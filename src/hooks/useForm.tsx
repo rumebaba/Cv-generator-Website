@@ -9,8 +9,10 @@ import type {
   Introduction,
   Experience,
   Education,
-  Skill,
+  MedicalScience,
   Project,
+  Skill,
+  Credential,
   Certification,
   Language,
   Reference,
@@ -28,12 +30,18 @@ type FormAction =
   | { type: 'ADD_EDUCATION'; payload: Education }
   | { type: 'UPDATE_EDUCATION'; payload: { id: string; data: Partial<Education> } }
   | { type: 'REMOVE_EDUCATION'; payload: string }
-  | { type: 'ADD_SKILL'; payload: Skill }
-  | { type: 'UPDATE_SKILL'; payload: { id: string; data: Partial<Skill> } }
-  | { type: 'REMOVE_SKILL'; payload: string }
+  | { type: 'ADD_MEDICAL_SCIENCE'; payload: MedicalScience }
+  | { type: 'UPDATE_MEDICAL_SCIENCE'; payload: { id: string; data: Partial<MedicalScience> } }
+  | { type: 'REMOVE_MEDICAL_SCIENCE'; payload: string }
   | { type: 'ADD_PROJECT'; payload: Project }
   | { type: 'UPDATE_PROJECT'; payload: { id: string; data: Partial<Project> } }
   | { type: 'REMOVE_PROJECT'; payload: string }
+  | { type: 'ADD_SKILL'; payload: Skill }
+  | { type: 'UPDATE_SKILL'; payload: { id: string; data: Partial<Skill> } }
+  | { type: 'REMOVE_SKILL'; payload: string }
+  | { type: 'ADD_CREDENTIAL'; payload: Credential }
+  | { type: 'UPDATE_CREDENTIAL'; payload: { id: string; data: Partial<Credential> } }
+  | { type: 'REMOVE_CREDENTIAL'; payload: string }
   | { type: 'ADD_CERTIFICATION'; payload: Certification }
   | { type: 'UPDATE_CERTIFICATION'; payload: { id: string; data: Partial<Certification> } }
   | { type: 'REMOVE_CERTIFICATION'; payload: string }
@@ -139,31 +147,31 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
         isDirty: true,
       };
 
-    case 'ADD_SKILL':
+    case 'ADD_MEDICAL_SCIENCE':
       return {
         ...state,
-        data: { ...state.data, skills: [...state.data.skills, action.payload] },
+        data: { ...state.data, medicalScience: [...state.data.medicalScience, action.payload] },
         isDirty: true,
       };
 
-    case 'UPDATE_SKILL':
+    case 'UPDATE_MEDICAL_SCIENCE':
       return {
         ...state,
         data: {
           ...state.data,
-          skills: state.data.skills.map((skill) =>
-            skill.id === action.payload.id ? { ...skill, ...action.payload.data } : skill
+          medicalScience: state.data.medicalScience.map((ms) =>
+            ms.id === action.payload.id ? { ...ms, ...action.payload.data } : ms
           ),
         },
         isDirty: true,
       };
 
-    case 'REMOVE_SKILL':
+    case 'REMOVE_MEDICAL_SCIENCE':
       return {
         ...state,
         data: {
           ...state.data,
-          skills: state.data.skills.filter((skill) => skill.id !== action.payload),
+          medicalScience: state.data.medicalScience.filter((ms) => ms.id !== action.payload),
         },
         isDirty: true,
       };
@@ -193,6 +201,64 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
         data: {
           ...state.data,
           projects: state.data.projects.filter((proj) => proj.id !== action.payload),
+        },
+        isDirty: true,
+      };
+
+    case 'ADD_SKILL':
+      return {
+        ...state,
+        data: { ...state.data, skills: [...state.data.skills, action.payload] },
+        isDirty: true,
+      };
+
+    case 'UPDATE_SKILL':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: state.data.skills.map((skill) =>
+            skill.id === action.payload.id ? { ...skill, ...action.payload.data } : skill
+          ),
+        },
+        isDirty: true,
+      };
+
+    case 'REMOVE_SKILL':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: state.data.skills.filter((skill) => skill.id !== action.payload),
+        },
+        isDirty: true,
+      };
+
+    case 'ADD_CREDENTIAL':
+      return {
+        ...state,
+        data: { ...state.data, credentials: [...state.data.credentials, action.payload] },
+        isDirty: true,
+      };
+
+    case 'UPDATE_CREDENTIAL':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          credentials: state.data.credentials.map((cred) =>
+            cred.id === action.payload.id ? { ...cred, ...action.payload.data } : cred
+          ),
+        },
+        isDirty: true,
+      };
+
+    case 'REMOVE_CREDENTIAL':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          credentials: state.data.credentials.filter((cred) => cred.id !== action.payload),
         },
         isDirty: true,
       };
@@ -366,12 +432,18 @@ interface FormContextValue extends FormState {
   addEducation: (edu: Education) => void;
   updateEducation: (id: string, data: Partial<Education>) => void;
   removeEducation: (id: string) => void;
-  addSkill: (skill: Skill) => void;
-  updateSkill: (id: string, data: Partial<Skill>) => void;
-  removeSkill: (id: string) => void;
+  addMedicalScience: (ms: MedicalScience) => void;
+  updateMedicalScience: (id: string, data: Partial<MedicalScience>) => void;
+  removeMedicalScience: (id: string) => void;
   addProject: (project: Project) => void;
   updateProject: (id: string, data: Partial<Project>) => void;
   removeProject: (id: string) => void;
+  addSkill: (skill: Skill) => void;
+  updateSkill: (id: string, data: Partial<Skill>) => void;
+  removeSkill: (id: string) => void;
+  addCredential: (cred: Credential) => void;
+  updateCredential: (id: string, data: Partial<Credential>) => void;
+  removeCredential: (id: string) => void;
   addCertification: (cert: Certification) => void;
   updateCertification: (id: string, data: Partial<Certification>) => void;
   removeCertification: (id: string) => void;
@@ -418,12 +490,20 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       addEducation: (edu) => dispatch({ type: 'ADD_EDUCATION', payload: edu }),
       updateEducation: (id, data) => dispatch({ type: 'UPDATE_EDUCATION', payload: { id, data } }),
       removeEducation: (id) => dispatch({ type: 'REMOVE_EDUCATION', payload: id }),
-      addSkill: (skill) => dispatch({ type: 'ADD_SKILL', payload: skill }),
-      updateSkill: (id, data) => dispatch({ type: 'UPDATE_SKILL', payload: { id, data } }),
-      removeSkill: (id) => dispatch({ type: 'REMOVE_SKILL', payload: id }),
+      addMedicalScience: (ms) => dispatch({ type: 'ADD_MEDICAL_SCIENCE', payload: ms }),
+      updateMedicalScience: (id, data) =>
+        dispatch({ type: 'UPDATE_MEDICAL_SCIENCE', payload: { id, data } }),
+      removeMedicalScience: (id) => dispatch({ type: 'REMOVE_MEDICAL_SCIENCE', payload: id }),
       addProject: (project) => dispatch({ type: 'ADD_PROJECT', payload: project }),
       updateProject: (id, data) => dispatch({ type: 'UPDATE_PROJECT', payload: { id, data } }),
       removeProject: (id) => dispatch({ type: 'REMOVE_PROJECT', payload: id }),
+      addSkill: (skill) => dispatch({ type: 'ADD_SKILL', payload: skill }),
+      updateSkill: (id, data) => dispatch({ type: 'UPDATE_SKILL', payload: { id, data } }),
+      removeSkill: (id) => dispatch({ type: 'REMOVE_SKILL', payload: id }),
+      addCredential: (cred) => dispatch({ type: 'ADD_CREDENTIAL', payload: cred }),
+      updateCredential: (id, data) =>
+        dispatch({ type: 'UPDATE_CREDENTIAL', payload: { id, data } }),
+      removeCredential: (id) => dispatch({ type: 'REMOVE_CREDENTIAL', payload: id }),
       addCertification: (cert) => dispatch({ type: 'ADD_CERTIFICATION', payload: cert }),
       updateCertification: (id, data) =>
         dispatch({ type: 'UPDATE_CERTIFICATION', payload: { id, data } }),
@@ -476,13 +556,13 @@ const getStepData = (data: FormData, step: FormStep) => {
     case 4:
       return data.educations;
     case 5:
-      return data.skills;
+      return data.medicalScience;
     case 6:
       return data.projects;
     case 7:
-      return data.certifications;
+      return data.skills;
     case 8:
-      return data.languages;
+      return data.credentials;
     case 9:
       return data.references;
     default:
@@ -514,6 +594,26 @@ const validateStep = (step: FormStep, data: unknown): string[] => {
     case 4: {
       const edus = data as Education[];
       if (edus.length === 0) errors.push('At least one education entry is required');
+      break;
+    }
+    case 5: {
+      const ms = data as MedicalScience[];
+      if (ms.length === 0) errors.push('At least one medical science entry is required');
+      break;
+    }
+    case 6: {
+      const projects = data as Project[];
+      if (projects.length === 0) errors.push('At least one project is required');
+      break;
+    }
+    case 7: {
+      const skills = data as Skill[];
+      if (skills.length === 0) errors.push('At least one skill entry is required');
+      break;
+    }
+    case 8: {
+      const creds = data as Credential[];
+      if (creds.length === 0) errors.push('At least one credential entry is required');
       break;
     }
   }
@@ -596,8 +696,28 @@ const calculateStepCompletion = (data: FormData, step: FormStep): number => {
       return Math.round((filled / totalFields) * 100);
     }
     case 5: {
+      const ms = stepData as MedicalScience[];
+      if (ms.length === 0) return 0;
+      return 100;
+    }
+    case 6: {
+      const projects = stepData as Project[];
+      if (projects.length === 0) return 0;
+      return 100;
+    }
+    case 7: {
       const skills = stepData as Skill[];
       if (skills.length === 0) return 0;
+      return 100;
+    }
+    case 8: {
+      const creds = stepData as Credential[];
+      if (creds.length === 0) return 0;
+      return 100;
+    }
+    case 9: {
+      const refs = stepData as Reference[];
+      if (refs.length === 0) return 0;
       return 100;
     }
     default:

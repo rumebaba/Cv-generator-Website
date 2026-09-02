@@ -7,23 +7,35 @@ import { FormNavigation } from '../components/common/FormNavigation';
 import { StepProgress } from '../components/common/StepProgress';
 import { Step1PersonalData } from '../components/forms/Step1PersonalData';
 import { Step2Introduction } from '../components/forms/Step2Introduction';
+import { Step3Education } from '../components/forms/Step3Education';
+import { Step4Experience } from '../components/forms/Step4Experience';
+import { Step5MedicalScience } from '../components/forms/Step5MedicalScience';
+import { Step6Projects } from '../components/forms/Step6Projects';
+import { Step7Skills } from '../components/forms/Step7Skills';
+import { Step8Credentials } from '../components/forms/Step8Credentials';
 import { FormProvider } from '../hooks/useForm';
 
 const steps = [
   { number: 1, label: 'Personal Data', component: Step1PersonalData },
   { number: 2, label: 'Introduction', component: Step2Introduction },
-  { number: 3, label: 'Experience', component: null },
-  { number: 4, label: 'Education', component: null },
-  { number: 5, label: 'Skills', component: null },
-  { number: 6, label: 'Projects', component: null },
-  { number: 7, label: 'Certifications', component: null },
-  { number: 8, label: 'Languages', component: null },
+  { number: 3, label: 'Experience', component: Step4Experience },
+  { number: 4, label: 'Education', component: Step3Education },
+  { number: 5, label: 'Medical & Science', component: Step5MedicalScience },
+  { number: 6, label: 'Projects', component: Step6Projects },
+  { number: 7, label: 'Skills', component: Step7Skills },
+  { number: 8, label: 'Credentials & Extras', component: Step8Credentials },
   { number: 9, label: 'References', component: null },
 ];
 
 const stepComponents: Record<number, React.ComponentType> = {
   1: Step1PersonalData,
   2: Step2Introduction,
+  3: Step4Experience,
+  4: Step3Education,
+  5: Step5MedicalScience,
+  6: Step6Projects,
+  7: Step7Skills,
+  8: Step8Credentials,
 };
 
 const ComingSoonStep: React.FC<{ stepNumber: number; stepLabel: string }> = ({

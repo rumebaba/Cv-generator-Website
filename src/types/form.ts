@@ -35,6 +35,11 @@ export interface Experience {
   current: boolean;
   description: string;
   location: string;
+  achievements: string;
+  directReports: string;
+  toolsUsed: string;
+  reasonForLeaving: string;
+  salaryHistory: string;
 }
 
 export interface Education {
@@ -48,25 +53,54 @@ export interface Education {
   description: string;
   location: string;
   gpa: string;
+  thesisTopic: string;
+  academicHonors: string;
+  relevantClasses: string;
+  classRank: string;
 }
 
-export interface Skill {
+export interface MedicalScience {
   id: string;
-  name: string;
-  category: string;
-  proficiency: 'beginner' | 'intermediate' | 'advanced' | 'expert';
-  yearsOfExperience: number;
+  clinicalRotations: string;
+  researchGrants: string;
+  publications: string;
+  medicalLicenses: string;
 }
 
 export interface Project {
   id: string;
   name: string;
-  description: string;
-  technologies: string[];
-  url: string;
-  githubUrl: string;
+  role: string;
   startDate: string;
   endDate: string;
+  current: boolean;
+  description: string;
+  codeRepositoryUrl: string;
+  liveDemoUrl: string;
+  technicalArchitecture: string;
+}
+
+export interface Skill {
+  id: string;
+  technicalSkills: string;
+  softSkills: string;
+  spokenLanguages: string;
+  proficiencyLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  yearsOfExperience: number;
+}
+
+export interface Credential {
+  id: string;
+  certificateName: string;
+  issuer: string;
+  dateIssued: string;
+  credentialId: string;
+  expirationDate: string;
+  volunteerWork: string;
+  hobbies: string;
+  militaryService: string;
+  references: string;
+  securityClearance: string;
 }
 
 export interface Certification {
@@ -100,8 +134,10 @@ export interface FormData {
   introduction: Introduction;
   experiences: Experience[];
   educations: Education[];
-  skills: Skill[];
+  medicalScience: MedicalScience[];
   projects: Project[];
+  skills: Skill[];
+  credentials: Credential[];
   certifications: Certification[];
   languages: Language[];
   references: Reference[];
@@ -139,13 +175,92 @@ export const initialIntroduction: Introduction = {
   targetJobTitles: '',
 };
 
+export const initialExperience: Experience = {
+  id: '',
+  company: '',
+  position: '',
+  startDate: '',
+  endDate: '',
+  current: false,
+  description: '',
+  location: '',
+  achievements: '',
+  directReports: '',
+  toolsUsed: '',
+  reasonForLeaving: '',
+  salaryHistory: '',
+};
+
+export const initialEducation: Education = {
+  id: '',
+  institution: '',
+  degree: '',
+  fieldOfStudy: '',
+  startDate: '',
+  endDate: '',
+  current: false,
+  description: '',
+  location: '',
+  gpa: '',
+  thesisTopic: '',
+  academicHonors: '',
+  relevantClasses: '',
+  classRank: '',
+};
+
+export const initialMedicalScience: MedicalScience = {
+  id: '',
+  clinicalRotations: '',
+  researchGrants: '',
+  publications: '',
+  medicalLicenses: '',
+};
+
+export const initialProject: Project = {
+  id: '',
+  name: '',
+  role: '',
+  startDate: '',
+  endDate: '',
+  current: false,
+  description: '',
+  codeRepositoryUrl: '',
+  liveDemoUrl: '',
+  technicalArchitecture: '',
+};
+
+export const initialSkill: Skill = {
+  id: '',
+  technicalSkills: '',
+  softSkills: '',
+  spokenLanguages: '',
+  proficiencyLevel: 'beginner',
+  yearsOfExperience: 0,
+};
+
+export const initialCredential: Credential = {
+  id: '',
+  certificateName: '',
+  issuer: '',
+  dateIssued: '',
+  credentialId: '',
+  expirationDate: '',
+  volunteerWork: '',
+  hobbies: '',
+  militaryService: '',
+  references: '',
+  securityClearance: '',
+};
+
 export const initialFormData: FormData = {
   personalData: initialPersonalData,
   introduction: initialIntroduction,
   experiences: [],
   educations: [],
-  skills: [],
+  medicalScience: [],
   projects: [],
+  skills: [],
+  credentials: [],
   certifications: [],
   languages: [],
   references: [],

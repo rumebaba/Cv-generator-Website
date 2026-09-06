@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { TemplateId } from '../../hooks/useTemplate';
 import type { FormState } from '../../types/form';
 import { Button } from '../common/Button';
+import { generateDocxBlob } from '../../services/generateDocx';
 
 import CVTemplate from './CVTemplate';
 import CVTemplateMinimal from './CVTemplateMinimal';
@@ -38,6 +39,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
 }) => {
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
+  const [downloadingDocx, setDownloadingDocx] = useState(false);
   const mountedRef = useRef(true);
 
   const TemplateComponent = templateMap[template];
@@ -75,6 +77,23 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
 
   if (!isOpen) return null;
 
+  const handleDownloadDocx = async () => {
+    setDownloadingDocx(true);
+    try {
+      const blob = await generateDocxBlob(formState.data);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${formState.data.personalData.fullName.replace(/\s+/g, '_') || 'cv'}.docx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('DOCX generation failed:', error);
+    } finally {
+      setDownloadingDocx(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="flex max-h-[90vh] w-full max-w-5xl flex-col rounded-xl bg-white dark:bg-slate-900">
@@ -98,6 +117,14 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" onClick={onClose}>
               Close
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadDocx}
+              disabled={downloadingDocx}
+            >
+              {downloadingDocx ? 'Generating...' : 'Download DOCX'}
             </Button>
             {pdfBlob && (
               <a href={URL.createObjectURL(pdfBlob)} download="cv.pdf">

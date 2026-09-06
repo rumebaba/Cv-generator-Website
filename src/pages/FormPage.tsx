@@ -21,8 +21,8 @@ import { submitClient } from '../services/submitClient';
 const steps = [
   { number: 1, label: 'Personal Data', component: Step1PersonalData },
   { number: 2, label: 'Introduction', component: Step2Introduction },
-  { number: 3, label: 'Experience', component: Step4Experience },
-  { number: 4, label: 'Education', component: Step3Education },
+  { number: 3, label: 'Education', component: Step3Education },
+  { number: 4, label: 'Experience', component: Step4Experience },
   { number: 5, label: 'Medical & Science', component: Step5MedicalScience },
   { number: 6, label: 'Projects', component: Step6Projects },
   { number: 7, label: 'Skills', component: Step7Skills },
@@ -33,8 +33,8 @@ const steps = [
 const stepComponents: Record<number, React.ComponentType> = {
   1: Step1PersonalData,
   2: Step2Introduction,
-  3: Step4Experience,
-  4: Step3Education,
+  3: Step3Education,
+  4: Step4Experience,
   5: Step5MedicalScience,
   6: Step6Projects,
   7: Step7Skills,

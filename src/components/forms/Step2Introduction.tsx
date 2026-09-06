@@ -4,6 +4,7 @@ import { useForm } from '../../hooks/useForm';
 import type { Introduction } from '../../types/form';
 import { Card, CardHeader, CardContent } from '../common/Card';
 import { Textarea, Input } from '../common/Input';
+import { RichTextEditor } from '../common/RichTextEditor';
 
 export const Step2Introduction: React.FC = () => {
   const {
@@ -32,14 +33,11 @@ export const Step2Introduction: React.FC = () => {
           subtitle="A concise overview of your professional background, key achievements, and what you bring to the table (2-3 sentences)"
         />
         <CardContent className="space-y-4">
-          <Textarea
-            label=""
+          <RichTextEditor
             value={introduction.professionalSummary}
-            onChange={(e) => handleChange('professionalSummary', e.target.value)}
-            error={introErrors.professionalSummary}
+            onChange={(value) => handleChange('professionalSummary', value)}
             placeholder="Results-driven Software Engineer with 8+ years of experience building scalable web applications. Proven track record of leading cross-functional teams, delivering complex projects on time, and implementing innovative solutions that improve system performance by 40%+..."
-            rows={4}
-            maxLength={500}
+            error={introErrors.professionalSummary}
             helperText={characterCount(introduction.professionalSummary, 500)}
           />
         </CardContent>
@@ -69,17 +67,12 @@ export const Step2Introduction: React.FC = () => {
           subtitle="Highlight your most significant achievements, awards, promotions, or impactful projects (optional)"
         />
         <CardContent className="space-y-4">
-          <Textarea
-            label=""
+          <RichTextEditor
             value={introduction.keyCareerMilestones}
-            onChange={(e) => handleChange('keyCareerMilestones', e.target.value)}
-            placeholder="• Led migration of monolithic architecture to microservices, reducing deployment time by 75%
-• Awarded 'Engineer of the Year' 2022 for building real-time analytics platform serving 10M+ users
-• Published 3 technical papers on distributed systems at top-tier conferences
-• Mentored 15+ engineers, with 5 promoted to senior roles under my guidance
-• Architected CI/CD pipeline reducing release cycle from 2 weeks to 2 days..."
-            rows={6}
-            maxLength={1000}
+            onChange={(value) => handleChange('keyCareerMilestones', value)}
+            placeholder={
+              "• Led migration of monolithic architecture to microservices, reducing deployment time by 75%\n• Awarded 'Engineer of the Year' 2022 for building real-time analytics platform serving 10M+ users\n• Published 3 technical papers on distributed systems at top-tier conferences"
+            }
             helperText={characterCount(introduction.keyCareerMilestones, 1000)}
           />
         </CardContent>
@@ -116,7 +109,7 @@ export const Step2Introduction: React.FC = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 01-18 0 9 9 0 0118 0z"
               />
             </svg>
           </div>

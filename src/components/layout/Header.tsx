@@ -2,12 +2,15 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { Button } from '../common/Button';
+import { DarkModeToggle } from '../common/DarkModeToggle';
 
 export const Header: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
     { path: '/', label: 'Home' },
+    { path: '/templates', label: 'Templates' },
+    { path: '/portfolio', label: 'Portfolio' },
     { path: '/form', label: 'Build CV' },
     { path: '/admin', label: 'Admin' },
   ];
@@ -47,6 +50,7 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <DarkModeToggle />
             <Link to="/form">
               <Button size="sm" variant="primary">
                 Create CV

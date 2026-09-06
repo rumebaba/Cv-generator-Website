@@ -6,6 +6,8 @@ import { FormLayout } from '../components/layout/Layout';
 import { AdminPage } from '../pages/AdminPage';
 import { FormPage } from '../pages/FormPage';
 import { LandingPage } from '../pages/LandingPage';
+import { PortfolioPage } from '../pages/PortfolioPage';
+import { TemplatesPage } from '../pages/TemplatesPage';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -13,6 +15,8 @@ export const AppRoutes: React.FC = () => {
       <Route element={<Layout />}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/templates" element={<TemplatesPage />} />
+        <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/form/*" element={<FormLayout />}>
           <Route path="step/:step" element={<FormPage />} />
           <Route index element={<Navigate to="/form/step/1" replace />} />

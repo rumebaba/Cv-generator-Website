@@ -252,6 +252,16 @@ export const initialCredential: Credential = {
   securityClearance: '',
 };
 
+export const initialReference: Reference = {
+  id: '',
+  name: '',
+  title: '',
+  company: '',
+  email: '',
+  phone: '',
+  relationship: '',
+};
+
 export const initialFormData: FormData = {
   personalData: initialPersonalData,
   introduction: initialIntroduction,

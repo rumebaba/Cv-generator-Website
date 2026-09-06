@@ -5,7 +5,8 @@ import { useForm } from '../../hooks/useForm';
 import type { Experience } from '../../types/form';
 import { Button } from '../common/Button';
 import { Card, CardHeader, CardContent, CardFooter } from '../common/Card';
-import { Input, Textarea, Select } from '../common/Input';
+import { Input, Textarea } from '../common/Input';
+import { RichTextEditor } from '../common/RichTextEditor';
 
 const initialExperience: Experience = {
   id: '',
@@ -187,28 +188,23 @@ export const Step4Experience: React.FC = () => {
                   />
                 </div>
 
-                <Textarea
+                <RichTextEditor
                   label="Key Achievements & Impact *"
                   value={formData.achievements}
-                  onChange={(e) => handleInputChange('achievements', e.target.value)}
+                  onChange={(value) => handleInputChange('achievements', value)}
                   error={experienceErrors.achievements}
-                  placeholder="• Led migration of monolithic architecture to microservices, reducing deployment time by 75% and saving $200K/year
-• Built real-time analytics platform processing 10M+ events/day with 99.99% uptime
-• Mentored 5 junior engineers, 3 promoted within 18 months
-• Designed and implemented CI/CD pipeline reducing release cycle from 2 weeks to 2 days"
-                  rows={6}
-                  maxLength={2000}
+                  placeholder={
+                    '• Led migration of monolithic architecture to microservices, reducing deployment time by 75% and saving $200K/year\n• Built real-time analytics platform processing 10M+ events/day with 99.99% uptime\n• Mentored 5 junior engineers, 3 promoted within 18 months\n• Designed and implemented CI/CD pipeline reducing release cycle from 2 weeks to 2 days'
+                  }
                   required
                   helperText="Use bullet points. Quantify with numbers, percentages, dollar amounts. Focus on RESULTS."
                 />
 
-                <Textarea
+                <RichTextEditor
                   label="Role Description"
                   value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  onChange={(value) => handleInputChange('description', value)}
                   placeholder="Full-stack development using React, Node.js, PostgreSQL. Collaborated with product and design teams. Participated in code reviews and architecture decisions."
-                  rows={4}
-                  maxLength={1000}
                   helperText="Brief overview of your day-to-day responsibilities"
                 />
 

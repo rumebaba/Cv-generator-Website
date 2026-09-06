@@ -6,6 +6,7 @@ import type { Project } from '../../types/form';
 import { Button } from '../common/Button';
 import { Card, CardHeader, CardContent, CardFooter } from '../common/Card';
 import { Input, Textarea } from '../common/Input';
+import { RichTextEditor } from '../common/RichTextEditor';
 
 const initialProject: Project = {
   id: '',
@@ -173,14 +174,12 @@ export const Step6Projects: React.FC = () => {
                   </label>
                 </div>
 
-                <Textarea
+                <RichTextEditor
                   label="Project Description *"
                   value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  onChange={(value) => handleInputChange('description', value)}
                   error={projectErrors.description}
                   placeholder="Built a scalable e-commerce platform handling 10K+ daily transactions. Implemented microservices architecture with event-driven communication. Integrated payment gateways, inventory management, and real-time analytics dashboard."
-                  rows={4}
-                  maxLength={2000}
                   required
                   helperText="Describe the project scope, your contributions, and key outcomes"
                 />

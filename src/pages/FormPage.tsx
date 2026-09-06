@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { Button } from '../components/common/Button';
@@ -13,7 +13,10 @@ import { Step5MedicalScience } from '../components/forms/Step5MedicalScience';
 import { Step6Projects } from '../components/forms/Step6Projects';
 import { Step7Skills } from '../components/forms/Step7Skills';
 import { Step8Credentials } from '../components/forms/Step8Credentials';
-import { FormProvider } from '../hooks/useForm';
+import { Step9References } from '../components/forms/Step9References';
+import { FormProvider, useForm } from '../hooks/useForm';
+import { TemplateProvider, useTemplate } from '../hooks/useTemplate';
+import { submitClient } from '../services/submitClient';
 
 const steps = [
   { number: 1, label: 'Personal Data', component: Step1PersonalData },
@@ -24,7 +27,7 @@ const steps = [
   { number: 6, label: 'Projects', component: Step6Projects },
   { number: 7, label: 'Skills', component: Step7Skills },
   { number: 8, label: 'Credentials & Extras', component: Step8Credentials },
-  { number: 9, label: 'References', component: null },
+  { number: 9, label: 'References', component: Step9References },
 ];
 
 const stepComponents: Record<number, React.ComponentType> = {
@@ -36,6 +39,7 @@ const stepComponents: Record<number, React.ComponentType> = {
   6: Step6Projects,
   7: Step7Skills,
   8: Step8Credentials,
+  9: Step9References,
 };
 
 const ComingSoonStep: React.FC<{ stepNumber: number; stepLabel: string }> = ({
@@ -72,11 +76,14 @@ const ComingSoonStep: React.FC<{ stepNumber: number; stepLabel: string }> = ({
   </Card>
 );
 
-export const FormPage: React.FC = () => {
+const FormPageInner: React.FC = () => {
   const { step } = useParams<{ step: string }>();
   const navigate = useNavigate();
-  const currentStep = parseInt(step || '1', 10);
+  const { data, setSubmitting, isSubmitting } = useForm();
+  const { selectedTemplate } = useTemplate();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const currentStep = parseInt(step || '1', 10);
   const validStep = Math.max(1, Math.min(9, currentStep));
 
   useEffect(() => {
@@ -102,50 +109,74 @@ export const FormPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted!');
-    alert('CV Generated Successfully! (Demo)');
+  const handleSubmit = async () => {
+    setSubmitError(null);
+    setSubmitting(true);
+    try {
+      const result = await submitClient(data, selectedTemplate);
+      window.open(result.pdfUrl, '_blank');
+      alert(
+        `CV submitted successfully!\n\nClient ID: ${result.clientId}\nPDF URL: ${result.pdfUrl}`
+      );
+    } catch (err) {
+      console.error('Submission failed:', err);
+      setSubmitError(err instanceof Error ? err.message : 'Submission failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <FormProvider>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Build Your CV</h1>
-            <p className="mt-1 text-slate-600 dark:text-slate-400">
-              Step {validStep} of 9: {currentStepData?.label}
-            </p>
-          </div>
-          <div className="hidden sm:block">
-            <Button variant="ghost" size="sm">
-              Save Draft
-            </Button>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Build Your CV</h1>
+          <p className="mt-1 text-slate-600 dark:text-slate-400">
+            Step {validStep} of 9: {currentStepData?.label}
+          </p>
         </div>
-
-        <StepProgress currentStep={validStep} />
-
-        <div className="animate-fade-in">
-          {StepComponent ? (
-            <StepComponent />
-          ) : (
-            <ComingSoonStep stepNumber={validStep} stepLabel={currentStepData?.label || 'Step'} />
-          )}
+        <div className="hidden sm:block">
+          <Button variant="ghost" size="sm">
+            Save Draft
+          </Button>
         </div>
-
-        <FormNavigation
-          onNext={handleNext}
-          onPrev={handlePrev}
-          onSubmit={handleSubmit}
-          isFirstStep={isFirstStep}
-          isLastStep={isLastStep}
-          nextLabel={isLastStep ? 'Generate CV' : 'Continue'}
-          submitLabel="Generate CV"
-        />
       </div>
-    </FormProvider>
+
+      <StepProgress currentStep={validStep} />
+
+      {submitError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          {submitError}
+        </div>
+      )}
+
+      <div className="animate-fade-in">
+        {StepComponent ? (
+          <StepComponent />
+        ) : (
+          <ComingSoonStep stepNumber={validStep} stepLabel={currentStepData?.label || 'Step'} />
+        )}
+      </div>
+
+      <FormNavigation
+        onNext={handleNext}
+        onPrev={handlePrev}
+        onSubmit={handleSubmit}
+        isFirstStep={isFirstStep}
+        isLastStep={isLastStep}
+        nextLabel={isLastStep ? 'Generate CV' : 'Continue'}
+        submitLabel={isSubmitting ? 'Submitting...' : 'Generate CV'}
+      />
+    </div>
   );
 };
+
+export const FormPage: React.FC = () => (
+  <FormProvider>
+    <TemplateProvider>
+      <FormPageInner />
+    </TemplateProvider>
+  </FormProvider>
+);
 
 export default FormPage;

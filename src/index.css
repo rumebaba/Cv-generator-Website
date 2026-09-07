@@ -26,6 +26,16 @@
     @apply bg-indigo-500/30 text-indigo-900 dark:text-indigo-100;
   }
 
+  .dark .ProseMirror ::selection {
+    background: rgba(99, 102, 241, 0.4);
+    color: #e2e8f0;
+  }
+
+  .dark .ProseMirror *::selection {
+    background: rgba(99, 102, 241, 0.4);
+    color: #e2e8f0;
+  }
+
   :focus-visible {
     @apply ring-2 ring-indigo-500 ring-offset-2 ring-offset-white outline-none dark:ring-offset-slate-950;
   }

@@ -204,14 +204,72 @@ export const Step1PersonalData: React.FC = () => {
               onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
               max={new Date().toISOString().split('T')[0]}
             />
-            <Input
-              label="Profile Photo URL"
-              value={personalData.profilePhotoUrl}
-              onChange={(e) => handleInputChange('profilePhotoUrl', e.target.value)}
-              placeholder="https://example.com/photo.jpg"
-              autoComplete="url"
-              helperText="Optional: Link to a professional headshot"
-            />
+            <div />
+          </div>
+
+          {/* Photo Upload Section */}
+          <div className="rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-6 dark:border-slate-600 dark:bg-slate-800/50">
+            <div className="flex flex-col items-center gap-4 sm:flex-row">
+              {personalData.profilePhotoUrl ? (
+                <img
+                  src={personalData.profilePhotoUrl}
+                  alt="Profile preview"
+                  className="h-20 w-20 rounded-full object-cover ring-2 ring-indigo-500"
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700">
+                  <svg className="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+              )}
+              <div className="flex-1 text-center sm:text-left">
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Profile Photo</h4>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  Add a professional headshot to your CV
+                </p>
+                <div className="mt-3 flex flex-col gap-2">
+                  <label className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Upload Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            handleInputChange('profilePhotoUrl', reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">or paste a URL below</span>
+                  <Input
+                    value={personalData.profilePhotoUrl}
+                    onChange={(e) => handleInputChange('profilePhotoUrl', e.target.value)}
+                    placeholder="https://example.com/photo.jpg"
+                    autoComplete="off"
+                  />
+                  {personalData.profilePhotoUrl && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600 hover:text-red-700"
+                      onClick={() => handleInputChange('profilePhotoUrl', '')}
+                    >
+                      Remove Photo
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

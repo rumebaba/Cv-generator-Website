@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormState } from '../../types/form';
@@ -20,6 +20,7 @@ const s = StyleSheet.create({
   page: { fontFamily: 'Helvetica', fontSize: 9, color: '#333' },
   container: { flexDirection: 'row', minHeight: '100%' as any },
   sidebar: { width: 200, backgroundColor: '#6c3ce0', color: '#ffffff', padding: 25 },
+  photo: { width: 60, height: 60, borderRadius: 30, marginBottom: 10, alignSelf: 'center' },
   main: { flex: 1, padding: 25 },
   name: { fontSize: 18, fontWeight: 'bold', color: '#ffffff' },
   subtitle: { fontSize: 9, color: '#d4c4f7', marginTop: 4 },
@@ -54,6 +55,9 @@ export const CVTemplateCreative: React.FC<Props> = ({ formState }) => {
         <View style={s.container}>
           {/* Sidebar */}
           <View style={s.sidebar}>
+            {pd.profilePhotoUrl && (
+              <Image style={s.photo} src={pd.profilePhotoUrl} />
+            )}
             <Text style={s.name}>{pd.fullName}</Text>
             {introduction.targetJobTitles && <Text style={s.subtitle}>{introduction.targetJobTitles}</Text>}
 

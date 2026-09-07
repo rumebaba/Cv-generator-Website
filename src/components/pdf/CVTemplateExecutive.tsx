@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormState } from '../../types/form';
@@ -19,6 +19,7 @@ interface Props {
 const s = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica', fontSize: 9, color: '#1a1a2e', lineHeight: 1.5 },
   header: { backgroundColor: '#1a1a2e', color: '#ffffff', padding: 30, marginBottom: 20, textAlign: 'center' },
+  photo: { width: 65, height: 65, borderRadius: 33, marginBottom: 10, alignSelf: 'center' },
   name: { fontSize: 22, fontWeight: 'bold', letterSpacing: 2, textTransform: 'uppercase' as const, color: '#c9a84c' },
   subtitle: { fontSize: 10, color: '#b0b0b0', marginTop: 4, letterSpacing: 1 },
   contact: { fontSize: 8, color: '#999999', marginTop: 8 },
@@ -48,6 +49,9 @@ export const CVTemplateExecutive: React.FC<Props> = ({ formState }) => {
       <Page size="A4" style={s.page}>
         {/* Header */}
         <View style={s.header}>
+          {pd.profilePhotoUrl && (
+            <Image style={s.photo} src={pd.profilePhotoUrl} />
+          )}
           <Text style={s.name}>{pd.fullName}</Text>
           {introduction.targetJobTitles && <Text style={s.subtitle}>{introduction.targetJobTitles}</Text>}
           <Text style={s.contact}>

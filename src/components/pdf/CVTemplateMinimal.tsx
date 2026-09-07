@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormState } from '../../types/form';
@@ -45,6 +45,12 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+  },
+  photo: {
+    width: 55,
+    height: 55,
+    borderRadius: 28,
+    marginRight: 15,
   },
   name: {
     fontSize: 26,
@@ -146,6 +152,9 @@ const CVTemplateMinimal: React.FC<CVTemplateProps> = ({ formState }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
+          {personalData.profilePhotoUrl && (
+            <Image style={styles.photo} src={personalData.profilePhotoUrl} />
+          )}
           <View style={styles.headerLeft}>
             <Text style={styles.name}>{personalData.fullName || 'Your Name'}</Text>
             {personalData.email && <Text style={styles.title}>{personalData.email}</Text>}

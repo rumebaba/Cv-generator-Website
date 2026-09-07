@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormState } from '../../types/form';
@@ -19,6 +19,7 @@ interface Props {
 const s = StyleSheet.create({
   page: { padding: 30, fontFamily: 'Helvetica', fontSize: 8.5, color: '#222', lineHeight: 1.4 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '2 solid #222', paddingBottom: 8, marginBottom: 12 },
+  photo: { width: 45, height: 45, borderRadius: 23 },
   name: { fontSize: 18, fontWeight: 'bold', color: '#222' },
   contactBlock: { textAlign: 'right' as const, fontSize: 7.5, color: '#555' },
   section: { marginBottom: 10 },
@@ -44,7 +45,12 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
       <Page size="A4" style={s.page}>
         {/* Header */}
         <View style={s.header}>
-          <Text style={s.name}>{pd.fullName}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            {pd.profilePhotoUrl && (
+              <Image style={s.photo} src={pd.profilePhotoUrl} />
+            )}
+            <Text style={s.name}>{pd.fullName}</Text>
+          </View>
           <View style={s.contactBlock}>
             {pd.email && <Text>{pd.email}</Text>}
             {pd.phone && <Text>{pd.phone}</Text>}

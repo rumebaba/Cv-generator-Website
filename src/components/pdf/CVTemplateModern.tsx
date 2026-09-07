@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet, Font, Link } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Font, Link, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormState } from '../../types/form';
@@ -48,6 +48,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#f8fafc',
     marginBottom: 4,
+  },
+  photo: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginBottom: 10,
+    alignSelf: 'center',
   },
   sidebarTitle: {
     fontSize: 10,
@@ -163,6 +170,9 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.sidebar}>
+          {personalData.profilePhotoUrl && (
+            <Image style={styles.photo} src={personalData.profilePhotoUrl} />
+          )}
           <Text style={styles.sidebarName}>{personalData.fullName || 'Your Name'}</Text>
           <Text style={styles.sidebarTitle}>Professional CV</Text>
 

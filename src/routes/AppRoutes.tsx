@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { FormLayout } from '../components/layout/Layout';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
+import { TemplateProvider } from '../hooks/useTemplate';
 import { AdminPage } from '../pages/AdminPage';
 import { FormPage } from '../pages/FormPage';
 import { LandingPage } from '../pages/LandingPage';
@@ -26,7 +27,14 @@ export const AppRoutes: React.FC = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/templates" element={<TemplatesPage />} />
+        <Route
+          path="/templates"
+          element={
+            <TemplateProvider>
+              <TemplatesPage />
+            </TemplateProvider>
+          }
+        />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/form/*" element={<FormLayout />}>
           <Route path="step/:step" element={<FormPage />} />

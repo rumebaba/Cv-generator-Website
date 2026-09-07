@@ -6,164 +6,164 @@ import { Card } from '../components/common/Card';
 import { useTemplate, type TemplateId } from '../hooks/useTemplate';
 
 const ClassicPreview: React.FC = () => (
-  <div className="rounded-lg bg-white p-4 text-[7px] leading-tight text-slate-800 shadow-inner" style={{ fontFamily: 'Georgia, serif' }}>
-    <div className="mb-2 border-b-2 border-slate-800 pb-1 text-center">
-      <div className="text-[10px] font-bold uppercase tracking-wider">John Smith</div>
-      <div className="text-[6px] text-slate-500">john@email.com | +1 555 0123 | New York, NY</div>
+  <div className="rounded-lg bg-white p-5 text-[11px] leading-snug text-slate-800 shadow-inner" style={{ fontFamily: 'Georgia, serif' }}>
+    <div className="mb-3 border-b-2 border-slate-800 pb-2 text-center">
+      <div className="text-[15px] font-bold uppercase tracking-wider">John Smith</div>
+      <div className="text-[9px] text-slate-500">john@email.com | +1 555 0123 | New York, NY</div>
     </div>
-    <div className="mb-1.5">
-      <div className="mb-0.5 text-[7px] font-bold uppercase text-indigo-700">Professional Summary</div>
-      <div className="text-[6px] text-slate-600">Experienced software engineer with 8+ years building scalable web applications.</div>
+    <div className="mb-3">
+      <div className="mb-1 text-[10px] font-bold uppercase text-indigo-700">Professional Summary</div>
+      <div className="text-[9px] text-slate-600">Experienced software engineer with 8+ years building scalable web applications and leading cross-functional teams.</div>
     </div>
-    <div className="mb-1.5">
-      <div className="mb-0.5 text-[7px] font-bold uppercase text-indigo-700">Experience</div>
+    <div className="mb-3">
+      <div className="mb-1 text-[10px] font-bold uppercase text-indigo-700">Experience</div>
       <div className="font-semibold">Senior Developer — Google (2020-Present)</div>
-      <div className="text-[6px] text-slate-600">Led team of 5 engineers, improved performance by 40%.</div>
+      <div className="text-[9px] text-slate-600">Led team of 5 engineers, improved performance by 40%. Architected microservices infrastructure.</div>
     </div>
     <div>
-      <div className="mb-0.5 text-[7px] font-bold uppercase text-indigo-700">Education</div>
+      <div className="mb-1 text-[10px] font-bold uppercase text-indigo-700">Education</div>
       <div className="font-semibold">BS Computer Science — MIT (2016)</div>
     </div>
   </div>
 );
 
 const ModernPreview: React.FC = () => (
-  <div className="flex overflow-hidden rounded-lg bg-slate-900 text-[7px] leading-tight text-white shadow-inner">
+  <div className="flex overflow-hidden rounded-lg bg-slate-900 text-[11px] leading-snug text-white shadow-inner">
     <div className="w-1/3 bg-slate-800 p-3">
-      <div className="mb-2 text-center text-[9px] font-bold">John Smith</div>
-      <div className="mb-2 text-[5px] text-slate-400">john@email.com</div>
-      <div className="mb-2">
-        <div className="mb-0.5 text-[6px] font-bold uppercase text-indigo-400">Skills</div>
-        <div className="space-y-0.5 text-[5px] text-slate-300">
+      <div className="mb-3 text-center text-[13px] font-bold">John Smith</div>
+      <div className="mb-3 text-[8px] text-slate-400">john@email.com</div>
+      <div className="mb-3">
+        <div className="mb-1 text-[9px] font-bold uppercase text-indigo-400">Skills</div>
+        <div className="space-y-0.5 text-[8px] text-slate-300">
           <div>React, TypeScript</div>
           <div>Node.js, Python</div>
           <div>AWS, Docker</div>
         </div>
       </div>
       <div>
-        <div className="mb-0.5 text-[6px] font-bold uppercase text-indigo-400">Contact</div>
-        <div className="text-[5px] text-slate-400">+1 555 0123</div>
-        <div className="text-[5px] text-slate-400">New York, NY</div>
+        <div className="mb-1 text-[9px] font-bold uppercase text-indigo-400">Contact</div>
+        <div className="text-[8px] text-slate-400">+1 555 0123</div>
+        <div className="text-[8px] text-slate-400">New York, NY</div>
       </div>
     </div>
-    <div className="w-2/3 p-3">
-      <div className="mb-1.5">
-        <div className="mb-0.5 text-[7px] font-bold uppercase text-indigo-400">Summary</div>
-        <div className="text-[6px] text-slate-300">Experienced software engineer with 8+ years building scalable web applications.</div>
+    <div className="w-2/3 p-4">
+      <div className="mb-3">
+        <div className="mb-1 text-[10px] font-bold uppercase text-indigo-400">Summary</div>
+        <div className="text-[9px] text-slate-300">Experienced software engineer with 8+ years building scalable web applications.</div>
       </div>
-      <div className="mb-1.5">
-        <div className="mb-0.5 text-[7px] font-bold uppercase text-indigo-400">Experience</div>
-        <div className="font-semibold text-[7px]">Senior Developer — Google</div>
-        <div className="text-[5px] text-slate-400">2020-Present</div>
-        <div className="text-[5px] text-slate-300">Led team of 5 engineers.</div>
+      <div className="mb-3">
+        <div className="mb-1 text-[10px] font-bold uppercase text-indigo-400">Experience</div>
+        <div className="font-semibold text-[10px]">Senior Developer — Google</div>
+        <div className="text-[8px] text-slate-400">2020-Present</div>
+        <div className="text-[9px] text-slate-300">Led team of 5 engineers, improved performance by 40%.</div>
       </div>
       <div>
-        <div className="mb-0.5 text-[7px] font-bold uppercase text-indigo-400">Education</div>
-        <div className="font-semibold text-[7px]">BS Computer Science — MIT</div>
+        <div className="mb-1 text-[10px] font-bold uppercase text-indigo-400">Education</div>
+        <div className="font-semibold text-[10px]">BS Computer Science — MIT</div>
       </div>
     </div>
   </div>
 );
 
 const MinimalPreview: React.FC = () => (
-  <div className="rounded-lg bg-white p-4 text-[7px] leading-tight text-slate-800 shadow-inner">
-    <div className="mb-2">
-      <div className="text-[10px] font-bold text-slate-900">John Smith</div>
-      <div className="text-[6px] text-emerald-600">john@email.com · +1 555 0123 · New York, NY</div>
+  <div className="rounded-lg bg-white p-5 text-[11px] leading-snug text-slate-800 shadow-inner">
+    <div className="mb-3">
+      <div className="text-[15px] font-bold text-slate-900">John Smith</div>
+      <div className="text-[9px] text-emerald-600">john@email.com · +1 555 0123 · New York, NY</div>
     </div>
-    <div className="mb-1.5 border-l-2 border-emerald-500 pl-2">
-      <div className="text-[7px] font-bold uppercase text-emerald-700">Summary</div>
-      <div className="text-[6px] text-slate-600">Experienced software engineer with 8+ years building scalable web applications.</div>
+    <div className="mb-3 border-l-2 border-emerald-500 pl-3">
+      <div className="text-[10px] font-bold uppercase text-emerald-700">Summary</div>
+      <div className="text-[9px] text-slate-600">Experienced software engineer with 8+ years building scalable web applications.</div>
     </div>
-    <div className="mb-1.5 border-l-2 border-emerald-500 pl-2">
-      <div className="text-[7px] font-bold uppercase text-emerald-700">Experience</div>
+    <div className="mb-3 border-l-2 border-emerald-500 pl-3">
+      <div className="text-[10px] font-bold uppercase text-emerald-700">Experience</div>
       <div className="font-semibold">Senior Developer — Google (2020-Present)</div>
-      <div className="text-[6px] text-slate-600">Led team of 5 engineers, improved performance by 40%.</div>
+      <div className="text-[9px] text-slate-600">Led team of 5 engineers, improved performance by 40%.</div>
     </div>
-    <div className="border-l-2 border-emerald-500 pl-2">
-      <div className="text-[7px] font-bold uppercase text-emerald-700">Education</div>
+    <div className="border-l-2 border-emerald-500 pl-3">
+      <div className="text-[10px] font-bold uppercase text-emerald-700">Education</div>
       <div className="font-semibold">BS Computer Science — MIT (2016)</div>
     </div>
   </div>
 );
 
 const ExecutivePreview: React.FC = () => (
-  <div className="rounded-lg bg-[#1a1a2e] p-4 text-[7px] leading-tight text-white shadow-inner">
-    <div className="mb-2 border-b border-[#c9a84c] pb-1 text-center">
-      <div className="text-[10px] font-bold uppercase tracking-widest text-[#c9a84c]">John Smith</div>
-      <div className="text-[6px] text-slate-400">Senior Executive | john@email.com | New York, NY</div>
+  <div className="rounded-lg bg-[#1a1a2e] p-5 text-[11px] leading-snug text-white shadow-inner">
+    <div className="mb-3 border-b border-[#c9a84c] pb-2 text-center">
+      <div className="text-[15px] font-bold uppercase tracking-widest text-[#c9a84c]">John Smith</div>
+      <div className="text-[9px] text-slate-400">Senior Executive | john@email.com | New York, NY</div>
     </div>
-    <div className="mb-1.5">
-      <div className="mb-0.5 text-[7px] font-bold uppercase text-[#c9a84c]">Professional Summary</div>
-      <div className="text-[6px] text-slate-300">15+ years leading Fortune 500 teams and driving strategic growth.</div>
+    <div className="mb-3">
+      <div className="mb-1 text-[10px] font-bold uppercase text-[#c9a84c]">Professional Summary</div>
+      <div className="text-[9px] text-slate-300">15+ years leading Fortune 500 teams and driving strategic growth initiatives across global markets.</div>
     </div>
-    <div className="mb-1.5">
-      <div className="mb-0.5 text-[7px] font-bold uppercase text-[#c9a84c]">Experience</div>
+    <div className="mb-3">
+      <div className="mb-1 text-[10px] font-bold uppercase text-[#c9a84c]">Experience</div>
       <div className="font-semibold">VP of Engineering — Microsoft (2018-Present)</div>
-      <div className="text-[6px] text-slate-300">Managed 200+ engineers across 3 global offices.</div>
+      <div className="text-[9px] text-slate-300">Managed 200+ engineers across 3 global offices.</div>
     </div>
     <div>
-      <div className="mb-0.5 text-[7px] font-bold uppercase text-[#c9a84c]">Education</div>
+      <div className="mb-1 text-[10px] font-bold uppercase text-[#c9a84c]">Education</div>
       <div className="font-semibold">MBA — Harvard Business School (2010)</div>
     </div>
   </div>
 );
 
 const CreativePreview: React.FC = () => (
-  <div className="flex overflow-hidden rounded-lg text-[7px] leading-tight text-white shadow-inner">
+  <div className="flex overflow-hidden rounded-lg text-[11px] leading-snug text-white shadow-inner">
     <div className="w-1/3 bg-[#6c3ce0] p-3">
-      <div className="mb-2 text-center text-[9px] font-bold">John Smith</div>
-      <div className="mb-2 text-[6px] font-bold uppercase text-[#d4c4f7]">Skills</div>
-      <div className="space-y-0.5 text-[5px] text-[#e8e0ff]">
+      <div className="mb-3 text-center text-[13px] font-bold">John Smith</div>
+      <div className="mb-3 text-[9px] font-bold uppercase text-[#d4c4f7]">Skills</div>
+      <div className="mb-3 space-y-0.5 text-[8px] text-[#e8e0ff]">
         <div>React, TypeScript</div>
         <div>Node.js, Python</div>
       </div>
-      <div className="mt-2 mb-1 text-[6px] font-bold uppercase text-[#d4c4f7]">Contact</div>
-      <div className="text-[5px] text-[#e8e0ff]">john@email.com</div>
-      <div className="text-[5px] text-[#e8e0ff]">New York, NY</div>
+      <div className="mb-1 text-[9px] font-bold uppercase text-[#d4c4f7]">Contact</div>
+      <div className="text-[8px] text-[#e8e0ff]">john@email.com</div>
+      <div className="text-[8px] text-[#e8e0ff]">New York, NY</div>
     </div>
-    <div className="w-2/3 bg-white p-3 text-slate-800">
-      <div className="mb-1.5">
-        <div className="mb-0.5 text-[7px] font-bold uppercase text-[#6c3ce0]">About Me</div>
-        <div className="text-[6px] text-slate-600">Creative full-stack developer with 8+ years experience.</div>
+    <div className="w-2/3 bg-white p-4 text-slate-800">
+      <div className="mb-3">
+        <div className="mb-1 text-[10px] font-bold uppercase text-[#6c3ce0]">About Me</div>
+        <div className="text-[9px] text-slate-600">Creative full-stack developer with 8+ years experience building beautiful web apps.</div>
       </div>
-      <div className="mb-1.5">
-        <div className="mb-0.5 text-[7px] font-bold uppercase text-[#6c3ce0]">Experience</div>
-        <div className="font-semibold text-[7px]">Senior Developer — Google</div>
-        <div className="text-[6px] text-slate-600">Led team of 5 engineers.</div>
+      <div className="mb-3">
+        <div className="mb-1 text-[10px] font-bold uppercase text-[#6c3ce0]">Experience</div>
+        <div className="font-semibold text-[10px]">Senior Developer — Google</div>
+        <div className="text-[9px] text-slate-600">Led team of 5 engineers, improved performance by 40%.</div>
       </div>
       <div>
-        <div className="mb-0.5 text-[7px] font-bold uppercase text-[#6c3ce0]">Education</div>
-        <div className="font-semibold text-[7px]">BS Computer Science — MIT</div>
+        <div className="mb-1 text-[10px] font-bold uppercase text-[#6c3ce0]">Education</div>
+        <div className="font-semibold text-[10px]">BS Computer Science — MIT</div>
       </div>
     </div>
   </div>
 );
 
 const CompactPreview: React.FC = () => (
-  <div className="rounded-lg bg-white p-3 text-[7px] leading-tight text-slate-800 shadow-inner">
-    <div className="mb-1.5 flex items-end justify-between border-b-2 border-slate-800 pb-1">
-      <div className="text-[10px] font-bold">John Smith</div>
-      <div className="text-[5px] text-slate-500">john@email.com | +1 555 0123</div>
+  <div className="rounded-lg bg-white p-4 text-[11px] leading-snug text-slate-800 shadow-inner">
+    <div className="mb-2 flex items-end justify-between border-b-2 border-slate-800 pb-1">
+      <div className="text-[15px] font-bold">John Smith</div>
+      <div className="text-[8px] text-slate-500">john@email.com | +1 555 0123</div>
     </div>
-    <div className="mb-1">
-      <div className="bg-slate-100 px-1 text-[6px] font-bold uppercase text-slate-700">Experience</div>
+    <div className="mb-2">
+      <div className="bg-slate-100 px-1 text-[9px] font-bold uppercase text-slate-700">Experience</div>
       <div className="flex justify-between">
         <div className="font-semibold">Senior Developer — Google</div>
-        <div className="text-[5px] text-slate-400">2020-Present</div>
+        <div className="text-[8px] text-slate-400">2020-Present</div>
       </div>
-      <div className="text-[5px] text-slate-600">Led team of 5 engineers, improved performance by 40%.</div>
+      <div className="text-[9px] text-slate-600">Led team of 5 engineers, improved performance by 40%.</div>
     </div>
-    <div className="mb-1">
-      <div className="bg-slate-100 px-1 text-[6px] font-bold uppercase text-slate-700">Education</div>
+    <div className="mb-2">
+      <div className="bg-slate-100 px-1 text-[9px] font-bold uppercase text-slate-700">Education</div>
       <div className="flex justify-between">
         <div className="font-semibold">BS Computer Science — MIT</div>
-        <div className="text-[5px] text-slate-400">2016</div>
+        <div className="text-[8px] text-slate-400">2016</div>
       </div>
     </div>
     <div>
-      <div className="bg-slate-100 px-1 text-[6px] font-bold uppercase text-slate-700">Skills</div>
-      <div className="flex gap-1 text-[5px]">
+      <div className="bg-slate-100 px-1 text-[9px] font-bold uppercase text-slate-700">Skills</div>
+      <div className="flex gap-1 text-[8px]">
         <span className="rounded bg-slate-100 px-1">React</span>
         <span className="rounded bg-slate-100 px-1">TypeScript</span>
         <span className="rounded bg-slate-100 px-1">Node.js</span>
@@ -254,19 +254,18 @@ export const TemplatesPage: React.FC = () => {
                     : 'hover:shadow-lg'
                 }`}
               >
-                <div className={`h-48 bg-gradient-to-br ${template.color} p-6`}>
-                  <div className="flex h-full flex-col justify-end text-white">
-                    <h3 className="text-2xl font-bold">{template.name}</h3>
-                    {selectedTemplate === template.id && (
-                      <span className="mt-1 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
-                        Selected
-                      </span>
-                    )}
-                  </div>
+                {/* Small header with template name */}
+                <div className={`flex items-center justify-between bg-gradient-to-r ${template.color} px-5 py-3`}>
+                  <h3 className="text-lg font-bold text-white">{template.name}</h3>
+                  {selectedTemplate === template.id && (
+                    <span className="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-medium text-white">
+                      Selected
+                    </span>
+                  )}
                 </div>
 
-                {/* Template Preview */}
-                <div className="border-b border-slate-200 bg-slate-100 p-4 dark:border-slate-700 dark:bg-slate-800">
+                {/* Large template preview */}
+                <div className="border-b border-slate-200 bg-slate-100 p-5 dark:border-slate-700 dark:bg-slate-800">
                   <Preview />
                 </div>
 

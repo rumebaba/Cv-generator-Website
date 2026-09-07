@@ -202,7 +202,6 @@ export const Step3Education: React.FC = () => {
                     value={formData.endDate}
                     onChange={(e) => handleDateChange('endDate', e.target.value)}
                     disabled={formData.current}
-                    max={new Date().toISOString().slice(0, 7)}
                     placeholder={formData.current ? 'Present' : ''}
                   />
                   <div className="flex items-end">

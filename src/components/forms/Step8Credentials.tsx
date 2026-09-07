@@ -75,7 +75,6 @@ const CredentialForm: React.FC<{
           type="month"
           value={formData.expirationDate}
           onChange={(e) => onDateChange('expirationDate', e.target.value)}
-          max={new Date().toISOString().slice(0, 7)}
           placeholder="Optional"
         />
       </div>

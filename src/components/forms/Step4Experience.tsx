@@ -161,7 +161,7 @@ export const Step4Experience: React.FC = () => {
                         className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                       />
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Current Position
+                        Currently Working Here
                       </span>
                     </label>
                   </div>

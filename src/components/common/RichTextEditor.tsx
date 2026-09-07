@@ -1,14 +1,21 @@
 import Blockquote from '@tiptap/extension-blockquote';
+import Bold from '@tiptap/extension-bold';
+import BulletList from '@tiptap/extension-bullet-list';
 import Code from '@tiptap/extension-code';
+import Document from '@tiptap/extension-document';
 import Image from '@tiptap/extension-image';
+import Italic from '@tiptap/extension-italic';
 import Link from '@tiptap/extension-link';
+import ListItem from '@tiptap/extension-list-item';
+import OrderedList from '@tiptap/extension-ordered-list';
+import Paragraph from '@tiptap/extension-paragraph';
 import Placeholder from '@tiptap/extension-placeholder';
 import Strike from '@tiptap/extension-strike';
 import TextAlign from '@tiptap/extension-text-align';
+import Text from '@tiptap/extension-text';
 import Underline from '@tiptap/extension-underline';
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import React, { useEffect, forwardRef, useImperativeHandle, useRef, useState, useMemo } from 'react';
+import React, { useEffect, forwardRef, useImperativeHandle, useRef, useState, useCallback } from 'react';
 
 interface RichTextEditorProps {
   value: string;
@@ -52,42 +59,48 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
     const [showLinkModal, setShowLinkModal] = useState(false);
     const [linkUrl, setLinkUrl] = useState('');
     const linkInputRef = useRef<HTMLInputElement>(null);
-    const isInternalUpdate = useRef(false);
-
-    const extensions = useMemo(() => [
-      StarterKit.configure({
-        heading: false,
-        codeBlock: false,
-        strike: false,
-      }),
-      Placeholder.configure({ placeholder }),
-      Image.configure({
-        HTMLAttributes: { class: 'rounded-lg max-w-full h-auto my-2' },
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: { class: 'text-indigo-600 underline hover:text-indigo-800' },
-      }),
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Underline,
-      Strike,
-      Code.configure({
-        HTMLAttributes: { class: 'bg-slate-100 dark:bg-slate-800 px-1 rounded' },
-      }),
-      Blockquote.configure({
-        HTMLAttributes: {
-          class: 'border-l-4 border-indigo-500 pl-4 italic text-slate-600 dark:text-slate-400 my-2',
-        },
-      }),
-    ], []);
+    const onChangeRef = useRef(onChange);
+    onChangeRef.current = onChange;
 
     const editor = useEditor({
-      extensions,
-      content: value,
+      immediatelyRender: true,
+      extensions: [
+        Document,
+        Paragraph,
+        Text,
+        Bold,
+        Italic,
+        Strike,
+        Underline,
+        BulletList.configure({
+          HTMLAttributes: { class: 'list-disc pl-6 my-1' },
+        }),
+        OrderedList.configure({
+          HTMLAttributes: { class: 'list-decimal pl-6 my-1' },
+        }),
+        ListItem,
+        Placeholder.configure({ placeholder }),
+        Image.configure({
+          HTMLAttributes: { class: 'rounded-lg max-w-full h-auto my-2' },
+        }),
+        Link.configure({
+          openOnClick: false,
+          HTMLAttributes: { class: 'text-indigo-600 underline hover:text-indigo-800' },
+        }),
+        TextAlign.configure({ types: ['paragraph'] }),
+        Code.configure({
+          HTMLAttributes: { class: 'bg-slate-100 dark:bg-slate-800 px-1 rounded' },
+        }),
+        Blockquote.configure({
+          HTMLAttributes: {
+            class: 'border-l-4 border-indigo-500 pl-4 italic text-slate-600 dark:text-slate-400 my-2',
+          },
+        }),
+      ],
+      content: value || '',
       editable: !disabled,
       onUpdate: ({ editor }) => {
-        isInternalUpdate.current = true;
-        onChange(editor.getHTML());
+        onChangeRef.current(editor.getHTML());
       },
       editorProps: {
         attributes: {
@@ -96,17 +109,6 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
         },
       },
     });
-
-    // Sync external value changes to editor
-    useEffect(() => {
-      if (editor && !isInternalUpdate.current) {
-        const currentContent = editor.getHTML();
-        if (value !== currentContent) {
-          editor.commands.setContent(value, { emitUpdate: false });
-        }
-      }
-      isInternalUpdate.current = false;
-    }, [value, editor]);
 
     useImperativeHandle(ref, () => ({
       focus: () => editor?.commands.focus(),
@@ -127,7 +129,7 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
       }
     }, [showLinkModal]);
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file || !editor) return;
       if (!file.type.startsWith('image/')) {
@@ -140,9 +142,9 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
       };
       reader.readAsDataURL(file);
       e.target.value = '';
-    };
+    }, [editor]);
 
-    const handleLinkSubmit = () => {
+    const handleLinkSubmit = useCallback(() => {
       if (!editor || !linkUrl.trim()) return;
       let url = linkUrl.trim();
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -151,17 +153,20 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
       editor.chain().focus().setLink({ href: url }).run();
       setLinkUrl('');
       setShowLinkModal(false);
-    };
+    }, [editor, linkUrl]);
 
-    const handleLinkRemove = () => {
+    const handleLinkRemove = useCallback(() => {
       if (!editor) return;
       editor.chain().focus().unsetLink().run();
       setLinkUrl('');
       setShowLinkModal(false);
-    };
+    }, [editor]);
 
-    const btnClass = (active = false) =>
-      `rounded p-1.5 transition-colors hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-slate-700 ${active ? 'bg-slate-200 dark:bg-slate-700' : ''}`;
+    const btnClass = useCallback(
+      (active = false) =>
+        `rounded p-1.5 transition-colors hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-slate-700 ${active ? 'bg-slate-200 dark:bg-slate-700' : ''}`,
+      []
+    );
 
     return (
       <div className={`${fullWidth ? 'w-full' : ''}`}>

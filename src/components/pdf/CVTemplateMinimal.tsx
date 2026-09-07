@@ -4,6 +4,7 @@ import React from 'react';
 import type { FormState } from '../../types/form';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
+import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
 
 Font.register({
   family: 'Helvetica',
@@ -235,7 +236,7 @@ const CVTemplateMinimal: React.FC<CVTemplateProps> = ({ formState }) => {
             {educations.map((edu, i) => (
               <View key={edu.id || i} style={{ marginBottom: i < educations.length - 1 ? 8 : 0 }}>
                 <Text style={styles.role}>
-                  {edu.degree}: {edu.fieldOfStudy}
+                  {getDegreeLabel(edu.degree)}: {edu.fieldOfStudy}
                 </Text>
                 {edu.institution && <Text style={styles.company}>{edu.institution}</Text>}
                 {(edu.startDate || edu.endDate) && (
@@ -243,7 +244,7 @@ const CVTemplateMinimal: React.FC<CVTemplateProps> = ({ formState }) => {
                     {formatDateRange(edu.startDate, edu.endDate, edu.current)}
                   </Text>
                 )}
-                {edu.gpa && <Text style={styles.text}>GPA: {edu.gpa}</Text>}
+                {edu.gpa && <Text style={styles.text}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
               </View>
             ))}
           </View>
@@ -306,6 +307,11 @@ const CVTemplateMinimal: React.FC<CVTemplateProps> = ({ formState }) => {
               <View key={cred.id || i} style={{ marginBottom: i < credentials.length - 1 ? 6 : 0 }}>
                 <Text style={styles.role}>{cred.certificateName}</Text>
                 {cred.issuer && <Text style={styles.company}>{cred.issuer}</Text>}
+                {(cred.dateIssued || cred.expirationDate) && (
+                  <Text style={styles.date}>
+                    {cred.dateIssued && formatDateRange(cred.dateIssued, cred.expirationDate, false)}
+                  </Text>
+                )}
               </View>
             ))}
           </View>

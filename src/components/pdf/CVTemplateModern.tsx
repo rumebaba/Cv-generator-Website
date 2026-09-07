@@ -4,6 +4,7 @@ import React from 'react';
 import type { FormState } from '../../types/form';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
+import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
 
 Font.register({
   family: 'Helvetica',
@@ -319,7 +320,7 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
                   style={{ marginBottom: i < educations.length - 1 ? 10 : 0 }}
                 >
                   <Text style={styles.mainRole}>
-                    {edu.degree}: {edu.fieldOfStudy}
+                    {getDegreeLabel(edu.degree)}: {edu.fieldOfStudy}
                   </Text>
                   {edu.institution && <Text style={styles.mainCompany}>{edu.institution}</Text>}
                   {(edu.startDate || edu.endDate) && (
@@ -327,7 +328,7 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
                       {formatDateRange(edu.startDate, edu.endDate, edu.current)}
                     </Text>
                   )}
-                  {edu.gpa && <Text style={styles.mainText}>GPA: {edu.gpa}</Text>}
+                  {edu.gpa && <Text style={styles.mainText}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
                   {edu.thesisTopic && (
                     <Text style={styles.mainText}>Thesis: {edu.thesisTopic}</Text>
                   )}
@@ -372,6 +373,11 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
                 >
                   <Text style={styles.mainRole}>{cred.certificateName}</Text>
                   {cred.issuer && <Text style={styles.mainCompany}>{cred.issuer}</Text>}
+                  {(cred.dateIssued || cred.expirationDate) && (
+                    <Text style={styles.mainDate}>
+                      {cred.dateIssued && formatDateRange(cred.dateIssued, cred.expirationDate, false)}
+                    </Text>
+                  )}
                   {cred.credentialId && (
                     <Text style={styles.mainText}>ID: {cred.credentialId}</Text>
                   )}

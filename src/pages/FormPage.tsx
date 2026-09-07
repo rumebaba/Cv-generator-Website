@@ -72,7 +72,7 @@ const FormPageInner: React.FC = () => {
   const navigate = useNavigate();
   const form = useForm();
   const { data, setSubmitting, isSubmitting } = form;
-  const { selectedTemplate } = useTemplate();
+  const { selectedTemplate, setSelectedTemplate } = useTemplate();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [downloadingDocx, setDownloadingDocx] = useState(false);
@@ -189,6 +189,23 @@ const FormPageInner: React.FC = () => {
       {isLastStep && (
         <Card variant="elevated" padding="lg">
           <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">Export Your CV</h3>
+          <div className="mb-4">
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Choose Template
+            </label>
+            <select
+              value={selectedTemplate}
+              onChange={(e) => setSelectedTemplate(e.target.value as import('../hooks/useTemplate').TemplateId)}
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+            >
+              <option value="classic">Classic</option>
+              <option value="modern">Modern</option>
+              <option value="minimal">Minimal</option>
+              <option value="executive">Executive</option>
+              <option value="creative">Creative</option>
+              <option value="compact">Compact</option>
+            </select>
+          </div>
           <div className="flex flex-wrap gap-3">
             <Button variant="primary" onClick={() => setShowPreview(true)}>
               <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -4,6 +4,7 @@ import React from 'react';
 import type { FormState } from '../../types/form';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
+import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHelpers';
 
 Font.register({
   family: 'Helvetica',
@@ -35,6 +36,9 @@ const s = StyleSheet.create({
   inline: { flexDirection: 'row', flexWrap: 'wrap', gap: 3 },
   pill: { backgroundColor: '#eee', fontSize: 7.5, paddingHorizontal: 5, paddingVertical: 1.5, borderRadius: 2 },
   compactEntry: { marginBottom: 6 },
+  bulletRow: { flexDirection: 'row', marginBottom: 2 },
+  bullet: { width: 10, fontSize: 8, color: '#555' },
+  bulletText: { flex: 1, fontSize: 8.5, color: '#333' },
 });
 
 export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
@@ -82,7 +86,12 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
                   <Text style={s.rowRight}>{formatDateRange(exp.startDate, exp.endDate, exp.current)}</Text>
                 </View>
                 {exp.description && <Text style={s.text}>{stripHtml(exp.description)}</Text>}
-                {exp.achievements && <Text style={s.textSmall}>{stripHtml(exp.achievements)}</Text>}
+                {exp.achievements && htmlToBullets(exp.achievements).map((b, j) => (
+                  <View key={j} style={s.bulletRow}>
+                    <Text style={s.bullet}>•</Text>
+                    <Text style={s.bulletText}>{b}</Text>
+                  </View>
+                ))}
               </View>
             ))}
           </View>
@@ -96,11 +105,11 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
               <View key={edu.id} style={s.compactEntry}>
                 <View style={s.row}>
                   <View style={s.rowLeft}>
-                    <Text style={s.title}>{edu.degree}{edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''} — {edu.institution}</Text>
+                    <Text style={s.title}>{getDegreeLabel(edu.degree)}{edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''} — {edu.institution}</Text>
                   </View>
                   <Text style={s.rowRight}>{formatDateRange(edu.startDate, edu.endDate, edu.current)}</Text>
                 </View>
-                {edu.gpa && <Text style={s.textSmall}>GPA: {edu.gpa}</Text>}
+                {edu.gpa && <Text style={s.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
               </View>
             ))}
           </View>
@@ -144,7 +153,7 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
             <Text style={s.sectionTitle}>Certifications</Text>
             <View style={s.inline}>
               {credentials.filter((c) => c.certificateName).map((cred) => (
-                <Text key={cred.id} style={s.pill}>{cred.certificateName} ({cred.issuer})</Text>
+                <Text key={cred.id} style={s.pill}>{cred.certificateName} ({cred.issuer}){cred.dateIssued ? ` - ${cred.dateIssued}` : ''}</Text>
               ))}
             </View>
           </View>

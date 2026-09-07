@@ -3,6 +3,7 @@ import React from 'react';
 
 import type { FormData, FormState } from '../../types/form';
 import { stripHtml } from '../../utils/stripHtml';
+import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
 
 Font.register({
   family: 'Helvetica',
@@ -331,7 +332,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                 style={{ marginBottom: index < educations.length - 1 ? 10 : 0 }}
               >
                 <Text style={styles.role}>
-                  {edu.degree}: {edu.fieldOfStudy}
+                  {getDegreeLabel(edu.degree)}: {edu.fieldOfStudy}
                 </Text>
                 {edu.institution && <Text style={styles.company}>{edu.institution}</Text>}
                 {(edu.startDate || edu.endDate || edu.current) && (
@@ -349,7 +350,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                     {edu.location && ` | ${edu.location}`}
                   </Text>
                 )}
-                {edu.gpa && edu.gpa.trim() && <Text style={styles.textSmall}>GPA: {edu.gpa}</Text>}
+                {edu.gpa && edu.gpa.trim() && <Text style={styles.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
                 {edu.classRank && edu.classRank.trim() && (
                   <Text style={styles.textSmall}>Class Rank: {edu.classRank}</Text>
                 )}

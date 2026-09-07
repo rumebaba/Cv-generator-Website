@@ -3,6 +3,9 @@ import { collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firesto
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import CVTemplate from '../components/pdf/CVTemplate';
+import CVTemplateCompact from '../components/pdf/CVTemplateCompact';
+import CVTemplateCreative from '../components/pdf/CVTemplateCreative';
+import CVTemplateExecutive from '../components/pdf/CVTemplateExecutive';
 import CVTemplateMinimal from '../components/pdf/CVTemplateMinimal';
 import CVTemplateModern from '../components/pdf/CVTemplateModern';
 import type { TemplateId } from '../hooks/useTemplate';
@@ -56,6 +59,9 @@ const templateMap = {
   classic: CVTemplate,
   modern: CVTemplateModern,
   minimal: CVTemplateMinimal,
+  executive: CVTemplateExecutive,
+  creative: CVTemplateCreative,
+  compact: CVTemplateCompact,
 } as const;
 
 async function generatePDFBlob(data: FormData, template: TemplateId = 'classic'): Promise<Blob> {

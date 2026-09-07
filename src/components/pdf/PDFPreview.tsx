@@ -7,6 +7,9 @@ import { Button } from '../common/Button';
 import { generateDocxBlob } from '../../services/generateDocx';
 
 import CVTemplate from './CVTemplate';
+import CVTemplateCompact from './CVTemplateCompact';
+import CVTemplateCreative from './CVTemplateCreative';
+import CVTemplateExecutive from './CVTemplateExecutive';
 import CVTemplateMinimal from './CVTemplateMinimal';
 import CVTemplateModern from './CVTemplateModern';
 
@@ -22,12 +25,18 @@ const templateMap = {
   classic: CVTemplate,
   modern: CVTemplateModern,
   minimal: CVTemplateMinimal,
+  executive: CVTemplateExecutive,
+  creative: CVTemplateCreative,
+  compact: CVTemplateCompact,
 } as const;
 
 const templateNames: Record<TemplateId, string> = {
   classic: 'Classic',
   modern: 'Modern',
   minimal: 'Minimal',
+  executive: 'Executive',
+  creative: 'Creative',
+  compact: 'Compact',
 };
 
 export const PDFPreview: React.FC<PDFPreviewProps> = ({

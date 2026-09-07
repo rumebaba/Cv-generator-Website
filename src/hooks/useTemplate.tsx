@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-export type TemplateId = 'classic' | 'modern' | 'minimal';
+export type TemplateId = 'classic' | 'modern' | 'minimal' | 'executive' | 'creative' | 'compact';
 
 interface TemplateContextValue {
   selectedTemplate: TemplateId;

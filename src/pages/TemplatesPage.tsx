@@ -87,10 +87,98 @@ const MinimalPreview: React.FC = () => (
   </div>
 );
 
+const ExecutivePreview: React.FC = () => (
+  <div className="rounded-lg bg-[#1a1a2e] p-4 text-[7px] leading-tight text-white shadow-inner">
+    <div className="mb-2 border-b border-[#c9a84c] pb-1 text-center">
+      <div className="text-[10px] font-bold uppercase tracking-widest text-[#c9a84c]">John Smith</div>
+      <div className="text-[6px] text-slate-400">Senior Executive | john@email.com | New York, NY</div>
+    </div>
+    <div className="mb-1.5">
+      <div className="mb-0.5 text-[7px] font-bold uppercase text-[#c9a84c]">Professional Summary</div>
+      <div className="text-[6px] text-slate-300">15+ years leading Fortune 500 teams and driving strategic growth.</div>
+    </div>
+    <div className="mb-1.5">
+      <div className="mb-0.5 text-[7px] font-bold uppercase text-[#c9a84c]">Experience</div>
+      <div className="font-semibold">VP of Engineering — Microsoft (2018-Present)</div>
+      <div className="text-[6px] text-slate-300">Managed 200+ engineers across 3 global offices.</div>
+    </div>
+    <div>
+      <div className="mb-0.5 text-[7px] font-bold uppercase text-[#c9a84c]">Education</div>
+      <div className="font-semibold">MBA — Harvard Business School (2010)</div>
+    </div>
+  </div>
+);
+
+const CreativePreview: React.FC = () => (
+  <div className="flex overflow-hidden rounded-lg text-[7px] leading-tight text-white shadow-inner">
+    <div className="w-1/3 bg-[#6c3ce0] p-3">
+      <div className="mb-2 text-center text-[9px] font-bold">John Smith</div>
+      <div className="mb-2 text-[6px] font-bold uppercase text-[#d4c4f7]">Skills</div>
+      <div className="space-y-0.5 text-[5px] text-[#e8e0ff]">
+        <div>React, TypeScript</div>
+        <div>Node.js, Python</div>
+      </div>
+      <div className="mt-2 mb-1 text-[6px] font-bold uppercase text-[#d4c4f7]">Contact</div>
+      <div className="text-[5px] text-[#e8e0ff]">john@email.com</div>
+      <div className="text-[5px] text-[#e8e0ff]">New York, NY</div>
+    </div>
+    <div className="w-2/3 bg-white p-3 text-slate-800">
+      <div className="mb-1.5">
+        <div className="mb-0.5 text-[7px] font-bold uppercase text-[#6c3ce0]">About Me</div>
+        <div className="text-[6px] text-slate-600">Creative full-stack developer with 8+ years experience.</div>
+      </div>
+      <div className="mb-1.5">
+        <div className="mb-0.5 text-[7px] font-bold uppercase text-[#6c3ce0]">Experience</div>
+        <div className="font-semibold text-[7px]">Senior Developer — Google</div>
+        <div className="text-[6px] text-slate-600">Led team of 5 engineers.</div>
+      </div>
+      <div>
+        <div className="mb-0.5 text-[7px] font-bold uppercase text-[#6c3ce0]">Education</div>
+        <div className="font-semibold text-[7px]">BS Computer Science — MIT</div>
+      </div>
+    </div>
+  </div>
+);
+
+const CompactPreview: React.FC = () => (
+  <div className="rounded-lg bg-white p-3 text-[7px] leading-tight text-slate-800 shadow-inner">
+    <div className="mb-1.5 flex items-end justify-between border-b-2 border-slate-800 pb-1">
+      <div className="text-[10px] font-bold">John Smith</div>
+      <div className="text-[5px] text-slate-500">john@email.com | +1 555 0123</div>
+    </div>
+    <div className="mb-1">
+      <div className="bg-slate-100 px-1 text-[6px] font-bold uppercase text-slate-700">Experience</div>
+      <div className="flex justify-between">
+        <div className="font-semibold">Senior Developer — Google</div>
+        <div className="text-[5px] text-slate-400">2020-Present</div>
+      </div>
+      <div className="text-[5px] text-slate-600">Led team of 5 engineers, improved performance by 40%.</div>
+    </div>
+    <div className="mb-1">
+      <div className="bg-slate-100 px-1 text-[6px] font-bold uppercase text-slate-700">Education</div>
+      <div className="flex justify-between">
+        <div className="font-semibold">BS Computer Science — MIT</div>
+        <div className="text-[5px] text-slate-400">2016</div>
+      </div>
+    </div>
+    <div>
+      <div className="bg-slate-100 px-1 text-[6px] font-bold uppercase text-slate-700">Skills</div>
+      <div className="flex gap-1 text-[5px]">
+        <span className="rounded bg-slate-100 px-1">React</span>
+        <span className="rounded bg-slate-100 px-1">TypeScript</span>
+        <span className="rounded bg-slate-100 px-1">Node.js</span>
+      </div>
+    </div>
+  </div>
+);
+
 const previewMap: Record<TemplateId, React.FC> = {
   classic: ClassicPreview,
   modern: ModernPreview,
   minimal: MinimalPreview,
+  executive: ExecutivePreview,
+  creative: CreativePreview,
+  compact: CompactPreview,
 };
 
 const templates = [
@@ -114,6 +202,27 @@ const templates = [
     description: 'Clean, elegant design with green accents. Focus on content over style.',
     color: 'from-emerald-500 to-teal-600',
     features: ['Clean lines', 'Green accents', 'Minimalist design', 'Best for any industry'],
+  },
+  {
+    id: 'executive' as TemplateId,
+    name: 'Executive',
+    description: 'Dark navy header with gold accents. Formal and authoritative — for senior leaders.',
+    color: 'from-slate-800 to-slate-900',
+    features: ['Gold accents', 'Dark header', 'Professional tone', 'Best for executives & managers'],
+  },
+  {
+    id: 'creative' as TemplateId,
+    name: 'Creative',
+    description: 'Two-column layout with purple sidebar. Bold, colorful, and visually striking.',
+    color: 'from-purple-500 to-violet-700',
+    features: ['Purple sidebar', 'Two-column layout', 'Skills in sidebar', 'Best for designers & creatives'],
+  },
+  {
+    id: 'compact' as TemplateId,
+    name: 'Compact',
+    description: 'Maximum density, minimal whitespace. Fits more content on a single page.',
+    color: 'from-slate-500 to-slate-700',
+    features: ['Ultra-compact', 'Max content density', 'Row-based layout', 'Best for detailed CVs'],
   },
 ];
 

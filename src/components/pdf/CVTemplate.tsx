@@ -178,14 +178,12 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
           {pd.profilePhotoUrl && (
             <Image style={styles.photo} src={pd.profilePhotoUrl} />
           )}
-          <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
-          <View style={{ height: 4 }} />
-          {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-            <>
+          <View style={{ alignItems: 'center', marginBottom: 8 }}>
+            <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+            {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
               <Text style={styles.targetTitle}>{introduction.targetJobTitles}</Text>
-              <View style={{ height: 4 }} />
-            </>
-          )}
+            )}
+          </View>
           <View style={styles.contactRow}>
             {pd.email && <Text style={styles.contactItem}>{pd.email}</Text>}
             {pd.phone && <Text style={styles.contactItem}>{pd.phone}</Text>}

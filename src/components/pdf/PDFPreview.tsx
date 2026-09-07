@@ -129,12 +129,12 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-slate-900" onClick={onClose}>
       <div
-        className="flex max-h-[95vh] w-full max-w-6xl flex-col rounded-xl bg-white dark:bg-slate-900"
+        className="flex h-full flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-700">
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">CV Preview</h2>
             {onTemplateChange && (
@@ -172,7 +172,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
             )}
           </div>
         </div>
-        <div className="flex-1 overflow-hidden p-4">
+        <div className="flex-1 overflow-hidden">
           {loading ? (
             <div className="flex h-full items-center justify-center">
               <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />

@@ -58,11 +58,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#1e293b',
+    marginBottom: 4,
   },
   targetTitle: {
     fontSize: 10,
     color: '#4f46e5',
     fontStyle: 'italic',
+    marginTop: 4,
   },
   contactRow: {
     flexDirection: 'row',

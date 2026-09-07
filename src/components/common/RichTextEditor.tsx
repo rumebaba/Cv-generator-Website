@@ -8,7 +8,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import React, { useEffect, forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { useEffect, forwardRef, useImperativeHandle, useRef, useState, useMemo } from 'react';
 
 interface RichTextEditorProps {
   value: string;
@@ -52,48 +52,41 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
     const [showLinkModal, setShowLinkModal] = useState(false);
     const [linkUrl, setLinkUrl] = useState('');
     const linkInputRef = useRef<HTMLInputElement>(null);
+    const isInternalUpdate = useRef(false);
+
+    const extensions = useMemo(() => [
+      StarterKit.configure({
+        heading: false,
+        codeBlock: false,
+        strike: false,
+      }),
+      Placeholder.configure({ placeholder }),
+      Image.configure({
+        HTMLAttributes: { class: 'rounded-lg max-w-full h-auto my-2' },
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: { class: 'text-indigo-600 underline hover:text-indigo-800' },
+      }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Underline,
+      Strike,
+      Code.configure({
+        HTMLAttributes: { class: 'bg-slate-100 dark:bg-slate-800 px-1 rounded' },
+      }),
+      Blockquote.configure({
+        HTMLAttributes: {
+          class: 'border-l-4 border-indigo-500 pl-4 italic text-slate-600 dark:text-slate-400 my-2',
+        },
+      }),
+    ], []);
 
     const editor = useEditor({
-      extensions: [
-        StarterKit.configure({
-          heading: false,
-          codeBlock: false,
-          strike: false,
-        }),
-        Placeholder.configure({
-          placeholder,
-        }),
-        Image.configure({
-          HTMLAttributes: {
-            class: 'rounded-lg max-w-full h-auto my-2',
-          },
-        }),
-        Link.configure({
-          openOnClick: false,
-          HTMLAttributes: {
-            class: 'text-indigo-600 underline hover:text-indigo-800',
-          },
-        }),
-        TextAlign.configure({
-          types: ['heading', 'paragraph'],
-        }),
-        Underline,
-        Strike,
-        Code.configure({
-          HTMLAttributes: {
-            class: 'bg-slate-100 dark:bg-slate-800 px-1 rounded',
-          },
-        }),
-        Blockquote.configure({
-          HTMLAttributes: {
-            class:
-              'border-l-4 border-indigo-500 pl-4 italic text-slate-600 dark:text-slate-400 my-2',
-          },
-        }),
-      ],
+      extensions,
       content: value,
       editable: !disabled,
       onUpdate: ({ editor }) => {
+        isInternalUpdate.current = true;
         onChange(editor.getHTML());
       },
       editorProps: {
@@ -103,6 +96,17 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
         },
       },
     });
+
+    // Sync external value changes to editor
+    useEffect(() => {
+      if (editor && !isInternalUpdate.current) {
+        const currentContent = editor.getHTML();
+        if (value !== currentContent) {
+          editor.commands.setContent(value, { emitUpdate: false });
+        }
+      }
+      isInternalUpdate.current = false;
+    }, [value, editor]);
 
     useImperativeHandle(ref, () => ({
       focus: () => editor?.commands.focus(),
@@ -117,7 +121,6 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
       }
     }, [autoFocus, editor]);
 
-    // Focus link input when modal opens
     useEffect(() => {
       if (showLinkModal && linkInputRef.current) {
         linkInputRef.current.focus();
@@ -127,30 +130,24 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file || !editor) return;
-
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file');
         return;
       }
-
       const reader = new FileReader();
       reader.onloadend = () => {
         editor.chain().focus().setImage({ src: reader.result as string }).run();
       };
       reader.readAsDataURL(file);
-
-      // Reset input so same file can be selected again
       e.target.value = '';
     };
 
     const handleLinkSubmit = () => {
       if (!editor || !linkUrl.trim()) return;
-
       let url = linkUrl.trim();
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
       }
-
       editor.chain().focus().setLink({ href: url }).run();
       setLinkUrl('');
       setShowLinkModal(false);
@@ -171,9 +168,7 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
         {label && (
           <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
             {label}
-            {required && (
-              <span className="ml-1 text-red-500" aria-hidden="true">*</span>
-            )}
+            {required && <span className="ml-1 text-red-500" aria-hidden="true">*</span>}
           </label>
         )}
         <div className="relative">
@@ -253,7 +248,10 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
             </button>
 
             {/* Bullet List */}
-            <button type="button" onClick={() => editor?.chain().focus().toggleBulletList().run()}
+            <button type="button" onClick={() => {
+              if (!editor) return;
+              editor.chain().focus().toggleBulletList().run();
+            }}
               disabled={disabled || !editor?.can().toggleBulletList()}
               className={btnClass(editor?.isActive('bulletList'))} title="Bullet List" aria-label="Bullet List">
               <svg className="h-4 w-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,7 +260,10 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
             </button>
 
             {/* Numbered List */}
-            <button type="button" onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+            <button type="button" onClick={() => {
+              if (!editor) return;
+              editor.chain().focus().toggleOrderedList().run();
+            }}
               disabled={disabled || !editor?.can().toggleOrderedList()}
               className={btnClass(editor?.isActive('orderedList'))} title="Numbered List" aria-label="Numbered List">
               <svg className="h-4 w-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +285,7 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
               </svg>
             </button>
 
-            {/* Add Image (file upload) */}
+            {/* Add Image */}
             <button type="button" onClick={() => fileInputRef.current?.click()}
               disabled={disabled}
               className={btnClass()} title="Add Image from Device" aria-label="Add Image">

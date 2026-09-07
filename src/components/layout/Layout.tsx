@@ -30,7 +30,6 @@ export const FormLayout: React.FC<LayoutProps> = ({ children }) => {
           {children || <Outlet />}
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

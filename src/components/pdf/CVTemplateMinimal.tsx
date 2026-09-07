@@ -3,6 +3,7 @@ import React from 'react';
 
 import type { FormState } from '../../types/form';
 import { formatDateRange } from '../../utils/formatDate';
+import { stripHtml } from '../../utils/stripHtml';
 
 Font.register({
   family: 'Helvetica',
@@ -179,7 +180,7 @@ const CVTemplateMinimal: React.FC<CVTemplateProps> = ({ formState }) => {
               <Text>Summary</Text>
               <View style={styles.sectionLine} />
             </View>
-            <Text style={styles.text}>{introduction.professionalSummary}</Text>
+            <Text style={styles.text}>{stripHtml(introduction.professionalSummary)}</Text>
           </View>
         )}
 
@@ -210,7 +211,7 @@ const CVTemplateMinimal: React.FC<CVTemplateProps> = ({ formState }) => {
                   </Text>
                 )}
                 {exp.achievements &&
-                  exp.achievements
+                  stripHtml(exp.achievements)
                     .split('\n')
                     .filter(Boolean)
                     .map((b, j) => (
@@ -219,7 +220,7 @@ const CVTemplateMinimal: React.FC<CVTemplateProps> = ({ formState }) => {
                         <Text style={styles.text}>{b.trim()}</Text>
                       </View>
                     ))}
-                {exp.description && <Text style={styles.text}>{exp.description}</Text>}
+                {exp.description && <Text style={styles.text}>{stripHtml(exp.description)}</Text>}
               </View>
             ))}
           </View>
@@ -289,7 +290,7 @@ const CVTemplateMinimal: React.FC<CVTemplateProps> = ({ formState }) => {
               <View key={project.id || i} style={{ marginBottom: i < projects.length - 1 ? 8 : 0 }}>
                 <Text style={styles.role}>{project.name}</Text>
                 {project.role && <Text style={styles.company}>{project.role}</Text>}
-                {project.description && <Text style={styles.text}>{project.description}</Text>}
+                {project.description && <Text style={styles.text}>{stripHtml(project.description)}</Text>}
               </View>
             ))}
           </View>

@@ -3,6 +3,7 @@ import React from 'react';
 
 import type { FormState } from '../../types/form';
 import { formatDateRange } from '../../utils/formatDate';
+import { stripHtml } from '../../utils/stripHtml';
 
 Font.register({
   family: 'Helvetica',
@@ -64,7 +65,7 @@ export const CVTemplateExecutive: React.FC<Props> = ({ formState }) => {
         {introduction.professionalSummary && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Professional Summary</Text>
-            <Text style={s.text}>{introduction.professionalSummary}</Text>
+            <Text style={s.text}>{stripHtml(introduction.professionalSummary)}</Text>
           </View>
         )}
 
@@ -79,8 +80,8 @@ export const CVTemplateExecutive: React.FC<Props> = ({ formState }) => {
                   <Text style={s.entryDate}>{formatDateRange(exp.startDate, exp.endDate, exp.current)}</Text>
                 </View>
                 {exp.location && <Text style={s.entrySub}>{exp.location}</Text>}
-                {exp.description && <Text style={s.text}>{exp.description}</Text>}
-                {exp.achievements && <Text style={s.textSmall}>{exp.achievements}</Text>}
+                {exp.description && <Text style={s.text}>{stripHtml(exp.description)}</Text>}
+                {exp.achievements && <Text style={s.textSmall}>{stripHtml(exp.achievements)}</Text>}
               </View>
             ))}
           </View>
@@ -129,7 +130,7 @@ export const CVTemplateExecutive: React.FC<Props> = ({ formState }) => {
                   <Text style={s.entryDate}>{formatDateRange(proj.startDate, proj.endDate, proj.current)}</Text>
                 </View>
                 {proj.role && <Text style={s.entrySub}>{proj.role}</Text>}
-                {proj.description && <Text style={s.text}>{proj.description}</Text>}
+                {proj.description && <Text style={s.text}>{stripHtml(proj.description)}</Text>}
               </View>
             ))}
           </View>

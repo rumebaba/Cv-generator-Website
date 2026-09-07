@@ -3,6 +3,7 @@ import React from 'react';
 
 import type { FormState } from '../../types/form';
 import { formatDateRange } from '../../utils/formatDate';
+import { stripHtml } from '../../utils/stripHtml';
 
 Font.register({
   family: 'Helvetica',
@@ -263,7 +264,7 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
           {introduction.professionalSummary && (
             <View style={styles.mainSection}>
               <Text style={styles.mainSectionTitle}>Professional Summary</Text>
-              <Text style={styles.mainText}>{introduction.professionalSummary}</Text>
+              <Text style={styles.mainText}>{stripHtml(introduction.professionalSummary)}</Text>
             </View>
           )}
 
@@ -294,7 +295,7 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
                     <Text style={styles.mainText}>Direct Reports: {exp.directReports}</Text>
                   )}
                   {exp.achievements &&
-                    exp.achievements
+                    stripHtml(exp.achievements)
                       .split('\n')
                       .filter(Boolean)
                       .map((b, j) => (
@@ -303,7 +304,7 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
                           <Text style={styles.mainText}>{b.trim()}</Text>
                         </View>
                       ))}
-                  {exp.description && <Text style={styles.mainText}>{exp.description}</Text>}
+                  {exp.description && <Text style={styles.mainText}>{stripHtml(exp.description)}</Text>}
                 </View>
               ))}
             </View>
@@ -346,7 +347,7 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
                   <Text style={styles.mainRole}>{project.name}</Text>
                   {project.role && <Text style={styles.mainCompany}>Role: {project.role}</Text>}
                   {project.description && (
-                    <Text style={styles.mainText}>{project.description}</Text>
+                    <Text style={styles.mainText}>{stripHtml(project.description)}</Text>
                   )}
                   {project.codeRepositoryUrl && (
                     <Link

@@ -129,9 +129,9 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4" onClick={onClose}>
       <div
-        className="flex max-h-[90vh] w-full max-w-5xl flex-col rounded-xl bg-white dark:bg-slate-900"
+        className="flex max-h-[95vh] w-full max-w-6xl flex-col rounded-xl bg-white dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-700">
@@ -178,7 +178,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
               <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
             </div>
           ) : pdfBlob ? (
-            <PDFViewer width="100%" height="100%">
+            <PDFViewer width="100%" height="100%" showToolbar={false}>
               <TemplateComponent formState={formState} />
             </PDFViewer>
           ) : (

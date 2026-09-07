@@ -2,6 +2,7 @@ import { Document, Page, View, Text, StyleSheet, Font, Link, Image } from '@reac
 import React from 'react';
 
 import type { FormData, FormState } from '../../types/form';
+import { stripHtml } from '../../utils/stripHtml';
 
 Font.register({
   family: 'Helvetica',
@@ -225,7 +226,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
         {introduction.professionalSummary && introduction.professionalSummary.trim() && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Professional Summary</Text>
-            <Text style={styles.text}>{introduction.professionalSummary}</Text>
+            <Text style={styles.text}>{stripHtml(introduction.professionalSummary)}</Text>
           </View>
         )}
 
@@ -239,7 +240,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
         {introduction.keyCareerMilestones && introduction.keyCareerMilestones.trim() && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Key Career Milestones</Text>
-            <Text style={styles.text}>{introduction.keyCareerMilestones}</Text>
+            <Text style={styles.text}>{stripHtml(introduction.keyCareerMilestones)}</Text>
           </View>
         )}
 
@@ -283,7 +284,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                 )}
                 {exp.achievements && exp.achievements.trim() && (
                   <>
-                    {exp.achievements
+                    {stripHtml(exp.achievements)
                       .split('\n')
                       .filter(Boolean)
                       .map((bullet, i) => (
@@ -304,7 +305,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                   </>
                 )}
                 {exp.description && exp.description.trim() && (
-                  <Text style={styles.text}>{exp.description}</Text>
+                  <Text style={styles.text}>{stripHtml(exp.description)}</Text>
                 )}
                 {exp.reasonForLeaving && exp.reasonForLeaving.trim() && (
                     <Text style={styles.textSmall}>
@@ -447,7 +448,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                   </>
                 )}
                 {project.description && project.description.trim() && (
-                  <Text style={styles.text}>{project.description}</Text>
+                  <Text style={styles.text}>{stripHtml(project.description)}</Text>
                 )}
                 {project.codeRepositoryUrl && project.codeRepositoryUrl.trim() && (
                   <Link

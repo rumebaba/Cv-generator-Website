@@ -24,7 +24,7 @@ const features = [
     ),
     title: 'Professional Templates',
     description:
-      'Choose from 20+ ATS-friendly templates designed by career experts for every industry and experience level.',
+      'Choose from multiple ATS-friendly templates designed by career experts for every industry and experience level.',
   },
   {
     icon: (
@@ -43,9 +43,9 @@ const features = [
         />
       </svg>
     ),
-    title: 'AI-Powered Suggestions',
+    title: 'Smart Suggestions',
     description:
-      'Get real-time content recommendations, keyword optimization, and personalized phrasing powered by GPT-4.',
+      'Get content recommendations and phrasing tips to strengthen your CV.',
   },
   {
     icon: (
@@ -106,9 +106,9 @@ const features = [
         />
       </svg>
     ),
-    title: 'Version Control',
+    title: 'Multi-Format Export',
     description:
-      'Track changes, create multiple versions for different roles, and revert to previous drafts instantly.',
+      'Download your CV as PDF or DOCX. Perfect for email, job boards, and print.',
   },
   {
     icon: (
@@ -127,17 +127,17 @@ const features = [
         />
       </svg>
     ),
-    title: 'Collaboration Ready',
+    title: 'Auto-Save',
     description:
-      'Share with mentors for feedback, export for recruiters, or connect directly with job applications.',
+      'Your progress is automatically saved as you type. Never lose your work.',
   },
 ];
 
 const stats = [
-  { value: '50K+', label: 'CVs Created' },
-  { value: '94%', label: 'Interview Rate' },
-  { value: '20+', label: 'Templates' },
-  { value: '180', label: 'Countries' },
+  { value: '3', label: 'Pro Templates' },
+  { value: '9', label: 'Form Steps' },
+  { value: '2', label: 'Export Formats' },
+  { value: '100%', label: 'Free' },
 ];
 
 export const LandingPage: React.FC = () => {
@@ -168,7 +168,7 @@ export const LandingPage: React.FC = () => {
               style={{ animationDelay: '100ms' }}
             >
               Create a professional, ATS-optimized CV in minutes. No design skills needed.
-              Completely free, privacy-first, and powered by AI.
+              Completely free, privacy-first, and easy to use.
             </p>
 
             <div
@@ -455,17 +455,14 @@ export const LandingPage: React.FC = () => {
       <section className="bg-white px-4 py-12 sm:px-6 lg:px-8 dark:bg-slate-900">
         <div className="mx-auto max-w-7xl">
           <p className="mb-8 text-center text-sm font-medium tracking-wider text-slate-500 uppercase dark:text-slate-400">
-            Trusted by professionals at
+            Built with modern technologies
           </p>
           <div className="flex flex-wrap items-center justify-center gap-12 opacity-60">
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Google</span>
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Microsoft</span>
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Amazon</span>
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Meta</span>
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Apple</span>
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Netflix</span>
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Spotify</span>
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Airbnb</span>
+            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">React</span>
+            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">TypeScript</span>
+            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Firebase</span>
+            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Tailwind CSS</span>
+            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Vercel</span>
           </div>
         </div>
       </section>

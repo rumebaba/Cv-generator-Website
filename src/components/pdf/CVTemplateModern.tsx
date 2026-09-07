@@ -2,6 +2,7 @@ import { Document, Page, View, Text, StyleSheet, Font, Link } from '@react-pdf/r
 import React from 'react';
 
 import type { FormState } from '../../types/form';
+import { formatDateRange } from '../../utils/formatDate';
 
 Font.register({
   family: 'Helvetica',
@@ -275,7 +276,7 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
                   {exp.company && <Text style={styles.mainCompany}>{exp.company}</Text>}
                   {(exp.startDate || exp.endDate) && (
                     <Text style={styles.mainDate}>
-                      {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                      {formatDateRange(exp.startDate, exp.endDate, exp.current)}
                       {exp.location ? ` | ${exp.location}` : ''}
                     </Text>
                   )}
@@ -312,7 +313,7 @@ const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
                   {edu.institution && <Text style={styles.mainCompany}>{edu.institution}</Text>}
                   {(edu.startDate || edu.endDate) && (
                     <Text style={styles.mainDate}>
-                      {edu.startDate} - {edu.current ? 'Present' : edu.endDate}
+                      {formatDateRange(edu.startDate, edu.endDate, edu.current)}
                     </Text>
                   )}
                   {edu.gpa && <Text style={styles.mainText}>GPA: {edu.gpa}</Text>}

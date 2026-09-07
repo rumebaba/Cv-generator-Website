@@ -41,6 +41,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   const [loading, setLoading] = useState(false);
   const [downloadingDocx, setDownloadingDocx] = useState(false);
   const mountedRef = useRef(true);
+  const pdfUrlRef = useRef<string | null>(null);
 
   const TemplateComponent = templateMap[template];
 
@@ -50,6 +51,16 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
       mountedRef.current = false;
     };
   }, []);
+
+  // Escape key handler
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
 
   const generatePDF = useCallback(async () => {
     if (!isOpen) return;
@@ -70,10 +81,17 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   }, [formState, TemplateComponent, isOpen]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     generatePDF();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, template, formState]);
+  }, [isOpen, template, formState, generatePDF]);
+
+  // Cleanup blob URL on unmount
+  useEffect(() => {
+    return () => {
+      if (pdfUrlRef.current) {
+        URL.revokeObjectURL(pdfUrlRef.current);
+      }
+    };
+  }, []);
 
   if (!isOpen) return null;
 
@@ -94,9 +112,19 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
     }
   };
 
+  const getPdfUrl = () => {
+    if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
+    if (!pdfBlob) return '';
+    pdfUrlRef.current = URL.createObjectURL(pdfBlob);
+    return pdfUrlRef.current;
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex max-h-[90vh] w-full max-w-5xl flex-col rounded-xl bg-white dark:bg-slate-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div
+        className="flex max-h-[90vh] w-full max-w-5xl flex-col rounded-xl bg-white dark:bg-slate-900"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-700">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">CV Preview</h2>
@@ -127,7 +155,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
               {downloadingDocx ? 'Generating...' : 'Download DOCX'}
             </Button>
             {pdfBlob && (
-              <a href={URL.createObjectURL(pdfBlob)} download="cv.pdf">
+              <a href={getPdfUrl()} download="cv.pdf">
                 <Button variant="primary" size="sm">
                   Download PDF
                 </Button>

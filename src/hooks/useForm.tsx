@@ -571,9 +571,9 @@ const getStepData = (data: FormData, step: FormStep) => {
     case 2:
       return data.introduction;
     case 3:
-      return data.experiences;
-    case 4:
       return data.educations;
+    case 4:
+      return data.experiences;
     case 5:
       return data.medicalScience;
     case 6:
@@ -606,23 +606,21 @@ const validateStep = (step: FormStep, data: unknown): string[] => {
       break;
     }
     case 3: {
-      const exps = data as Experience[];
-      if (exps.length === 0) errors.push('At least one experience is required');
-      break;
-    }
-    case 4: {
       const edus = data as Education[];
       if (edus.length === 0) errors.push('At least one education entry is required');
       break;
     }
+    case 4: {
+      const exps = data as Experience[];
+      if (exps.length === 0) errors.push('At least one experience entry is required');
+      break;
+    }
     case 5: {
-      const ms = data as MedicalScience[];
-      if (ms.length === 0) errors.push('At least one medical science entry is required');
+      // Medical & Science is optional - always valid
       break;
     }
     case 6: {
-      const projects = data as Project[];
-      if (projects.length === 0) errors.push('At least one project is required');
+      // Projects is optional - always valid
       break;
     }
     case 7: {
@@ -631,8 +629,7 @@ const validateStep = (step: FormStep, data: unknown): string[] => {
       break;
     }
     case 8: {
-      const creds = data as Credential[];
-      if (creds.length === 0) errors.push('At least one credential entry is required');
+      // Credentials is optional - always valid
       break;
     }
   }
@@ -673,26 +670,6 @@ const calculateStepCompletion = (data: FormData, step: FormStep): number => {
       return Math.round((filled / fields.length) * 100);
     }
     case 3: {
-      const exps = stepData as Experience[];
-      if (exps.length === 0) return 0;
-      const totalFields = exps.length * 7;
-      let filled = 0;
-      exps.forEach((exp) => {
-        [
-          exp.company,
-          exp.position,
-          exp.startDate,
-          exp.endDate,
-          exp.description,
-          exp.location,
-        ].forEach((f) => {
-          if (f?.trim()) filled++;
-        });
-        if (exp.current) filled++;
-      });
-      return Math.round((filled / totalFields) * 100);
-    }
-    case 4: {
       const edus = stepData as Education[];
       if (edus.length === 0) return 0;
       const totalFields = edus.length * 8;
@@ -711,6 +688,26 @@ const calculateStepCompletion = (data: FormData, step: FormStep): number => {
           if (f?.trim()) filled++;
         });
         if (edu.current) filled++;
+      });
+      return Math.round((filled / totalFields) * 100);
+    }
+    case 4: {
+      const exps = stepData as Experience[];
+      if (exps.length === 0) return 0;
+      const totalFields = exps.length * 7;
+      let filled = 0;
+      exps.forEach((exp) => {
+        [
+          exp.company,
+          exp.position,
+          exp.startDate,
+          exp.endDate,
+          exp.description,
+          exp.location,
+        ].forEach((f) => {
+          if (f?.trim()) filled++;
+        });
+        if (exp.current) filled++;
       });
       return Math.round((filled / totalFields) * 100);
     }

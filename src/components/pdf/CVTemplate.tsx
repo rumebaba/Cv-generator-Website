@@ -298,14 +298,14 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                   <Text style={styles.text}>{exp.description}</Text>
                 )}
                 {exp.reasonForLeaving && exp.reasonForLeaving.trim() && (
-                  <Text style={styles.textSmall}>
-                    <strong>Reason for leaving:</strong> {exp.reasonForLeaving}
-                  </Text>
+                    <Text style={styles.textSmall}>
+                      Reason for leaving: {exp.reasonForLeaving}
+                    </Text>
                 )}
                 {exp.salaryHistory && exp.salaryHistory.trim() && (
-                  <Text style={styles.textSmall}>
-                    <strong>Salary progression:</strong> {exp.salaryHistory}
-                  </Text>
+                    <Text style={styles.textSmall}>
+                      Salary progression: {exp.salaryHistory}
+                    </Text>
                 )}
               </View>
             ))}
@@ -345,17 +345,17 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                 )}
                 {edu.thesisTopic && edu.thesisTopic.trim() && (
                   <Text style={styles.textSmall}>
-                    <strong>Thesis:</strong> {edu.thesisTopic}
+                    Thesis: {edu.thesisTopic}
                   </Text>
                 )}
                 {edu.academicHonors && edu.academicHonors.trim() && (
                   <Text style={styles.textSmall}>
-                    <strong>Honors:</strong> {edu.academicHonors}
+                    Honors: {edu.academicHonors}
                   </Text>
                 )}
                 {edu.relevantClasses && edu.relevantClasses.trim() && (
                   <Text style={styles.textSmall}>
-                    <strong>Relevant Coursework:</strong> {edu.relevantClasses}
+                    Relevant Coursework: {edu.relevantClasses}
                   </Text>
                 )}
                 {edu.description && edu.description.trim() && (
@@ -560,7 +560,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                 )}
                 {cred.securityClearance && cred.securityClearance !== 'None' && (
                   <Text style={styles.textSmall}>
-                    <strong>Security Clearance:</strong> {cred.securityClearance}
+                    Security Clearance: {cred.securityClearance}
                   </Text>
                 )}
                 {cred.volunteerWork && cred.volunteerWork.trim() && (

@@ -5,12 +5,12 @@ import { useForm } from '../../hooks/useForm';
 const steps = [
   { number: 1, label: 'Personal Data', href: '/form/step/1' },
   { number: 2, label: 'Introduction', href: '/form/step/2' },
-  { number: 3, label: 'Experience', href: '/form/step/3' },
-  { number: 4, label: 'Education', href: '/form/step/4' },
-  { number: 5, label: 'Skills', href: '/form/step/5' },
+  { number: 3, label: 'Education', href: '/form/step/3' },
+  { number: 4, label: 'Experience', href: '/form/step/4' },
+  { number: 5, label: 'Medical & Science', href: '/form/step/5' },
   { number: 6, label: 'Projects', href: '/form/step/6' },
-  { number: 7, label: 'Certifications', href: '/form/step/7' },
-  { number: 8, label: 'Languages', href: '/form/step/8' },
+  { number: 7, label: 'Skills', href: '/form/step/7' },
+  { number: 8, label: 'Credentials', href: '/form/step/8' },
   { number: 9, label: 'References', href: '/form/step/9' },
 ];
 

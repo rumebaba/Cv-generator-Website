@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { Button } from '../components/common/Button';
@@ -76,6 +76,18 @@ const FormPageInner: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [downloadingDocx, setDownloadingDocx] = useState(false);
+  const [savedIndicator, setSavedIndicator] = useState(false);
+  const prevDataRef = useRef(data);
+
+  // Auto-save indicator
+  useEffect(() => {
+    if (prevDataRef.current !== data) {
+      prevDataRef.current = data;
+      setSavedIndicator(true);
+      const timer = setTimeout(() => setSavedIndicator(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [data]);
 
   const currentStep = parseInt(step || '1', 10);
   const validStep = Math.max(1, Math.min(9, currentStep));
@@ -145,6 +157,16 @@ const FormPageInner: React.FC = () => {
           <p className="mt-1 text-slate-600 dark:text-slate-400">
             Step {validStep} of 9: {currentStepData?.label}
           </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {savedIndicator && (
+            <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Saved
+            </span>
+          )}
         </div>
       </div>
 

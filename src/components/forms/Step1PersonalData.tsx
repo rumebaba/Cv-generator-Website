@@ -78,10 +78,11 @@ export const Step1PersonalData: React.FC = () => {
   };
 
   const addSocialLink = () => {
-    if (newSocialLabel.trim() && newSocialUrl.trim()) {
+    const label = newSocialPlatform === 'custom' ? newSocialLabel.trim() : newSocialPlatform;
+    if (label && newSocialUrl.trim()) {
       const newLink: SocialLink = {
         id: uuidv4(),
-        label: newSocialLabel.trim(),
+        label,
         url: newSocialUrl.trim(),
         icon: newSocialPlatform,
       };

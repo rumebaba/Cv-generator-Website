@@ -53,6 +53,8 @@ export interface Education {
   description: string;
   location: string;
   gpa: string;
+  resultType: 'cgpa' | 'percentage' | 'marks' | '';
+  resultExpected: boolean;
   thesisTopic: string;
   academicHonors: string;
   relevantClasses: string;
@@ -202,6 +204,8 @@ export const initialEducation: Education = {
   description: '',
   location: '',
   gpa: '',
+  resultType: '',
+  resultExpected: false,
   thesisTopic: '',
   academicHonors: '',
   relevantClasses: '',

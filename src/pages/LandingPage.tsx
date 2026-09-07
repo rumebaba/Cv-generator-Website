@@ -466,6 +466,13 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Creator Credit */}
+      <section className="bg-slate-50 px-4 py-8 text-center dark:bg-slate-900">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Created by <Link to="/about" className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">Rumman Hamid</Link>
+        </p>
+      </section>
     </div>
   );
 };

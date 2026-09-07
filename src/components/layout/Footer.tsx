@@ -80,7 +80,7 @@ export const Footer: React.FC = () => {
         <div className="mt-12 border-t border-slate-200 pt-8 dark:border-slate-800">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              &copy; {currentYear} CV Generator. All rights reserved.
+              &copy; {currentYear} Rumman Hamid. All rights reserved.
             </p>
           </div>
         </div>

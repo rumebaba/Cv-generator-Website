@@ -328,9 +328,7 @@ Monitoring: Datadog, ELK Stack, Prometheus/Grafana"
                         </span>
                       </div>
                       {project.description && (
-                        <p className="mt-3 line-clamp-3 text-sm text-slate-600 dark:text-slate-400">
-                          {project.description}
-                        </p>
+                        <div className="mt-3 prose prose-sm dark:prose-invert line-clamp-3 max-w-none text-slate-600 dark:text-slate-400" dangerouslySetInnerHTML={{ __html: project.description }} />
                       )}
                       {project.technicalArchitecture && (
                         <div className="mt-3">

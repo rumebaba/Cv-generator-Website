@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useForm } from '../../hooks/useForm';
 
@@ -26,6 +27,7 @@ export const StepProgress: React.FC<StepProgressProps> = ({
   showLabels = true,
 }) => {
   const { getStepCompletion, completedSteps } = useForm();
+  const navigate = useNavigate();
 
   return (
     <nav className={`w-full ${className}`} aria-label="Form progress">
@@ -42,14 +44,18 @@ export const StepProgress: React.FC<StepProgressProps> = ({
             <li key={step.number} className="flex flex-1 items-center">
               <div className="flex items-center">
                 <div className="relative flex items-center">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 ${
+                  <button
+                    type="button"
+                    onClick={() => navigate(step.href)}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer hover:scale-110 ${
                       isCompleted
-                        ? 'border-2 border-green-500 bg-green-500 text-white'
+                        ? 'border-2 border-green-500 bg-green-500 text-white hover:bg-green-600'
                         : isCurrent
                           ? 'border-2 border-indigo-500 bg-indigo-500 text-white ring-4 ring-indigo-500/20'
-                          : 'border-2 border-slate-300 bg-white text-slate-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-500'
+                          : 'border-2 border-slate-300 bg-white text-slate-400 hover:border-indigo-400 hover:text-indigo-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-500 dark:hover:border-indigo-400 dark:hover:text-indigo-400'
                     }`}
+                    title={`Go to ${step.label}`}
+                    aria-label={`Go to step ${step.number}: ${step.label}`}
                   >
                     {isCompleted ? (
                       <svg
@@ -69,18 +75,21 @@ export const StepProgress: React.FC<StepProgressProps> = ({
                     ) : (
                       step.number
                     )}
-                  </div>
+                  </button>
 
                   {showLabels && (
-                    <span
-                      className={`ml-2 hidden text-sm font-medium transition-colors sm:block ${
+                    <button
+                      type="button"
+                      onClick={() => navigate(step.href)}
+                      className={`ml-2 hidden text-sm font-medium transition-colors sm:block cursor-pointer hover:underline ${
                         isCompleted || isCurrent
                           ? 'text-slate-900 dark:text-white'
                           : 'text-slate-500 dark:text-slate-400'
                       }`}
+                      aria-label={`Go to step ${step.number}: ${step.label}`}
                     >
                       {step.label}
-                    </span>
+                    </button>
                   )}
 
                   <div

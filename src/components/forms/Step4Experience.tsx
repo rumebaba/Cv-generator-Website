@@ -426,7 +426,7 @@ export const Step4Experience: React.FC = () => {
                               <strong className="text-slate-900 dark:text-white">
                                 Key Achievements:
                               </strong>
-                              <p className="mt-1 whitespace-pre-line">{exp.achievements}</p>
+                              <div className="mt-1 prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: exp.achievements }} />
                             </div>
                           )}
                           {exp.description && (
@@ -434,7 +434,7 @@ export const Step4Experience: React.FC = () => {
                               <strong className="text-slate-900 dark:text-white">
                                 Description:
                               </strong>
-                              <p className="mt-1">{exp.description}</p>
+                              <div className="mt-1 prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: exp.description }} />
                             </div>
                           )}
                         </div>

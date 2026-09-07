@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet, Font, Link, Image } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormData, FormState } from '../../types/form';
@@ -27,17 +27,6 @@ Font.register({
   ],
 });
 
-Font.register({
-  family: 'DejaVu',
-  fonts: [
-    { src: 'https://cdn.jsdelivr.net/npm/@react-pdf/renderer@3.1.14/fonts/DejaVu/DejaVuSans.ttf' },
-    {
-      src: 'https://cdn.jsdelivr.net/npm/@react-pdf/renderer@3.1.14/fonts/DejaVu/DejaVuSans-Bold.ttf',
-      fontWeight: 'bold' as const,
-    },
-  ],
-});
-
 interface CVTemplateProps {
   formState: FormState;
 }
@@ -45,120 +34,124 @@ interface CVTemplateProps {
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
-    padding: 40,
+    padding: 35,
     fontFamily: 'Helvetica',
-    fontSize: 10,
-    lineHeight: 1.5,
+    fontSize: 9,
+    lineHeight: 1.4,
     color: '#1e293b',
   },
   header: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 15,
+    marginBottom: 14,
+    paddingBottom: 12,
     borderBottomWidth: 2,
     borderBottomColor: '#4f46e5',
   },
   photo: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    marginBottom: 8,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginBottom: 6,
   },
   name: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#1e293b',
-    marginBottom: 5,
+    marginBottom: 2,
   },
-  contactInfo: {
+  targetTitle: {
+    fontSize: 10,
+    color: '#4f46e5',
+    marginBottom: 6,
+    fontStyle: 'italic',
+  },
+  contactRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 12,
-    marginBottom: 5,
-    fontSize: 9,
+    gap: 8,
+    fontSize: 8,
+    color: '#64748b',
+  },
+  contactItem: {
+    fontSize: 8,
     color: '#64748b',
   },
   section: {
-    marginBottom: 18,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#4f46e5',
     textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 10,
+    letterSpacing: 0.8,
+    marginBottom: 6,
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
-    paddingBottom: 3,
+    paddingBottom: 2,
   },
   subsectionTitle: {
-    fontSize: 11,
+    fontSize: 9.5,
     fontWeight: 'bold',
     color: '#1e293b',
-    marginTop: 8,
-    marginBottom: 3,
-  },
-  text: {
-    fontSize: 9.5,
-    color: '#334155',
+    marginTop: 4,
     marginBottom: 2,
   },
-  textSmall: {
+  text: {
     fontSize: 9,
+    color: '#334155',
+    marginBottom: 1,
+  },
+  textSmall: {
+    fontSize: 8,
     color: '#64748b',
   },
   role: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#1e293b',
   },
   company: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#4f46e5',
-    marginBottom: 2,
+    marginBottom: 1,
   },
   dateLocation: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#64748b',
-    marginBottom: 4,
-  },
-  bulletPoint: {
-    flexDirection: 'row',
-    marginLeft: 10,
     marginBottom: 3,
-    fontSize: 9.5,
-    color: '#334155',
+  },
+  bulletRow: {
+    flexDirection: 'row',
+    marginLeft: 8,
+    marginBottom: 2,
   },
   bullet: {
-    marginRight: 6,
+    width: 8,
+    fontSize: 9,
     color: '#4f46e5',
+  },
+  bulletText: {
+    flex: 1,
+    fontSize: 9,
+    color: '#334155',
   },
   skillTag: {
     backgroundColor: '#eef2ff',
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    fontSize: 8.5,
+    borderRadius: 3,
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    fontSize: 8,
     color: '#4f46e5',
   },
-  divider: {
-    height: 1,
-    backgroundColor: '#e2e8f0',
-    marginVertical: 8,
-  },
 });
-
-const renderIf = (condition: boolean, content: React.ReactNode) => {
-  return condition ? content : null;
-};
 
 const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
   const { data } = formState;
   const {
-    personalData,
+    personalData: pd,
     introduction,
     educations,
     experiences,
@@ -168,55 +161,46 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
     credentials,
   } = data;
 
+  const formatEnd = (current: boolean, endDate: string) => {
+    if (current) return 'Present';
+    if (endDate) {
+      return new Date(endDate + '-01').toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+    return 'Present';
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {/* Header */}
         <View style={styles.header}>
-          {personalData.profilePhotoUrl && (
-            <Image style={styles.photo} src={personalData.profilePhotoUrl} />
+          {pd.profilePhotoUrl && (
+            <Image style={styles.photo} src={pd.profilePhotoUrl} />
           )}
-          <Text style={styles.name}>{personalData.fullName || 'Your Name'}</Text>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              gap: 12,
-              marginBottom: 5,
-              fontSize: 9,
-              color: '#64748b',
-            }}
-          >
-            {personalData.email && <Text>✉ {personalData.email}</Text>}
-            {personalData.phone && <Text>☎ {personalData.phone}</Text>}
-            {(personalData.city || personalData.country) && (
-              <Text>
-                📍 {personalData.city || ''}
-                {personalData.city && personalData.country ? ', ' : ''}
-                {personalData.country || ''}
+          <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+          {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
+            <Text style={styles.targetTitle}>{introduction.targetJobTitles}</Text>
+          )}
+          <View style={styles.contactRow}>
+            {pd.email && <Text style={styles.contactItem}>{pd.email}</Text>}
+            {pd.phone && <Text style={styles.contactItem}>{pd.phone}</Text>}
+            {(pd.city || pd.country) && (
+              <Text style={styles.contactItem}>
+                {pd.city || ''}{pd.city && pd.country ? ', ' : ''}{pd.country || ''}
               </Text>
             )}
-            {personalData.linkedin && <Text>🔗 {personalData.linkedin}</Text>}
-            {personalData.nationality && <Text>🌐 {personalData.nationality}</Text>}
-            {personalData.visaStatus && <Text>🛂 {personalData.visaStatus}</Text>}
+            {pd.nationality && <Text style={styles.contactItem}>{pd.nationality}</Text>}
           </View>
-
-          {personalData.customSocialLinks && personalData.customSocialLinks.length > 0 && (
-            <View
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                gap: 10,
-                marginTop: 5,
-              }}
-            >
-              {personalData.customSocialLinks.map((link, i) => (
-                <Text
-                  key={i}
-                  style={{ fontSize: 8, color: '#4f46e5', textDecoration: 'underline' }}
-                >
+          {pd.linkedin && (
+            <Text style={{ fontSize: 8, color: '#4f46e5', marginTop: 3 }}>{pd.linkedin}</Text>
+          )}
+          {pd.customSocialLinks && pd.customSocialLinks.length > 0 && (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 2 }}>
+              {pd.customSocialLinks.map((link, i) => (
+                <Text key={i} style={{ fontSize: 7.5, color: '#64748b' }}>
                   {link.label}: {link.url}
                 </Text>
               ))}
@@ -224,6 +208,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
           )}
         </View>
 
+        {/* Summary */}
         {introduction.professionalSummary && introduction.professionalSummary.trim() && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Professional Summary</Text>
@@ -231,57 +216,29 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
           </View>
         )}
 
-        {introduction.objectiveStatement && introduction.objectiveStatement.trim() && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Career Objective</Text>
-            <Text style={styles.text}>{introduction.objectiveStatement}</Text>
-          </View>
-        )}
-
-        {introduction.keyCareerMilestones && introduction.keyCareerMilestones.trim() && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Key Career Milestones</Text>
-            <Text style={styles.text}>{stripHtml(introduction.keyCareerMilestones)}</Text>
-          </View>
-        )}
-
-        {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Target Positions</Text>
-            <Text style={styles.text}>{introduction.targetJobTitles}</Text>
-          </View>
-        )}
-
+        {/* Experience */}
         {experiences && experiences.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Professional Experience</Text>
             {experiences.map((exp, index) => (
-              <View
-                key={exp.id || index}
-                style={{ marginBottom: index < experiences.length - 1 ? 12 : 0 }}
-              >
-                <Text style={styles.role}>{exp.position}</Text>
-                {exp.company && <Text style={styles.company}>{exp.company}</Text>}
-                {(exp.startDate || exp.endDate || exp.current) && (
-                  <Text style={styles.dateLocation}>
-                    {exp.startDate &&
-                      `${new Date(exp.startDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                    {' - '}
-                    {exp.current
-                      ? 'Present'
-                      : exp.endDate &&
-                        new Date(exp.endDate + '-01').toLocaleDateString('en-US', {
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                    {exp.location && ` | ${exp.location}`}
+              <View key={exp.id || index} style={{ marginBottom: index < experiences.length - 1 ? 10 : 0 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <Text style={styles.role}>{exp.position}</Text>
+                  {(exp.startDate || exp.endDate || exp.current) && (
+                    <Text style={styles.dateLocation}>
+                      {exp.startDate && `${new Date(exp.startDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                      {' - '}
+                      {formatEnd(exp.current, exp.endDate)}
+                    </Text>
+                  )}
+                </View>
+                {exp.company && (
+                  <Text style={styles.company}>
+                    {exp.company}{exp.location ? ` | ${exp.location}` : ''}
                   </Text>
                 )}
-                {exp.directReports && exp.directReports.trim() && (
-                  <Text style={styles.textSmall}>👥 {exp.directReports} direct reports</Text>
-                )}
                 {exp.toolsUsed && exp.toolsUsed.trim() && (
-                  <Text style={styles.textSmall}>🛠 {exp.toolsUsed}</Text>
+                  <Text style={styles.textSmall}>Tools: {exp.toolsUsed}</Text>
                 )}
                 {exp.achievements && exp.achievements.trim() && (
                   <>
@@ -289,18 +246,9 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                       .split('\n')
                       .filter(Boolean)
                       .map((bullet, i) => (
-                        <View
-                          key={i}
-                          style={{
-                            flexDirection: 'row',
-                            marginLeft: 10,
-                            marginBottom: 3,
-                            fontSize: 9.5,
-                            color: '#334155',
-                          }}
-                        >
-                          <Text style={{ marginRight: 6, color: '#4f46e5' }}>•</Text>
-                          <Text style={styles.text}>{bullet.trim()}</Text>
+                        <View key={i} style={styles.bulletRow}>
+                          <Text style={styles.bullet}>•</Text>
+                          <Text style={styles.bulletText}>{bullet.trim()}</Text>
                         </View>
                       ))}
                   </>
@@ -308,66 +256,42 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
                 {exp.description && exp.description.trim() && (
                   <Text style={styles.text}>{stripHtml(exp.description)}</Text>
                 )}
-                {exp.reasonForLeaving && exp.reasonForLeaving.trim() && (
-                    <Text style={styles.textSmall}>
-                      Reason for leaving: {exp.reasonForLeaving}
-                    </Text>
-                )}
-                {exp.salaryHistory && exp.salaryHistory.trim() && (
-                    <Text style={styles.textSmall}>
-                      Salary progression: {exp.salaryHistory}
-                    </Text>
-                )}
               </View>
             ))}
           </View>
         )}
 
+        {/* Education */}
         {educations && educations.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Education</Text>
             {educations.map((edu, index) => (
-              <View
-                key={edu.id || index}
-                style={{ marginBottom: index < educations.length - 1 ? 10 : 0 }}
-              >
-                <Text style={styles.role}>
-                  {getDegreeLabel(edu.degree)}: {edu.fieldOfStudy}
-                </Text>
-                {edu.institution && <Text style={styles.company}>{edu.institution}</Text>}
-                {(edu.startDate || edu.endDate || edu.current) && (
-                  <Text style={styles.dateLocation}>
-                    {edu.startDate &&
-                      `${new Date(edu.startDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                    {' - '}
-                    {edu.current
-                      ? 'Present'
-                      : edu.endDate &&
-                        new Date(edu.endDate + '-01').toLocaleDateString('en-US', {
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                    {edu.location && ` | ${edu.location}`}
+              <View key={edu.id || index} style={{ marginBottom: index < educations.length - 1 ? 8 : 0 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <Text style={styles.role}>
+                    {getDegreeLabel(edu.degree)}{edu.fieldOfStudy ? `: ${edu.fieldOfStudy}` : ''}
+                  </Text>
+                  {(edu.startDate || edu.endDate || edu.current) && (
+                    <Text style={styles.dateLocation}>
+                      {edu.startDate && `${new Date(edu.startDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                      {' - '}
+                      {formatEnd(edu.current, edu.endDate)}
+                    </Text>
+                  )}
+                </View>
+                {edu.institution && (
+                  <Text style={styles.company}>
+                    {edu.institution}{edu.location ? ` | ${edu.location}` : ''}
                   </Text>
                 )}
-                {edu.gpa && edu.gpa.trim() && <Text style={styles.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
+                {edu.gpa && edu.gpa.trim() && (
+                  <Text style={styles.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>
+                )}
                 {edu.classRank && edu.classRank.trim() && (
                   <Text style={styles.textSmall}>Class Rank: {edu.classRank}</Text>
                 )}
-                {edu.thesisTopic && edu.thesisTopic.trim() && (
-                  <Text style={styles.textSmall}>
-                    Thesis: {edu.thesisTopic}
-                  </Text>
-                )}
-                {edu.academicHonors && edu.academicHonors.trim() && (
-                  <Text style={styles.textSmall}>
-                    Honors: {edu.academicHonors}
-                  </Text>
-                )}
                 {edu.relevantClasses && edu.relevantClasses.trim() && (
-                  <Text style={styles.textSmall}>
-                    Relevant Coursework: {edu.relevantClasses}
-                  </Text>
+                  <Text style={styles.textSmall}>Coursework: {edu.relevantClasses}</Text>
                 )}
                 {edu.description && edu.description.trim() && (
                   <Text style={styles.text}>{edu.description}</Text>
@@ -377,250 +301,111 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
           </View>
         )}
 
-        {medicalScience && medicalScience.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Medical & Science Background</Text>
-            {medicalScience.map((ms, index) => (
-              <View
-                key={ms.id || index}
-                style={{ marginBottom: index < medicalScience.length - 1 ? 10 : 0 }}
-              >
-                {ms.clinicalRotations && ms.clinicalRotations.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Clinical Rotations</Text>
-                    <Text style={styles.text}>{ms.clinicalRotations}</Text>
-                  </>
-                )}
-                {ms.researchGrants && ms.researchGrants.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Research Grants</Text>
-                    <Text style={styles.text}>{ms.researchGrants}</Text>
-                  </>
-                )}
-                {ms.publications && ms.publications.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Publications</Text>
-                    <Text style={styles.text}>{ms.publications}</Text>
-                  </>
-                )}
-                {ms.medicalLicenses && ms.medicalLicenses.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Licenses & Certifications</Text>
-                    <Text style={styles.text}>{ms.medicalLicenses}</Text>
-                  </>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
+        {/* Projects */}
         {projects && projects.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Projects</Text>
             {projects.map((project, index) => (
-              <View
-                key={project.id || index}
-                style={{ marginBottom: index < projects.length - 1 ? 12 : 0 }}
-              >
-                <Text style={styles.role}>{project.name}</Text>
+              <View key={project.id || index} style={{ marginBottom: index < projects.length - 1 ? 8 : 0 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <Text style={styles.role}>{project.name}</Text>
+                  {(project.startDate || project.endDate || project.current) && (
+                    <Text style={styles.dateLocation}>
+                      {project.startDate && `${new Date(project.startDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                      {' - '}
+                      {formatEnd(project.current, project.endDate)}
+                    </Text>
+                  )}
+                </View>
                 {project.role && (
-                  <Text style={{ ...styles.company, fontStyle: 'italic' }}>
-                    Role: {project.role}
-                  </Text>
-                )}
-                {(project.startDate || project.endDate || project.current) && (
-                  <Text style={styles.dateLocation}>
-                    {project.startDate &&
-                      `${new Date(project.startDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                    {' - '}
-                    {project.current
-                      ? 'Present'
-                      : project.endDate &&
-                        new Date(project.endDate + '-01').toLocaleDateString('en-US', {
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                  </Text>
+                  <Text style={styles.company}>{project.role}</Text>
                 )}
                 {project.technicalArchitecture && project.technicalArchitecture.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Technical Architecture</Text>
-                    <Text style={styles.textSmall}>{project.technicalArchitecture}</Text>
-                  </>
+                  <Text style={styles.textSmall}>{project.technicalArchitecture}</Text>
                 )}
                 {project.description && project.description.trim() && (
-                  <Text style={styles.text}>{stripHtml(project.description)}</Text>
-                )}
-                {project.codeRepositoryUrl && project.codeRepositoryUrl.trim() && (
-                  <Link
-                    href={project.codeRepositoryUrl}
-                    style={{ ...styles.textSmall, color: '#4f46e5', textDecoration: 'underline' }}
-                  >
-                    🔗 Code Repository
-                  </Link>
-                )}
-                {project.liveDemoUrl && project.liveDemoUrl.trim() && (
-                  <Link
-                    href={project.liveDemoUrl}
-                    style={{ ...styles.textSmall, color: '#4f46e5', textDecoration: 'underline' }}
-                  >
-                    🌐 Live Demo
-                  </Link>
+                  <>
+                    {stripHtml(project.description)
+                      .split('\n')
+                      .filter(Boolean)
+                      .map((line, i) => (
+                        <View key={i} style={styles.bulletRow}>
+                          <Text style={styles.bullet}>•</Text>
+                          <Text style={styles.bulletText}>{line.trim()}</Text>
+                        </View>
+                      ))}
+                  </>
                 )}
               </View>
             ))}
           </View>
         )}
 
+        {/* Skills */}
         {skills && skills.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Skills & Competencies</Text>
+            <Text style={styles.sectionTitle}>Skills</Text>
             {skills.map((skill, index) => (
-              <View
-                key={skill.id || index}
-                style={{ marginBottom: index < skills.length - 1 ? 10 : 0 }}
-              >
+              <View key={skill.id || index} style={{ marginBottom: 4 }}>
                 {skill.technicalSkills && skill.technicalSkills.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Technical Skills</Text>
-                    <View
-                      style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}
-                    >
-                      {skill.technicalSkills.split(',').map((s, i) => (
-                        <Text key={i} style={styles.skillTag}>
-                          {s.trim()}
-                        </Text>
-                      ))}
-                    </View>
-                  </>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginBottom: 3 }}>
+                    {skill.technicalSkills.split(',').map((s, i) => (
+                      <Text key={i} style={styles.skillTag}>{s.trim()}</Text>
+                    ))}
+                  </View>
                 )}
                 {skill.softSkills && skill.softSkills.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Soft Skills</Text>
-                    <View
-                      style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}
-                    >
-                      {skill.softSkills.split(',').map((s, i) => (
-                        <Text key={i} style={styles.skillTag}>
-                          {s.trim()}
-                        </Text>
-                      ))}
-                    </View>
-                  </>
+                  <Text style={styles.textSmall}>Soft Skills: {skill.softSkills}</Text>
                 )}
                 {skill.spokenLanguages && skill.spokenLanguages.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Spoken Languages</Text>
-                    <View
-                      style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}
-                    >
-                      {skill.spokenLanguages.split(',').map((s, i) => (
-                        <Text key={i} style={styles.skillTag}>
-                          {s.trim()}
-                        </Text>
-                      ))}
-                    </View>
-                  </>
-                )}
-                {(skill.proficiencyLevel ||
-                  (skill.yearsOfExperience !== undefined && skill.yearsOfExperience > 0)) && (
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    {skill.proficiencyLevel && (
-                      <View style={{ width: '48%' }}>
-                        <Text style={styles.subsectionTitle}>Proficiency Level</Text>
-                        <Text style={styles.text}>
-                          {skill.proficiencyLevel.charAt(0).toUpperCase() +
-                            skill.proficiencyLevel.slice(1)}
-                        </Text>
-                      </View>
-                    )}
-                    {skill.yearsOfExperience !== undefined && skill.yearsOfExperience > 0 && (
-                      <View style={{ width: '48%' }}>
-                        <Text style={styles.subsectionTitle}>Years of Experience</Text>
-                        <Text style={styles.text}>{skill.yearsOfExperience} years</Text>
-                      </View>
-                    )}
-                  </View>
+                  <Text style={styles.textSmall}>Languages: {skill.spokenLanguages}</Text>
                 )}
               </View>
             ))}
           </View>
         )}
 
+        {/* Credentials */}
         {credentials && credentials.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Credentials & Extras</Text>
+            <Text style={styles.sectionTitle}>Certifications</Text>
             {credentials.map((cred, index) => (
-              <View
-                key={cred.id || index}
-                style={{ marginBottom: index < credentials.length - 1 ? 12 : 0 }}
-              >
+              <View key={cred.id || index} style={{ marginBottom: index < credentials.length - 1 ? 6 : 0 }}>
                 <Text style={styles.role}>{cred.certificateName}</Text>
                 {cred.issuer && <Text style={styles.company}>{cred.issuer}</Text>}
                 {(cred.dateIssued || cred.expirationDate) && (
                   <Text style={styles.dateLocation}>
-                    {cred.dateIssued &&
-                      `Issued: ${new Date(cred.dateIssued + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                    {cred.expirationDate
-                      ? ` | Exp: ${new Date(cred.expirationDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`
-                      : ''}
+                    {cred.dateIssued && `${new Date(cred.dateIssued + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                    {cred.expirationDate ? ` - ${new Date(cred.expirationDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` : ''}
                   </Text>
-                )}
-                {cred.credentialId && cred.credentialId.trim() && (
-                  <Text style={styles.textSmall}>Credential ID: {cred.credentialId}</Text>
-                )}
-                {cred.securityClearance && cred.securityClearance !== 'None' && (
-                  <Text style={styles.textSmall}>
-                    Security Clearance: {cred.securityClearance}
-                  </Text>
-                )}
-                {cred.volunteerWork && cred.volunteerWork.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Volunteer Work</Text>
-                    <Text style={styles.text}>{cred.volunteerWork}</Text>
-                  </>
-                )}
-                {cred.hobbies && cred.hobbies.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Hobbies & Interests</Text>
-                    <Text style={styles.textSmall}>{cred.hobbies}</Text>
-                  </>
-                )}
-                {cred.militaryService && cred.militaryService.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>Military Service</Text>
-                    <Text style={styles.text}>{cred.militaryService}</Text>
-                  </>
-                )}
-                {cred.references && cred.references.trim() && (
-                  <>
-                    <Text style={styles.subsectionTitle}>References</Text>
-                    <Text style={styles.textSmall}>{cred.references}</Text>
-                  </>
                 )}
               </View>
             ))}
           </View>
         )}
 
-        <View
-          style={{
-            marginTop: 30,
-            paddingTop: 15,
-            borderTopWidth: 1,
-            borderTopColor: '#e2e8f0',
-            textAlign: 'center',
-          }}
-        >
-          <Text style={{ fontSize: 8, color: '#94a3b8' }}>
-            Generated by CV Generator •{' '}
-            {new Date().toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </Text>
-        </View>
+        {/* Medical & Science */}
+        {medicalScience && medicalScience.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Medical & Science</Text>
+            {medicalScience.map((ms, index) => (
+              <View key={ms.id || index} style={{ marginBottom: index < medicalScience.length - 1 ? 6 : 0 }}>
+                {ms.clinicalRotations && ms.clinicalRotations.trim() && (
+                  <Text style={styles.text}>Clinical Rotations: {ms.clinicalRotations}</Text>
+                )}
+                {ms.researchGrants && ms.researchGrants.trim() && (
+                  <Text style={styles.text}>Research Grants: {ms.researchGrants}</Text>
+                )}
+                {ms.publications && ms.publications.trim() && (
+                  <Text style={styles.text}>Publications: {ms.publications}</Text>
+                )}
+                {ms.medicalLicenses && ms.medicalLicenses.trim() && (
+                  <Text style={styles.text}>Licenses: {ms.medicalLicenses}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
       </Page>
     </Document>
   );

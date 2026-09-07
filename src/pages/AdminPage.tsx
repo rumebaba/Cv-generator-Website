@@ -1,213 +1,131 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 
+import { db } from '../lib/firebase';
+import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/common/Button';
 import { Card, CardHeader, CardContent } from '../components/common/Card';
 import { Input, Select } from '../components/common/Input';
-import { StepProgress } from '../components/common/StepProgress';
 
-interface CVSubmission {
+interface ClientRecord {
   id: string;
   name: string;
   email: string;
-  step: number;
-  completedAt: string;
-  status: 'draft' | 'completed' | 'exported';
+  createdAt: Date;
+  pdfUrl?: string;
+  template?: string;
 }
 
-const mockSubmissions: CVSubmission[] = [
-  {
-    id: 'cv_001',
-    name: 'John Doe',
-    email: 'john@example.com',
-    step: 9,
-    completedAt: '2024-01-15',
-    status: 'completed',
-  },
-  {
-    id: 'cv_002',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    step: 5,
-    completedAt: '2024-01-14',
-    status: 'draft',
-  },
-  {
-    id: 'cv_003',
-    name: 'Bob Wilson',
-    email: 'bob@example.com',
-    step: 9,
-    completedAt: '2024-01-13',
-    status: 'exported',
-  },
-  {
-    id: 'cv_004',
-    name: 'Alice Brown',
-    email: 'alice@example.com',
-    step: 3,
-    completedAt: '2024-01-12',
-    status: 'draft',
-  },
-  {
-    id: 'cv_005',
-    name: 'Charlie Davis',
-    email: 'charlie@example.com',
-    step: 7,
-    completedAt: '2024-01-11',
-    status: 'draft',
-  },
-];
-
 export const AdminPage: React.FC = () => {
+  const { user, logout } = useAuth();
+  const [clients, setClients] = useState<ClientRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'completed' | 'exported'>(
-    'all'
-  );
-  const [sortBy, setSortBy] = useState<'date' | 'name' | 'step'>('date');
+  const [sortBy, setSortBy] = useState<'date' | 'name'>('date');
 
-  const filteredSubmissions = mockSubmissions
-    .filter((sub) => {
-      const matchesSearch =
-        sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sub.email.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || sub.status === statusFilter;
-      return matchesSearch && matchesStatus;
+  const fetchClients = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const q = query(collection(db, 'clients'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const records: ClientRecord[] = snapshot.docs.map((doc) => {
+        const d = doc.data();
+        const personalData = d.personalData as { fullName?: string; email?: string } | undefined;
+        return {
+          id: doc.id,
+          name: personalData?.fullName || 'Unknown',
+          email: personalData?.email || '',
+          createdAt: d.createdAt?.toDate?.() ?? new Date(),
+          pdfUrl: d.pdfUrl as string | undefined,
+          template: d.template as string | undefined,
+        };
+      });
+      setClients(records);
+    } catch (err) {
+      console.error('Failed to fetch clients:', err);
+      setError('Failed to load clients. Check your Firebase config and Firestore rules.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchClients();
+  }, [fetchClients]);
+
+  const filtered = clients
+    .filter((c) => {
+      const term = searchTerm.toLowerCase();
+      return c.name.toLowerCase().includes(term) || c.email.toLowerCase().includes(term);
     })
     .sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return a.name.localeCompare(b.name);
-        case 'step':
-          return b.step - a.step;
-        case 'date':
-        default:
-          return new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
-      }
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      return b.createdAt.getTime() - a.createdAt.getTime();
     });
 
   const stats = {
-    total: mockSubmissions.length,
-    completed: mockSubmissions.filter((s) => s.status === 'completed').length,
-    drafts: mockSubmissions.filter((s) => s.status === 'draft').length,
-    exported: mockSubmissions.filter((s) => s.status === 'exported').length,
+    total: clients.length,
+    withPdf: clients.filter((c) => c.pdfUrl).length,
+    thisWeek: clients.filter((c) => {
+      const diff = Date.now() - c.createdAt.getTime();
+      return diff < 7 * 24 * 60 * 60 * 1000;
+    }).length,
   };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Admin Dashboard</h1>
           <p className="mt-1 text-slate-600 dark:text-slate-400">
-            Manage CV submissions and monitor platform activity
+            Signed in as {user?.email}
           </p>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          }
-        >
-          Export Report
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchClients}
+            leftIcon={
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            }
+          >
+            Refresh
+          </Button>
+          <Button variant="ghost" size="sm" onClick={logout}>
+            Sign Out
+          </Button>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Stats */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card variant="default" padding="md" className="border-l-4 border-indigo-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Total CVs</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Total Clients</p>
               <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
-            </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/30">
-              <svg
-                className="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
             </div>
           </div>
         </Card>
         <Card variant="default" padding="md" className="border-l-4 border-green-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Completed</p>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.completed}</p>
-            </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/30">
-              <svg
-                className="h-6 w-6 text-green-600 dark:text-green-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+              <p className="text-sm text-slate-600 dark:text-slate-400">With PDF</p>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.withPdf}</p>
             </div>
           </div>
         </Card>
         <Card variant="default" padding="md" className="border-l-4 border-yellow-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">In Progress</p>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.drafts}</p>
-            </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-100 dark:bg-yellow-900/30">
-              <svg
-                className="h-6 w-6 text-yellow-600 dark:text-yellow-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-        </Card>
-        <Card variant="default" padding="md" className="border-l-4 border-purple-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Exported</p>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.exported}</p>
-            </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/30">
-              <svg
-                className="h-6 w-6 text-purple-600 dark:text-purple-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                />
-              </svg>
+              <p className="text-sm text-slate-600 dark:text-slate-400">This Week</p>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.thisWeek}</p>
             </div>
           </div>
         </Card>
@@ -224,12 +142,7 @@ export const AdminPage: React.FC = () => {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <Input
                 placeholder="Search by name or email..."
@@ -239,42 +152,34 @@ export const AdminPage: React.FC = () => {
               />
             </div>
             <Select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-              options={[
-                { value: 'all', label: 'All Status' },
-                { value: 'draft', label: 'Draft' },
-                { value: 'completed', label: 'Completed' },
-                { value: 'exported', label: 'Exported' },
-              ]}
-              className="w-40"
-            />
-            <Select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               options={[
                 { value: 'date', label: 'Latest First' },
                 { value: 'name', label: 'Name (A-Z)' },
-                { value: 'step', label: 'Progress' },
               ]}
               className="w-40"
             />
           </div>
           <div className="text-sm text-slate-500 dark:text-slate-400">
-            Showing {filteredSubmissions.length} of {mockSubmissions.length} CVs
+            Showing {filtered.length} of {clients.length} clients
           </div>
         </CardContent>
       </Card>
 
-      {/* Submissions Table */}
+      {/* Error */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          {error}
+        </div>
+      )}
+
+      {/* Table */}
       <Card variant="default" padding="none">
         <div className="overflow-x-auto">
           <table className="w-full" role="table">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
-                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-400">
-                  CV ID
-                </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-400">
                   Name
                 </th>
@@ -282,171 +187,88 @@ export const AdminPage: React.FC = () => {
                   Email
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-400">
-                  Progress
+                  Template
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-400">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-400">
-                  Last Updated
+                  Submission Date
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-400">
-                  Actions
+                  CV PDF
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-              {filteredSubmissions.map((submission) => (
-                <tr
-                  key={submission.id}
-                  className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                >
-                  <td className="px-6 py-4">
-                    <code className="font-mono text-sm text-indigo-600 dark:text-indigo-400">
-                      {submission.id}
-                    </code>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-slate-900 dark:text-white">
-                      {submission.name}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      {submission.email}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-2 max-w-xs flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                        <div
-                          className="h-full rounded-full bg-indigo-500 transition-all duration-300"
-                          style={{ width: `${(submission.step / 9) * 100}%` }}
-                        />
-                      </div>
-                      <span className="w-16 text-right text-sm text-slate-500 dark:text-slate-400">
-                        {Math.round((submission.step / 9) * 100)}%
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        submission.status === 'completed'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                          : submission.status === 'exported'
-                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
-                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                      }`}
-                    >
-                      {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
-                    {new Date(submission.completedAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-600 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                          />
-                        </svg>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-600 hover:text-green-600 dark:text-slate-400 dark:hover:text-green-400"
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                          />
-                        </svg>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v10M7 7h10"
-                          />
-                        </svg>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filteredSubmissions.length === 0 && (
+              {loading ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-6 py-12 text-center text-slate-500 dark:text-slate-400"
-                  >
-                    No CV submissions found matching your criteria.
+                  <td colSpan={5} className="px-6 py-12 text-center">
+                    <div className="flex items-center justify-center gap-3 text-slate-500 dark:text-slate-400">
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+                      Loading clients...
+                    </div>
                   </td>
                 </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                    {clients.length === 0
+                      ? 'No clients yet. Submissions will appear here.'
+                      : 'No clients match your search.'}
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((client) => (
+                  <tr
+                    key={client.id}
+                    className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-slate-900 dark:text-white">
+                        {client.name}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                      {client.email || '—'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400">
+                        {client.template
+                          ? client.template.charAt(0).toUpperCase() + client.template.slice(1)
+                          : 'Classic'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                      {client.createdAt.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {client.pdfUrl ? (
+                        <a
+                          href={client.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          View PDF
+                        </a>
+                      ) : (
+                        <span className="text-sm text-slate-400 dark:text-slate-500">No PDF</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
         </div>
       </Card>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Page 1 of 1 • {mockSubmissions.length} total
-        </p>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled>
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" disabled>
-            Next
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };

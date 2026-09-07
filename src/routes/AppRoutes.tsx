@@ -3,18 +3,29 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { Layout } from '../components/layout/Layout';
 import { FormLayout } from '../components/layout/Layout';
+import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import { AdminPage } from '../pages/AdminPage';
 import { FormPage } from '../pages/FormPage';
 import { LandingPage } from '../pages/LandingPage';
+import { LoginPage } from '../pages/LoginPage';
 import { PortfolioPage } from '../pages/PortfolioPage';
 import { TemplatesPage } from '../pages/TemplatesPage';
 
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
+
       <Route element={<Layout />}>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/templates" element={<TemplatesPage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/form/*" element={<FormLayout />}>

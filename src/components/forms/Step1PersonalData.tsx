@@ -147,7 +147,7 @@ export const Step1PersonalData: React.FC = () => {
               value={personalData.linkedin}
               onChange={(e) => handleInputChange('linkedin', e.target.value)}
               placeholder="linkedin.com/in/johndoe"
-              autoComplete="off"
+              autoComplete="url"
             />
           </div>
 
@@ -209,7 +209,7 @@ export const Step1PersonalData: React.FC = () => {
               value={personalData.profilePhotoUrl}
               onChange={(e) => handleInputChange('profilePhotoUrl', e.target.value)}
               placeholder="https://example.com/photo.jpg"
-              autoComplete="off"
+              autoComplete="url"
               helperText="Optional: Link to a professional headshot"
             />
           </div>
@@ -340,7 +340,7 @@ export const Step1PersonalData: React.FC = () => {
                       value={newSocialUrl}
                       onChange={(e) => setNewSocialUrl(e.target.value)}
                       placeholder="https://..."
-                      type="url"
+                      type="text"
                       autoComplete="off"
                     />
                   </div>

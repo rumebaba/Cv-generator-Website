@@ -66,11 +66,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     lineHeight: 14,
   },
-  nameTitleBlock: {
-    alignItems: 'center',
-    flexDirection: 'column',
-    marginBottom: 10,
-  },
   contactRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',

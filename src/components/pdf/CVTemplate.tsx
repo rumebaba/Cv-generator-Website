@@ -63,11 +63,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#4f46e5',
     fontStyle: 'italic',
-    marginTop: 8,
+    marginTop: 10,
   },
   nameTitleWrapper: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   contactRow: {
     flexDirection: 'row',

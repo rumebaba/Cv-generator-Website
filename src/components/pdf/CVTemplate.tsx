@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#1e293b',
+    marginBottom: 6,
   },
   targetTitle: {
     fontSize: 10,
@@ -66,6 +67,7 @@ const styles = StyleSheet.create({
   },
   nameTitleBlock: {
     alignItems: 'center',
+    flexDirection: 'column',
     marginBottom: 10,
   },
   contactRow: {

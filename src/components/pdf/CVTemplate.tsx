@@ -58,12 +58,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#1e293b',
-    marginBottom: 6,
+    lineHeight: 32,
   },
   targetTitle: {
     fontSize: 10,
     color: '#4f46e5',
     fontStyle: 'italic',
+    lineHeight: 14,
   },
   nameTitleBlock: {
     alignItems: 'center',
@@ -184,12 +185,15 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
           {pd.profilePhotoUrl && (
             <Image style={styles.photo} src={pd.profilePhotoUrl} />
           )}
-          <View style={styles.nameTitleBlock}>
-            <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+          <Text style={styles.name}>
+            {pd.fullName || 'Your Name'}
             {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-              <Text style={styles.targetTitle}>{introduction.targetJobTitles}</Text>
+              <Text style={styles.targetTitle}>
+                {'\n'}
+                {introduction.targetJobTitles}
+              </Text>
             )}
-          </View>
+          </Text>
           <View style={styles.contactRow}>
             {pd.email && <Text style={styles.contactItem}>{pd.email}</Text>}
             {pd.phone && <Text style={styles.contactItem}>{pd.phone}</Text>}

@@ -51,6 +51,8 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   const [downloadingDocx, setDownloadingDocx] = useState(false);
   const mountedRef = useRef(true);
   const pdfUrlRef = useRef<string | null>(null);
+  const formStateRef = useRef(formState);
+  formStateRef.current = formState;
 
   const TemplateComponent = templateMap[template];
 
@@ -76,7 +78,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
     setLoading(true);
     setPdfBlob(null);
     try {
-      const blob = await pdf(<TemplateComponent formState={formState} />).toBlob();
+      const blob = await pdf(<TemplateComponent formState={formStateRef.current} />).toBlob();
       if (mountedRef.current) {
         setPdfBlob(blob);
       }
@@ -87,11 +89,11 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
         setLoading(false);
       }
     }
-  }, [formState, TemplateComponent, isOpen]);
+  }, [TemplateComponent, isOpen]);
 
-  useEffect(() => {
+useEffect(() => {
     generatePDF();
-  }, [isOpen, template, formState, generatePDF]);
+}, [isOpen, template, generatePDF]);
 
   // Cleanup blob URL on unmount
   useEffect(() => {

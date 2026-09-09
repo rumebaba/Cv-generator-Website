@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
   header: {
     padding: 30,
     marginBottom: 20,
-    backgroundColor: '#1e3a5f',
   },
   photo: {
     width: 70,

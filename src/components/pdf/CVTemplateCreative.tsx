@@ -6,6 +6,7 @@ import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHelpers';
 
+
 interface Props {
   formState: FormState;
 }

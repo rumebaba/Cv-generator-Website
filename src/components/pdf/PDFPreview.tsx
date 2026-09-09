@@ -49,6 +49,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
   const [downloadingDocx, setDownloadingDocx] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
   const pdfUrlRef = useRef<string | null>(null);
   const formStateRef = useRef(formState);
@@ -63,7 +64,6 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
     };
   }, []);
 
-  // Escape key handler
   useEffect(() => {
     if (!isOpen) return;
     const handleEsc = (e: KeyboardEvent) => {
@@ -76,14 +76,18 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   const generatePDF = useCallback(async () => {
     if (!isOpen) return;
     setLoading(true);
+    setError(null);
     setPdfBlob(null);
     try {
       const blob = await pdf(<TemplateComponent formState={formStateRef.current} />).toBlob();
       if (mountedRef.current) {
         setPdfBlob(blob);
       }
-    } catch (error) {
-      console.error('PDF generation failed:', error);
+    } catch (err) {
+      console.error('PDF generation failed:', err);
+      if (mountedRef.current) {
+        setError(err instanceof Error ? err.message : 'Failed to generate PDF');
+      }
     } finally {
       if (mountedRef.current) {
         setLoading(false);
@@ -91,11 +95,10 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
     }
   }, [TemplateComponent, isOpen]);
 
-useEffect(() => {
+  useEffect(() => {
     generatePDF();
-}, [isOpen, template, generatePDF]);
+  }, [isOpen, template, generatePDF]);
 
-  // Cleanup blob URL on unmount
   useEffect(() => {
     return () => {
       if (pdfUrlRef.current) {
@@ -109,15 +112,15 @@ useEffect(() => {
   const handleDownloadDocx = async () => {
     setDownloadingDocx(true);
     try {
-      const blob = await generateDocxBlob(formState.data);
+      const blob = await generateDocxBlob(formStateRef.current.data);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${formState.data.personalData.fullName.replace(/\s+/g, '_') || 'cv'}.docx`;
+      a.download = `${formStateRef.current.data.personalData.fullName.replace(/\s+/g, '_') || 'cv'}.docx`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('DOCX generation failed:', error);
+    } catch (err) {
+      console.error('DOCX generation failed:', err);
     } finally {
       setDownloadingDocx(false);
     }
@@ -131,11 +134,8 @@ useEffect(() => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-slate-900" onClick={onClose}>
-      <div
-        className="flex h-full flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-slate-900">
+      <div className="flex h-full flex-col">
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">CV Preview</h2>
@@ -179,13 +179,23 @@ useEffect(() => {
             <div className="flex h-full items-center justify-center">
               <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
             </div>
+          ) : error ? (
+            <div className="flex h-full items-center justify-center text-red-500 dark:text-red-400">
+              <div className="text-center">
+                <p className="text-lg font-semibold mb-2">Failed to generate PDF</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{error}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                  Check the browser console for details.
+                </p>
+              </div>
+            </div>
           ) : pdfBlob ? (
             <PDFViewer width="100%" height="100%" showToolbar={false}>
-              <TemplateComponent formState={formState} />
+              <TemplateComponent formState={formStateRef.current} />
             </PDFViewer>
           ) : (
             <div className="flex h-full items-center justify-center text-slate-500 dark:text-slate-400">
-              Failed to generate PDF preview
+              Generating PDF preview...
             </div>
           )}
         </div>

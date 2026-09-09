@@ -6,6 +6,7 @@ import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
 
+
 interface CVTemplateProps {
   formState: FormState;
 }

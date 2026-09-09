@@ -34,63 +34,70 @@ interface CVTemplateProps {
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
-    padding: 35,
     fontFamily: 'Helvetica',
     fontSize: 9,
     lineHeight: 1.4,
     color: '#1e293b',
   },
   header: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: 14,
-    paddingBottom: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: '#4f46e5',
+    padding: 30,
+    marginBottom: 20,
+    backgroundColor: '#1e3a5f',
   },
   photo: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginBottom: 6,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginBottom: 10,
+    alignSelf: 'center',
   },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    lineHeight: 32,
-  },
-  targetTitle: {
-    fontSize: 10,
-    color: '#4f46e5',
-    fontStyle: 'italic',
-    lineHeight: 14,
-  },
-  contactRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 8,
-    fontSize: 8,
-    color: '#64748b',
-  },
-  contactItem: {
-    fontSize: 8,
-    color: '#64748b',
-  },
-  section: {
+  nameBlock: {
+    alignItems: 'center',
     marginBottom: 12,
   },
-  sectionTitle: {
-    fontSize: 11,
+  name: {
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#4f46e5',
+    color: '#ffffff',
+    textAlign: 'center',
+    lineHeight: 34,
+  },
+  targetTitle: {
+    fontSize: 11,
+    color: '#a8c4f0',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  contactInfo: {
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  contactItem: {
+    fontSize: 8.5,
+    color: '#c8d8e8',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  contactSeparator: {
+    fontSize: 8.5,
+    color: '#6b8299',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  section: {
+    marginBottom: 14,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#1e3a5f',
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 6,
+    letterSpacing: 1,
+    marginBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    paddingBottom: 2,
+    borderBottomColor: '#1e3a5f',
+    paddingBottom: 3,
   },
   subsectionTitle: {
     fontSize: 9.5,
@@ -102,20 +109,20 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 9,
     color: '#334155',
-    marginBottom: 1,
+    marginBottom: 2,
   },
   textSmall: {
     fontSize: 8,
     color: '#64748b',
   },
   role: {
-    fontSize: 10,
+    fontSize: 10.5,
     fontWeight: 'bold',
     color: '#1e293b',
   },
   company: {
     fontSize: 9,
-    color: '#4f46e5',
+    color: '#1e3a5f',
     marginBottom: 1,
   },
   dateLocation: {
@@ -131,7 +138,7 @@ const styles = StyleSheet.create({
   bullet: {
     width: 8,
     fontSize: 9,
-    color: '#4f46e5',
+    color: '#1e3a5f',
   },
   bulletText: {
     flex: 1,
@@ -144,7 +151,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 1.5,
     fontSize: 8,
-    color: '#4f46e5',
+    color: '#1e3a5f',
   },
 });
 
@@ -180,18 +187,21 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
           {pd.profilePhotoUrl && (
             <Image style={styles.photo} src={pd.profilePhotoUrl} />
           )}
-          <Text style={styles.name}>
-            {pd.fullName || 'Your Name'}
+          <View style={styles.nameBlock}>
+            <Text style={styles.name}>
+              {pd.fullName || 'Your Name'}
+            </Text>
             {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-              <Text style={styles.targetTitle}>
-                {'\n'}
-                {introduction.targetJobTitles}
-              </Text>
+              <Text style={styles.targetTitle}>{introduction.targetJobTitles}</Text>
             )}
-          </Text>
-          <View style={styles.contactRow}>
+          </View>
+          <View style={styles.contactInfo}>
             {pd.email && <Text style={styles.contactItem}>{pd.email}</Text>}
-            {pd.phone && <Text style={styles.contactItem}>{pd.phone}</Text>}
+            {pd.phone && (
+              <>
+                <Text style={styles.contactItem}>{pd.phone}</Text>
+              </>
+            )}
             {(pd.city || pd.country) && (
               <Text style={styles.contactItem}>
                 {pd.city || ''}{pd.city && pd.country ? ', ' : ''}{pd.country || ''}
@@ -200,12 +210,12 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ formState }) => {
             {pd.nationality && <Text style={styles.contactItem}>{pd.nationality}</Text>}
           </View>
           {pd.linkedin && (
-            <Text style={{ fontSize: 8, color: '#4f46e5', marginTop: 3 }}>{pd.linkedin}</Text>
+            <Text style={styles.contactItem}>{pd.linkedin}</Text>
           )}
           {pd.customSocialLinks && pd.customSocialLinks.length > 0 && (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 2 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 4 }}>
               {pd.customSocialLinks.map((link, i) => (
-                <Text key={i} style={{ fontSize: 7.5, color: '#64748b' }}>
+                <Text key={i} style={{ fontSize: 8, color: '#c8d8e8' }}>
                   {link.label}: {link.url}
                 </Text>
               ))}

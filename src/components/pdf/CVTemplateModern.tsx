@@ -1,27 +1,10 @@
-import { Document, Page, View, Text, StyleSheet, Font, Link, Image } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Link, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormState } from '../../types/form';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
-
-Font.register({
-  family: 'Helvetica',
-  fonts: [
-    {
-      src: 'https://cdn.jsdelivr.net/npm/@react-pdf/renderer@3.1.14/fonts/Helvetica/Helvetica-Regular.ttf',
-    },
-    {
-      src: 'https://cdn.jsdelivr.net/npm/@react-pdf/renderer@3.1.14/fonts/Helvetica/Helvetica-Bold.ttf',
-      fontWeight: 'bold' as const,
-    },
-    {
-      src: 'https://cdn.jsdelivr.net/npm/@react-pdf/renderer@3.1.14/fonts/Helvetica/Helvetica-Oblique.ttf',
-      fontStyle: 'italic' as const,
-    },
-  ],
-});
 
 interface CVTemplateProps {
   formState: FormState;

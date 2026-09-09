@@ -1,18 +1,10 @@
-import { Document, Page, View, Text, StyleSheet, Font, Image } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormState } from '../../types/form';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHelpers';
-
-Font.register({
-  family: 'Helvetica',
-  fonts: [
-    { src: 'https://cdn.jsdelivr.net/npm/@react-pdf/renderer@3.1.14/fonts/Helvetica/Helvetica-Regular.ttf' },
-    { src: 'https://cdn.jsdelivr.net/npm/@react-pdf/renderer@3.1.14/fonts/Helvetica/Helvetica-Bold.ttf', fontWeight: 'bold' as const },
-  ],
-});
 
 interface Props {
   formState: FormState;

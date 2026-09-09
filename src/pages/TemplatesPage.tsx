@@ -6,23 +6,26 @@ import { Card } from '../components/common/Card';
 import { useTemplate, type TemplateId } from '../hooks/useTemplate';
 
 const ClassicPreview: React.FC = () => (
-  <div className="rounded-lg bg-white p-5 text-[11px] leading-snug text-slate-800 shadow-inner" style={{ fontFamily: 'Georgia, serif' }}>
-    <div className="mb-3 border-b-2 border-slate-800 pb-2 text-center">
-      <div className="text-[15px] font-bold uppercase tracking-wider">John Smith</div>
-      <div className="text-[9px] text-slate-500">john@email.com | +1 555 0123 | New York, NY</div>
+  <div className="rounded-lg bg-white overflow-hidden text-[11px] leading-snug text-slate-800 shadow-inner" style={{ fontFamily: 'Georgia, serif' }}>
+    <div className="bg-[#1e3a5f] p-6 text-center">
+      <div className="text-[18px] font-bold text-white uppercase tracking-wider">John Smith</div>
+      <div className="text-[10px] text-blue-200 italic">Developer</div>
+      <div className="text-[8px] text-blue-100 mt-1">john@email.com | +1 555 0123 | New York, NY</div>
     </div>
-    <div className="mb-3">
-      <div className="mb-1 text-[10px] font-bold uppercase text-indigo-700">Professional Summary</div>
-      <div className="text-[9px] text-slate-600">Experienced software engineer with 8+ years building scalable web applications and leading cross-functional teams.</div>
-    </div>
-    <div className="mb-3">
-      <div className="mb-1 text-[10px] font-bold uppercase text-indigo-700">Experience</div>
-      <div className="font-semibold">Senior Developer — Google (2020-Present)</div>
-      <div className="text-[9px] text-slate-600">Led team of 5 engineers, improved performance by 40%. Architected microservices infrastructure.</div>
-    </div>
-    <div>
-      <div className="mb-1 text-[10px] font-bold uppercase text-indigo-700">Education</div>
-      <div className="font-semibold">BS Computer Science — MIT (2016)</div>
+    <div className="p-4 space-y-3">
+      <div>
+        <div className="mb-1 text-[10px] font-bold uppercase text-[#1e3a5f]">Professional Summary</div>
+        <div className="text-[9px] text-slate-600">Experienced software engineer with 8+ years building scalable web applications and leading cross-functional teams.</div>
+      </div>
+      <div>
+        <div className="mb-1 text-[10px] font-bold uppercase text-[#1e3a5f]">Experience</div>
+        <div className="font-semibold text-[10px]">Senior Developer — Google (2020-Present)</div>
+        <div className="text-[9px] text-slate-600">Led team of 5 engineers, improved performance by 40%. Architected microservices infrastructure.</div>
+      </div>
+      <div>
+        <div className="mb-1 text-[10px] font-bold uppercase text-[#1e3a5f]">Education</div>
+        <div className="font-semibold text-[10px]">BS Computer Science — MIT (2016)</div>
+      </div>
     </div>
   </div>
 );

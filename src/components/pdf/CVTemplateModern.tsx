@@ -1,378 +1,121 @@
-import { Document, Page, View, Text, StyleSheet, Link, Image } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/renderer';
 import React from 'react';
 
 import type { FormState } from '../../types/form';
-import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
 
-
-interface CVTemplateProps {
-  formState: FormState;
-}
+const colors = { primary: '#2563eb', dark: '#1e293b', gray: '#64748b', light: '#f1f5f9' };
 
 const styles = StyleSheet.create({
-  page: {
-    flexDirection: 'row',
-    fontFamily: 'Helvetica',
-    fontSize: 10,
-    lineHeight: 1.5,
-    color: '#1e293b',
-  },
-  sidebar: {
-    width: 200,
-    backgroundColor: '#1e293b',
-    color: '#f8fafc',
-    padding: 25,
-  },
-  main: {
-    flex: 1,
-    padding: 30,
-  },
-  sidebarName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#f8fafc',
-    marginBottom: 4,
-  },
-  photo: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginBottom: 10,
-    alignSelf: 'center',
-  },
-  sidebarTitle: {
-    fontSize: 10,
-    color: '#94a3b8',
-    marginBottom: 20,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  sidebarSection: {
-    marginBottom: 18,
-  },
-  sidebarSectionTitle: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: '#818cf8',
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginBottom: 8,
-  },
-  sidebarText: {
-    fontSize: 8.5,
-    color: '#cbd5e1',
-    marginBottom: 3,
-  },
-  sidebarItem: {
-    marginBottom: 8,
-  },
-  sidebarLabel: {
-    fontSize: 8,
-    color: '#94a3b8',
-    marginBottom: 1,
-  },
-  sidebarValue: {
-    fontSize: 8.5,
-    color: '#f1f5f9',
-  },
-  mainSection: {
-    marginBottom: 16,
-  },
-  mainSectionTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: '#1e293b',
-    paddingBottom: 3,
-  },
-  mainRole: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#1e293b',
-  },
-  mainCompany: {
-    fontSize: 10,
-    color: '#6366f1',
-    marginBottom: 2,
-  },
-  mainDate: {
-    fontSize: 9,
-    color: '#64748b',
-    marginBottom: 4,
-  },
-  mainText: {
-    fontSize: 9,
-    color: '#334155',
-    marginBottom: 2,
-  },
-  bulletRow: {
-    flexDirection: 'row',
-    marginLeft: 8,
-    marginBottom: 2,
-  },
-  bullet: {
-    marginRight: 5,
-    color: '#6366f1',
-    fontSize: 9,
-  },
-  skillTag: {
-    backgroundColor: '#eef2ff',
-    borderRadius: 3,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    fontSize: 8,
-    color: '#4f46e5',
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  skillRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4,
-    marginBottom: 6,
-  },
+  page: { padding: 40, fontFamily: 'Helvetica', fontSize: 10, color: colors.dark },
+  header: { marginBottom: 16 },
+  photo: { width: 60, height: 60, borderRadius: 30, alignSelf: 'center', marginBottom: 8 },
+  name: { fontSize: 26, fontFamily: 'Helvetica-Bold', color: colors.primary, marginBottom: 4 },
+  subtitle: { fontSize: 10, textAlign: 'center', color: colors.gray, marginBottom: 8 },
+  contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, fontSize: 9, color: colors.gray },
+  summary: { marginBottom: 16, lineHeight: 1.5, color: colors.gray },
+  sectionTitle: { fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary, borderBottomWidth: 1, borderBottomColor: colors.primary, paddingBottom: 3, marginBottom: 8, marginTop: 12, textTransform: 'uppercase', letterSpacing: 1 },
+  entryHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
+  entryTitle: { fontFamily: 'Helvetica-Bold', fontSize: 11 },
+  entrySubtitle: { fontSize: 9, color: colors.gray },
+  entryDesc: { lineHeight: 1.5, marginBottom: 8, color: colors.dark },
+  skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  skillChip: { backgroundColor: colors.light, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4, fontSize: 9, color: colors.dark, marginBottom: 2 },
+  projectName: { fontFamily: 'Helvetica-Bold', fontSize: 10 },
 });
 
-const CVTemplateModern: React.FC<CVTemplateProps> = ({ formState }) => {
+const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => {
   const { data } = formState;
-  const {
-    personalData,
-    introduction,
-    educations,
-    experiences,
-    projects,
-    skills,
-    credentials,
-    references,
-  } = data;
+  const { personalData: pd, introduction, educations, experiences, projects, skills } = data;
+
+  const formatEnd = (current: boolean, endDate: string) => {
+    if (current) return 'Present';
+    if (endDate) return new Date(endDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    return 'Present';
+  };
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.sidebar}>
-          {personalData.profilePhotoUrl && (
-            <Image style={styles.photo} src={personalData.profilePhotoUrl} />
+        {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
+        <View style={styles.header}>
+          <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+          {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
+            <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
           )}
-          <Text style={styles.sidebarName}>{personalData.fullName || 'Your Name'}</Text>
-          <Text style={styles.sidebarTitle}>Professional CV</Text>
-
-          <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Contact</Text>
-            {personalData.email && <Text style={styles.sidebarText}>{personalData.email}</Text>}
-            {personalData.phone && <Text style={styles.sidebarText}>{personalData.phone}</Text>}
-            {(personalData.city || personalData.country) && (
-              <Text style={styles.sidebarText}>
-                {personalData.city || ''}
-                {personalData.city && personalData.country ? ', ' : ''}
-                {personalData.country || ''}
-              </Text>
-            )}
-            {personalData.linkedin && (
-              <Text style={styles.sidebarText}>{personalData.linkedin}</Text>
-            )}
+          <View style={styles.contactRow}>
+            {pd.email && <Text>{pd.email}</Text>}
+            {pd.phone && <Text>{pd.phone}</Text>}
+            {(pd.city || pd.country) && <Text>{pd.city}{pd.city && pd.country ? ', ' : ''}{pd.country}</Text>}
           </View>
-
-          {skills.length > 0 && skills.some((s) => s.technicalSkills) && (
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionTitle}>Technical Skills</Text>
-              {skills
-                .filter((s) => s.technicalSkills)
-                .map((skill, i) => (
-                  <View key={i} style={{ marginBottom: 4 }}>
-                    {skill.technicalSkills.split(',').map((s, j) => (
-                      <Text key={j} style={styles.sidebarText}>
-                        {s.trim()}
-                      </Text>
-                    ))}
-                  </View>
-                ))}
-            </View>
-          )}
-
-          {skills.length > 0 && skills.some((s) => s.softSkills) && (
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionTitle}>Soft Skills</Text>
-              {skills
-                .filter((s) => s.softSkills)
-                .map((skill, i) => (
-                  <View key={i} style={{ marginBottom: 4 }}>
-                    {skill.softSkills.split(',').map((s, j) => (
-                      <Text key={j} style={styles.sidebarText}>
-                        {s.trim()}
-                      </Text>
-                    ))}
-                  </View>
-                ))}
-            </View>
-          )}
-
-          {skills.length > 0 && skills.some((s) => s.spokenLanguages) && (
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionTitle}>Languages</Text>
-              {skills
-                .filter((s) => s.spokenLanguages)
-                .map((skill, i) => (
-                  <View key={i} style={{ marginBottom: 4 }}>
-                    {skill.spokenLanguages.split(',').map((s, j) => (
-                      <Text key={j} style={styles.sidebarText}>
-                        {s.trim()}
-                      </Text>
-                    ))}
-                  </View>
-                ))}
-            </View>
-          )}
-
-          {references.length > 0 && (
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionTitle}>References</Text>
-              {references.map((ref, i) => (
-                <View key={i} style={styles.sidebarItem}>
-                  <Text style={styles.sidebarValue}>{ref.name}</Text>
-                  <Text style={styles.sidebarLabel}>
-                    {ref.title} at {ref.company}
-                  </Text>
-                  <Text style={styles.sidebarLabel}>{ref.email}</Text>
-                </View>
-              ))}
-            </View>
-          )}
         </View>
 
-        <View style={styles.main}>
-          {introduction.professionalSummary && (
-            <View style={styles.mainSection}>
-              <Text style={styles.mainSectionTitle}>Professional Summary</Text>
-              <Text style={styles.mainText}>{stripHtml(introduction.professionalSummary)}</Text>
-            </View>
-          )}
+        {introduction.professionalSummary && introduction.professionalSummary.trim() && (
+          <Text style={styles.summary}>{stripHtml(introduction.professionalSummary)}</Text>
+        )}
 
-          {introduction.objectiveStatement && (
-            <View style={styles.mainSection}>
-              <Text style={styles.mainSectionTitle}>Career Objective</Text>
-              <Text style={styles.mainText}>{introduction.objectiveStatement}</Text>
-            </View>
-          )}
-
-          {experiences.length > 0 && (
-            <View style={styles.mainSection}>
-              <Text style={styles.mainSectionTitle}>Experience</Text>
-              {experiences.map((exp, i) => (
-                <View
-                  key={exp.id || i}
-                  style={{ marginBottom: i < experiences.length - 1 ? 12 : 0 }}
-                >
-                  <Text style={styles.mainRole}>{exp.position}</Text>
-                  {exp.company && <Text style={styles.mainCompany}>{exp.company}</Text>}
-                  {(exp.startDate || exp.endDate) && (
-                    <Text style={styles.mainDate}>
-                      {formatDateRange(exp.startDate, exp.endDate, exp.current)}
-                      {exp.location ? ` | ${exp.location}` : ''}
-                    </Text>
-                  )}
-                  {exp.directReports && (
-                    <Text style={styles.mainText}>Direct Reports: {exp.directReports}</Text>
-                  )}
-                  {exp.achievements &&
-                    stripHtml(exp.achievements)
-                      .split('\n')
-                      .filter(Boolean)
-                      .map((b, j) => (
-                        <View key={j} style={styles.bulletRow}>
-                          <Text style={styles.bullet}>•</Text>
-                          <Text style={styles.mainText}>{b.trim()}</Text>
-                        </View>
-                      ))}
-                  {exp.description && <Text style={styles.mainText}>{stripHtml(exp.description)}</Text>}
+        {experiences && experiences.length > 0 && (
+          <View>
+            <Text style={styles.sectionTitle}>Experience</Text>
+            {experiences.map((exp) => (
+              <View key={exp.id} style={{ marginBottom: 8 }}>
+                <View style={styles.entryHeader}>
+                  <Text style={styles.entryTitle}>{exp.position} — {exp.company}</Text>
+                  <Text style={styles.entrySubtitle}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate ? formatEnd(exp.current, exp.endDate) : ''}</Text>
                 </View>
+                <Text style={styles.entryDesc}>{stripHtml(exp.description)}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {educations && educations.length > 0 && (
+          <View>
+            <Text style={styles.sectionTitle}>Education</Text>
+            {educations.map((edu) => (
+              <View key={edu.id} style={{ marginBottom: 6 }}>
+                <View style={styles.entryHeader}>
+                  <Text style={styles.entryTitle}>{getDegreeLabel(edu.degree)} {edu.fieldOfStudy} — {edu.institution}</Text>
+                  <Text style={styles.entrySubtitle}>{edu.startDate} — {edu.current ? 'Present' : edu.endDate ? formatEnd(edu.current, edu.endDate) : ''}</Text>
+                </View>
+                {edu.gpa && edu.gpa.trim() && <Text style={styles.entrySubtitle}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {skills && skills.length > 0 && (
+          <View>
+            <Text style={styles.sectionTitle}>Skills</Text>
+            <View style={styles.skillsRow}>
+              {skills.map((skill) => (
+                <React.Fragment key={skill.id}>
+                  {skill.technicalSkills && skill.technicalSkills.trim() && (
+                    skill.technicalSkills.split(',').map((s, i) => (
+                      <Text key={i} style={styles.skillChip}>{s.trim()}</Text>
+                    ))
+                  )}
+                </React.Fragment>
               ))}
             </View>
-          )}
+          </View>
+        )}
 
-          {educations.length > 0 && (
-            <View style={styles.mainSection}>
-              <Text style={styles.mainSectionTitle}>Education</Text>
-              {educations.map((edu, i) => (
-                <View
-                  key={edu.id || i}
-                  style={{ marginBottom: i < educations.length - 1 ? 10 : 0 }}
-                >
-                  <Text style={styles.mainRole}>
-                    {getDegreeLabel(edu.degree)}: {edu.fieldOfStudy}
-                  </Text>
-                  {edu.institution && <Text style={styles.mainCompany}>{edu.institution}</Text>}
-                  {(edu.startDate || edu.endDate) && (
-                    <Text style={styles.mainDate}>
-                      {formatDateRange(edu.startDate, edu.endDate, edu.current)}
-                    </Text>
-                  )}
-                  {edu.gpa && <Text style={styles.mainText}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
-                  {edu.thesisTopic && (
-                    <Text style={styles.mainText}>Thesis: {edu.thesisTopic}</Text>
-                  )}
+        {projects && projects.length > 0 && (
+          <View>
+            <Text style={styles.sectionTitle}>Projects</Text>
+            {projects.map((pr) => (
+              <View key={pr.id} style={{ marginBottom: 6 }}>
+                <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                  <Text style={styles.projectName}>{pr.name}</Text>
                 </View>
-              ))}
-            </View>
-          )}
-
-          {projects.length > 0 && (
-            <View style={styles.mainSection}>
-              <Text style={styles.mainSectionTitle}>Projects</Text>
-              {projects.map((project, i) => (
-                <View
-                  key={project.id || i}
-                  style={{ marginBottom: i < projects.length - 1 ? 10 : 0 }}
-                >
-                  <Text style={styles.mainRole}>{project.name}</Text>
-                  {project.role && <Text style={styles.mainCompany}>Role: {project.role}</Text>}
-                  {project.description && (
-                    <Text style={styles.mainText}>{stripHtml(project.description)}</Text>
-                  )}
-                  {project.codeRepositoryUrl && (
-                    <Link
-                      href={project.codeRepositoryUrl}
-                      style={{ ...styles.mainText, color: '#6366f1', textDecoration: 'underline' }}
-                    >
-                      Code Repository
-                    </Link>
-                  )}
-                </View>
-              ))}
-            </View>
-          )}
-
-          {credentials.length > 0 && (
-            <View style={styles.mainSection}>
-              <Text style={styles.mainSectionTitle}>Credentials</Text>
-              {credentials.map((cred, i) => (
-                <View
-                  key={cred.id || i}
-                  style={{ marginBottom: i < credentials.length - 1 ? 8 : 0 }}
-                >
-                  <Text style={styles.mainRole}>{cred.certificateName}</Text>
-                  {cred.issuer && <Text style={styles.mainCompany}>{cred.issuer}</Text>}
-                  {(cred.dateIssued || cred.expirationDate) && (
-                    <Text style={styles.mainDate}>
-                      {cred.dateIssued && formatDateRange(cred.dateIssued, cred.expirationDate, false)}
-                    </Text>
-                  )}
-                  {cred.credentialId && (
-                    <Text style={styles.mainText}>ID: {cred.credentialId}</Text>
-                  )}
-                  {cred.volunteerWork && (
-                    <Text style={styles.mainText}>Volunteer: {cred.volunteerWork}</Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
+                <Text style={{ fontSize: 9, color: colors.gray, marginBottom: 2 }}>{pr.role}</Text>
+                <Text style={styles.entryDesc}>{stripHtml(pr.description)}</Text>
+              </View>
+            ))}
+          </View>
+        )}
       </Page>
     </Document>
   );

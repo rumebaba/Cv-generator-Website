@@ -40,12 +40,15 @@ export const AdminPage: React.FC = () => {
       const snapshot = await getDocs(q);
       const records: ClientRecord[] = snapshot.docs.map((doc) => {
         const d = doc.data();
-        const personalData = d.personalData as { fullName?: string; email?: string } | undefined;
+        const personalData = (d.personalData || d.pd || d.data) as { fullName?: string; email?: string } | undefined;
+        const fullName = personalData?.fullName || (d.fullName as string | undefined) || 'Unknown';
+        const email = personalData?.email || (d.email as string | undefined) || '';
+        const createdAt = d.createdAt?.toDate?.() ?? new Date(d.createdAt as string);
         return {
           id: doc.id,
-          name: personalData?.fullName || 'Unknown',
-          email: personalData?.email || '',
-          createdAt: d.createdAt?.toDate?.() ?? new Date(),
+          name: fullName,
+          email,
+          createdAt,
           pdfUrl: d.pdfUrl as string | undefined,
           template: d.template as string | undefined,
         };
@@ -53,6 +56,7 @@ export const AdminPage: React.FC = () => {
       setClients(records);
     } catch (err) {
       console.error('Failed to fetch clients:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load clients');
     }
   }, []);
 
@@ -73,6 +77,7 @@ export const AdminPage: React.FC = () => {
       setMessages(records);
     } catch (err) {
       console.error('Failed to fetch messages:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load messages');
     }
   }, []);
 

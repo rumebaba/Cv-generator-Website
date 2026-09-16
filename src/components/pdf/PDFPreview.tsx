@@ -2,9 +2,9 @@ import { PDFViewer, pdf } from '@react-pdf/renderer';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import type { TemplateId } from '../../hooks/useTemplate';
+import { generateDocxBlob } from '../../services/generateDocx';
 import type { FormState } from '../../types/form';
 import { Button } from '../common/Button';
-import { generateDocxBlob } from '../../services/generateDocx';
 
 import CVTemplate from './CVTemplate';
 import CVTemplateCompact from './CVTemplateCompact';
@@ -52,8 +52,6 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
   const pdfUrlRef = useRef<string | null>(null);
-  const formStateRef = useRef(formState);
-  formStateRef.current = formState;
 
   const TemplateComponent = templateMap[template];
 
@@ -79,7 +77,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
     setError(null);
     setPdfBlob(null);
     try {
-      const blob = await pdf(<TemplateComponent formState={formStateRef.current} />).toBlob();
+      const blob = await pdf(<TemplateComponent formState={formState} />).toBlob();
       if (mountedRef.current) {
         setPdfBlob(blob);
       }
@@ -93,7 +91,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
         setLoading(false);
       }
     }
-  }, [TemplateComponent, isOpen]);
+  }, [TemplateComponent, isOpen, formState]);
 
   useEffect(() => {
     generatePDF();
@@ -112,11 +110,11 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   const handleDownloadDocx = async () => {
     setDownloadingDocx(true);
     try {
-      const blob = await generateDocxBlob(formStateRef.current.data);
+      const blob = await generateDocxBlob(formState.data);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${formStateRef.current.data.personalData.fullName.replace(/\s+/g, '_') || 'cv'}.docx`;
+      a.download = `${formState.data.personalData.fullName.replace(/\s+/g, '_') || 'cv'}.docx`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -182,16 +180,16 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
           ) : error ? (
             <div className="flex h-full items-center justify-center text-red-500 dark:text-red-400">
               <div className="text-center">
-                <p className="text-lg font-semibold mb-2">Failed to generate PDF</p>
+                <p className="mb-2 text-lg font-semibold">Failed to generate PDF</p>
                 <p className="text-sm text-slate-500 dark:text-slate-400">{error}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                   Check the browser console for details.
                 </p>
               </div>
             </div>
           ) : pdfBlob ? (
             <PDFViewer width="100%" height="100%" showToolbar={false}>
-              <TemplateComponent formState={formStateRef.current} />
+              <TemplateComponent formState={formState} />
             </PDFViewer>
           ) : (
             <div className="flex h-full items-center justify-center text-slate-500 dark:text-slate-400">

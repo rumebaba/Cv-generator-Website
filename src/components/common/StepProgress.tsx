@@ -47,7 +47,7 @@ export const StepProgress: React.FC<StepProgressProps> = ({
                   <button
                     type="button"
                     onClick={() => navigate(step.href)}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer hover:scale-110 ${
+                    className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 hover:scale-110 ${
                       isCompleted
                         ? 'border-2 border-green-500 bg-green-500 text-white hover:bg-green-600'
                         : isCurrent
@@ -81,7 +81,7 @@ export const StepProgress: React.FC<StepProgressProps> = ({
                     <button
                       type="button"
                       onClick={() => navigate(step.href)}
-                      className={`ml-2 hidden text-sm font-medium transition-colors sm:block cursor-pointer hover:underline ${
+                      className={`ml-2 hidden cursor-pointer text-sm font-medium transition-colors hover:underline sm:block ${
                         isCompleted || isCurrent
                           ? 'text-slate-900 dark:text-white'
                           : 'text-slate-500 dark:text-slate-400'

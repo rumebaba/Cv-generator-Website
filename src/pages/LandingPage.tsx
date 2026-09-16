@@ -44,8 +44,7 @@ const features = [
       </svg>
     ),
     title: 'Smart Suggestions',
-    description:
-      'Get content recommendations and phrasing tips to strengthen your CV.',
+    description: 'Get content recommendations and phrasing tips to strengthen your CV.',
   },
   {
     icon: (
@@ -107,8 +106,7 @@ const features = [
       </svg>
     ),
     title: 'Multi-Format Export',
-    description:
-      'Download your CV as PDF or DOCX. Perfect for email, job boards, and print.',
+    description: 'Download your CV as PDF or DOCX. Perfect for email, job boards, and print.',
   },
   {
     icon: (
@@ -128,8 +126,7 @@ const features = [
       </svg>
     ),
     title: 'Auto-Save',
-    description:
-      'Your progress is automatically saved as you type. Never lose your work.',
+    description: 'Your progress is automatically saved as you type. Never lose your work.',
   },
 ];
 
@@ -461,7 +458,9 @@ export const LandingPage: React.FC = () => {
             <span className="text-xl font-bold text-slate-300 dark:text-slate-600">React</span>
             <span className="text-xl font-bold text-slate-300 dark:text-slate-600">TypeScript</span>
             <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Firebase</span>
-            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Tailwind CSS</span>
+            <span className="text-xl font-bold text-slate-300 dark:text-slate-600">
+              Tailwind CSS
+            </span>
             <span className="text-xl font-bold text-slate-300 dark:text-slate-600">Vercel</span>
           </div>
         </div>
@@ -470,7 +469,13 @@ export const LandingPage: React.FC = () => {
       {/* Creator Credit */}
       <section className="bg-slate-50 px-4 py-8 text-center dark:bg-slate-900">
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Created by <Link to="/about" className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">Rumman Hamid</Link>
+          Created by{' '}
+          <Link
+            to="/about"
+            className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+          >
+            Rumman Hamid
+          </Link>
         </p>
       </section>
     </div>

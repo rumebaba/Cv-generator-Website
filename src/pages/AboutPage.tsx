@@ -19,10 +19,12 @@ export const AboutPage: React.FC = () => (
         </div>
       </div>
 
-      <div className="prose prose-slate mt-10 max-w-none dark:prose-invert">
+      <div className="prose prose-slate dark:prose-invert mt-10 max-w-none">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">About This Project</h2>
         <p className="text-slate-600 dark:text-slate-400">
-          CV Generator was built by Rumman Hamid as a passion project to help job seekers create professional, ATS-friendly resumes in minutes. The platform combines modern design templates with an intuitive step-by-step builder.
+          CV Generator was built by Rumman Hamid as a passion project to help job seekers create
+          professional, ATS-friendly resumes in minutes. The platform combines modern design
+          templates with an intuitive step-by-step builder.
         </p>
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">What It Offers</h2>
@@ -48,13 +50,23 @@ export const AboutPage: React.FC = () => (
 
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Ownership</h2>
         <p className="text-slate-600 dark:text-slate-400">
-          This website is created and owned by <strong className="text-slate-900 dark:text-white">Rumman Hamid</strong>. All rights reserved.未经授权，禁止复制或分发本项目的任何部分。
+          This website is created and owned by{' '}
+          <strong className="text-slate-900 dark:text-white">Rumman Hamid</strong>. All rights
+          reserved.未经授权，禁止复制或分发本项目的任何部分。
         </p>
       </div>
 
-      <Link to="/" className="mt-8 inline-flex items-center text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+      <Link
+        to="/"
+        className="mt-8 inline-flex items-center text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+      >
         <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
         </svg>
         Back to Home
       </Link>

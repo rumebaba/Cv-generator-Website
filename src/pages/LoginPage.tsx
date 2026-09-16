@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/common/Button';
 import { Card, CardHeader, CardContent } from '../components/common/Card';
 import { Input } from '../components/common/Input';
+import { useAuth } from '../contexts/AuthContext';
 
 export const LoginPage: React.FC = () => {
   const { signIn } = useAuth();
@@ -84,12 +84,7 @@ export const LoginPage: React.FC = () => {
               autoComplete="current-password"
             />
 
-            <Button
-              type="submit"
-              variant="primary"
-              className="w-full"
-              disabled={submitting}
-            >
+            <Button type="submit" variant="primary" className="w-full" disabled={submitting}>
               {submitting ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>

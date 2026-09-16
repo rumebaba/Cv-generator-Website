@@ -1,6 +1,7 @@
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
 import { db } from '../lib/firebase';
 
 export const ContactPage: React.FC = () => {
@@ -42,14 +43,29 @@ export const ContactPage: React.FC = () => {
 
         {submitted ? (
           <div className="mt-8 rounded-lg border border-green-200 bg-green-50 p-8 text-center dark:border-green-800 dark:bg-green-900/20">
-            <svg className="mx-auto h-12 w-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <svg
+              className="mx-auto h-12 w-12 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
-            <h3 className="mt-4 text-lg font-semibold text-green-800 dark:text-green-400">Message sent!</h3>
+            <h3 className="mt-4 text-lg font-semibold text-green-800 dark:text-green-400">
+              Message sent!
+            </h3>
             <p className="mt-2 text-green-700 dark:text-green-300">
               Thank you for reaching out. We'll get back to you soon.
             </p>
-            <Link to="/" className="mt-6 inline-block text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+            <Link
+              to="/"
+              className="mt-6 inline-block text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+            >
               Back to Home
             </Link>
           </div>
@@ -61,7 +77,9 @@ export const ContactPage: React.FC = () => {
               </div>
             )}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Name</label>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Name
+              </label>
               <input
                 type="text"
                 required
@@ -72,7 +90,9 @@ export const ContactPage: React.FC = () => {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Email
+              </label>
               <input
                 type="email"
                 required
@@ -83,7 +103,9 @@ export const ContactPage: React.FC = () => {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Message</label>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Message
+              </label>
               <textarea
                 rows={5}
                 required
@@ -103,9 +125,17 @@ export const ContactPage: React.FC = () => {
           </form>
         )}
 
-        <Link to="/" className="mt-8 inline-flex items-center text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+        <Link
+          to="/"
+          className="mt-8 inline-flex items-center text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+        >
           <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
           </svg>
           Back to Home
         </Link>

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import { Layout } from '../components/layout/Layout';
 import { FormLayout } from '../components/layout/Layout';
-import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import { TemplateProvider } from '../hooks/useTemplate';
 import { AboutPage } from '../pages/AboutPage';
 import { AdminPage } from '../pages/AdminPage';
@@ -12,10 +12,11 @@ import { FeaturesPage } from '../pages/FeaturesPage';
 import { FormPage } from '../pages/FormPage';
 import { LandingPage } from '../pages/LandingPage';
 import { LoginPage } from '../pages/LoginPage';
+import MyCVs from '../pages/MyCVs';
 import { NotFoundPage } from '../pages/NotFoundPage';
+import { PrivacyPage, TermsPage, CookiePolicyPage } from '../pages/PolicyPages';
 import { PortfolioPage } from '../pages/PortfolioPage';
 import { PricingPage } from '../pages/PricingPage';
-import { PrivacyPage, TermsPage, CookiePolicyPage } from '../pages/PolicyPages';
 import { TemplatesPage } from '../pages/TemplatesPage';
 
 export const AppRoutes: React.FC = () => {
@@ -33,7 +34,14 @@ export const AppRoutes: React.FC = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/templates" element={<TemplateProvider><TemplatesPage /></TemplateProvider>} />
+        <Route
+          path="/templates"
+          element={
+            <TemplateProvider>
+              <TemplatesPage />
+            </TemplateProvider>
+          }
+        />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/features" element={<FeaturesPage />} />
@@ -46,10 +54,9 @@ export const AppRoutes: React.FC = () => {
           <Route path="step/:step" element={<FormPage />} />
           <Route index element={<Navigate to="/form/step/1" replace />} />
         </Route>
+        <Route path="/my-cvs" element={<MyCVs />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
-
-export default AppRoutes;

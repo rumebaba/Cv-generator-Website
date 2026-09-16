@@ -2,8 +2,8 @@ import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/render
 import React from 'react';
 
 import type { FormState } from '../../types/form';
-import { stripHtml } from '../../utils/stripHtml';
 import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
+import { stripHtml } from '../../utils/stripHtml';
 
 const colors = { primary: '#2563eb', dark: '#1e293b', gray: '#64748b', light: '#f1f5f9' };
 
@@ -15,13 +15,32 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 10, textAlign: 'center', color: colors.gray, marginBottom: 8 },
   contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, fontSize: 9, color: colors.gray },
   summary: { marginBottom: 16, lineHeight: 1.5, color: colors.gray },
-  sectionTitle: { fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary, borderBottomWidth: 1, borderBottomColor: colors.primary, paddingBottom: 3, marginBottom: 8, marginTop: 12, textTransform: 'uppercase', letterSpacing: 1 },
+  sectionTitle: {
+    fontSize: 12,
+    fontFamily: 'Helvetica-Bold',
+    color: colors.primary,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.primary,
+    paddingBottom: 3,
+    marginBottom: 8,
+    marginTop: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
   entryHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
   entryTitle: { fontFamily: 'Helvetica-Bold', fontSize: 11 },
   entrySubtitle: { fontSize: 9, color: colors.gray },
   entryDesc: { lineHeight: 1.5, marginBottom: 8, color: colors.dark },
   skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  skillChip: { backgroundColor: colors.light, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4, fontSize: 9, color: colors.dark, marginBottom: 2 },
+  skillChip: {
+    backgroundColor: colors.light,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
+    fontSize: 9,
+    color: colors.dark,
+    marginBottom: 2,
+  },
   projectName: { fontFamily: 'Helvetica-Bold', fontSize: 10 },
 });
 
@@ -31,7 +50,11 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
 
   const formatEnd = (current: boolean, endDate: string) => {
     if (current) return 'Present';
-    if (endDate) return new Date(endDate + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    if (endDate)
+      return new Date(endDate + '-01').toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      });
     return 'Present';
   };
 
@@ -47,7 +70,13 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
           <View style={styles.contactRow}>
             {pd.email && <Text>{pd.email}</Text>}
             {pd.phone && <Text>{pd.phone}</Text>}
-            {(pd.city || pd.country) && <Text>{pd.city}{pd.city && pd.country ? ', ' : ''}{pd.country}</Text>}
+            {(pd.city || pd.country) && (
+              <Text>
+                {pd.city}
+                {pd.city && pd.country ? ', ' : ''}
+                {pd.country}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -61,8 +90,17 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
             {experiences.map((exp) => (
               <View key={exp.id} style={{ marginBottom: 8 }}>
                 <View style={styles.entryHeader}>
-                  <Text style={styles.entryTitle}>{exp.position} — {exp.company}</Text>
-                  <Text style={styles.entrySubtitle}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate ? formatEnd(exp.current, exp.endDate) : ''}</Text>
+                  <Text style={styles.entryTitle}>
+                    {exp.position} — {exp.company}
+                  </Text>
+                  <Text style={styles.entrySubtitle}>
+                    {exp.startDate} —{' '}
+                    {exp.current
+                      ? 'Present'
+                      : exp.endDate
+                        ? formatEnd(exp.current, exp.endDate)
+                        : ''}
+                  </Text>
                 </View>
                 <Text style={styles.entryDesc}>{stripHtml(exp.description)}</Text>
               </View>
@@ -76,10 +114,23 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
             {educations.map((edu) => (
               <View key={edu.id} style={{ marginBottom: 6 }}>
                 <View style={styles.entryHeader}>
-                  <Text style={styles.entryTitle}>{getDegreeLabel(edu.degree)} {edu.fieldOfStudy} — {edu.institution}</Text>
-                  <Text style={styles.entrySubtitle}>{edu.startDate} — {edu.current ? 'Present' : edu.endDate ? formatEnd(edu.current, edu.endDate) : ''}</Text>
+                  <Text style={styles.entryTitle}>
+                    {getDegreeLabel(edu.degree)} {edu.fieldOfStudy} — {edu.institution}
+                  </Text>
+                  <Text style={styles.entrySubtitle}>
+                    {edu.startDate} —{' '}
+                    {edu.current
+                      ? 'Present'
+                      : edu.endDate
+                        ? formatEnd(edu.current, edu.endDate)
+                        : ''}
+                  </Text>
                 </View>
-                {edu.gpa && edu.gpa.trim() && <Text style={styles.entrySubtitle}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
+                {edu.gpa && edu.gpa.trim() && (
+                  <Text style={styles.entrySubtitle}>
+                    {getResultLabel(edu.resultType, edu.gpa)}
+                  </Text>
+                )}
               </View>
             ))}
           </View>
@@ -91,11 +142,13 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
             <View style={styles.skillsRow}>
               {skills.map((skill) => (
                 <React.Fragment key={skill.id}>
-                  {skill.technicalSkills && skill.technicalSkills.trim() && (
+                  {skill.technicalSkills &&
+                    skill.technicalSkills.trim() &&
                     skill.technicalSkills.split(',').map((s, i) => (
-                      <Text key={i} style={styles.skillChip}>{s.trim()}</Text>
-                    ))
-                  )}
+                      <Text key={i} style={styles.skillChip}>
+                        {s.trim()}
+                      </Text>
+                    ))}
                 </React.Fragment>
               ))}
             </View>

@@ -2,7 +2,7 @@ import { stripHtml } from './stripHtml';
 
 const degreeLabels: Record<string, string> = {
   high_school: 'High School Diploma',
-  associate: "Associate Degree",
+  associate: 'Associate Degree',
   bachelor: "Bachelor's Degree",
   master: "Master's Degree",
   phd: 'PhD / Doctorate',

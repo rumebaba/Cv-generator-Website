@@ -33,51 +33,10 @@ const steps = [
   { number: 9, label: 'References', component: Step9References },
 ];
 
-const stepComponents: Record<number, React.ComponentType> = {
-  1: Step1PersonalData,
-  2: Step2Introduction,
-  3: Step3Education,
-  4: Step4Experience,
-  5: Step5MedicalScience,
-  6: Step6Projects,
-  7: Step7Skills,
-  8: Step8Credentials,
-  9: Step9References,
-};
-
-const ComingSoonStep: React.FC<{ stepNumber: number; stepLabel: string }> = ({
-  stepNumber,
-  stepLabel,
-}) => (
-  <Card variant="default" padding="lg" className="py-16 text-center">
-    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/30">
-      <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{stepNumber}</span>
-    </div>
-    <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">{stepLabel}</h3>
-    <p className="mx-auto mb-6 max-w-md text-slate-600 dark:text-slate-400">
-      This step is coming soon! We're building out the complete CV builder experience.
-    </p>
-    <div className="flex items-center justify-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-      <span className="flex items-center gap-1">
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-          />
-        </svg>
-        Under Development
-      </span>
-    </div>
-  </Card>
-);
+const stepComponents: Record<number, React.ComponentType> = steps.reduce((acc, step) => {
+  acc[step.number] = step.component;
+  return acc;
+}, {} as Record<number, React.ComponentType>);
 
 const FormPageInner: React.FC = () => {
   const { step } = useParams<{ step: string }>();
@@ -199,11 +158,7 @@ const FormPageInner: React.FC = () => {
       )}
 
       <div className="animate-fade-in">
-        {StepComponent ? (
-          <StepComponent />
-        ) : (
-          <ComingSoonStep stepNumber={validStep} stepLabel={currentStepData?.label || 'Step'} />
-        )}
+        <StepComponent />
       </div>
 
       {isLastStep && (

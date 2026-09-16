@@ -27,7 +27,11 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="mb-4 flex items-center gap-2" aria-label="CV Generator Home">
-              <svg className="h-8 w-8 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="h-8 w-8 text-indigo-600 dark:text-indigo-400"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
               <span className="text-xl font-bold text-slate-900 dark:text-white">CV Generator</span>
@@ -42,7 +46,10 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.to} className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">
+                  <Link
+                    to={link.to}
+                    className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -55,7 +62,10 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.to} className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">
+                  <Link
+                    to={link.to}
+                    className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -68,7 +78,10 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.to} className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">
+                  <Link
+                    to={link.to}
+                    className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+                  >
                     {link.label}
                   </Link>
                 </li>

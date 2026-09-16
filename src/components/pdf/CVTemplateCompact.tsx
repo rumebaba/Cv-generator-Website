@@ -2,10 +2,9 @@ import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/render
 import React from 'react';
 
 import type { FormState } from '../../types/form';
+import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHelpers';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
-import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHelpers';
-
 
 interface Props {
   formState: FormState;
@@ -13,12 +12,28 @@ interface Props {
 
 const s = StyleSheet.create({
   page: { padding: 30, fontFamily: 'Helvetica', fontSize: 8.5, color: '#222', lineHeight: 1.4 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '2 solid #222', paddingBottom: 8, marginBottom: 12 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    borderBottom: '2 solid #222',
+    paddingBottom: 8,
+    marginBottom: 12,
+  },
   photo: { width: 45, height: 45, borderRadius: 23 },
   name: { fontSize: 18, fontWeight: 'bold', color: '#222' },
   contactBlock: { textAlign: 'right' as const, fontSize: 7.5, color: '#555' },
   section: { marginBottom: 10 },
-  sectionTitle: { fontSize: 9, fontWeight: 'bold', color: '#222', textTransform: 'uppercase' as const, backgroundColor: '#f5f5f5', paddingHorizontal: 6, paddingVertical: 3, marginBottom: 6 },
+  sectionTitle: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#222',
+    textTransform: 'uppercase' as const,
+    backgroundColor: '#f5f5f5',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    marginBottom: 6,
+  },
   row: { flexDirection: 'row', marginBottom: 6 },
   rowLeft: { flex: 1 },
   rowRight: { width: 90, textAlign: 'right' as const, fontSize: 7.5, color: '#777' },
@@ -27,16 +42,31 @@ const s = StyleSheet.create({
   text: { fontSize: 8.5, color: '#333', marginTop: 2 },
   textSmall: { fontSize: 7.5, color: '#666', marginTop: 1 },
   inline: { flexDirection: 'row', flexWrap: 'wrap', gap: 3 },
-  pill: { backgroundColor: '#eee', fontSize: 7.5, paddingHorizontal: 5, paddingVertical: 1.5, borderRadius: 2 },
+  pill: {
+    backgroundColor: '#eee',
+    fontSize: 7.5,
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    borderRadius: 2,
+  },
   compactEntry: { marginBottom: 6 },
   bulletRow: { flexDirection: 'row', marginBottom: 2 },
   bullet: { width: 10, fontSize: 8, color: '#555' },
   bulletText: { flex: 1, fontSize: 8.5, color: '#333' },
 });
 
-export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
+const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
   const { data } = formState;
-  const { personalData: pd, introduction, experiences, educations, projects, skills, credentials, references } = data;
+  const {
+    personalData: pd,
+    introduction,
+    experiences,
+    educations,
+    projects,
+    skills,
+    credentials,
+    references,
+  } = data;
 
   return (
     <Document>
@@ -44,15 +74,18 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
         {/* Header */}
         <View style={s.header}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            {pd.profilePhotoUrl && (
-              <Image style={s.photo} src={pd.profilePhotoUrl} />
-            )}
+            {pd.profilePhotoUrl && <Image style={s.photo} src={pd.profilePhotoUrl} />}
             <Text style={s.name}>{pd.fullName}</Text>
           </View>
           <View style={s.contactBlock}>
             {pd.email && <Text>{pd.email}</Text>}
             {pd.phone && <Text>{pd.phone}</Text>}
-            {pd.city && <Text>{pd.city}{pd.country ? `, ${pd.country}` : ''}</Text>}
+            {pd.city && (
+              <Text>
+                {pd.city}
+                {pd.country ? `, ${pd.country}` : ''}
+              </Text>
+            )}
             {pd.linkedin && <Text>{pd.linkedin}</Text>}
           </View>
         </View>
@@ -73,18 +106,24 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
               <View key={exp.id} style={s.compactEntry}>
                 <View style={s.row}>
                   <View style={s.rowLeft}>
-                    <Text style={s.title}>{exp.position}{exp.company ? ` — ${exp.company}` : ''}</Text>
+                    <Text style={s.title}>
+                      {exp.position}
+                      {exp.company ? ` — ${exp.company}` : ''}
+                    </Text>
                     {exp.location && <Text style={s.sub}>{exp.location}</Text>}
                   </View>
-                  <Text style={s.rowRight}>{formatDateRange(exp.startDate, exp.endDate, exp.current)}</Text>
+                  <Text style={s.rowRight}>
+                    {formatDateRange(exp.startDate, exp.endDate, exp.current)}
+                  </Text>
                 </View>
                 {exp.description && <Text style={s.text}>{stripHtml(exp.description)}</Text>}
-                {exp.achievements && htmlToBullets(exp.achievements).map((b, j) => (
-                  <View key={j} style={s.bulletRow}>
-                    <Text style={s.bullet}>•</Text>
-                    <Text style={s.bulletText}>{b}</Text>
-                  </View>
-                ))}
+                {exp.achievements &&
+                  htmlToBullets(exp.achievements).map((b, j) => (
+                    <View key={j} style={s.bulletRow}>
+                      <Text style={s.bullet}>•</Text>
+                      <Text style={s.bulletText}>{b}</Text>
+                    </View>
+                  ))}
               </View>
             ))}
           </View>
@@ -98,11 +137,18 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
               <View key={edu.id} style={s.compactEntry}>
                 <View style={s.row}>
                   <View style={s.rowLeft}>
-                    <Text style={s.title}>{getDegreeLabel(edu.degree)}{edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''} — {edu.institution}</Text>
+                    <Text style={s.title}>
+                      {getDegreeLabel(edu.degree)}
+                      {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''} — {edu.institution}
+                    </Text>
                   </View>
-                  <Text style={s.rowRight}>{formatDateRange(edu.startDate, edu.endDate, edu.current)}</Text>
+                  <Text style={s.rowRight}>
+                    {formatDateRange(edu.startDate, edu.endDate, edu.current)}
+                  </Text>
                 </View>
-                {edu.gpa && <Text style={s.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>}
+                {edu.gpa && (
+                  <Text style={s.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>
+                )}
               </View>
             ))}
           </View>
@@ -113,11 +159,15 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
           <View style={s.section}>
             <Text style={s.sectionTitle}>Skills</Text>
             <View style={s.inline}>
-              {skills.filter((sk) => sk.technicalSkills).map((sk) =>
-                sk.technicalSkills.split(',').map((skill, i) => (
-                  <Text key={`${sk.id}-${i}`} style={s.pill}>{skill.trim()}</Text>
-                ))
-              )}
+              {skills
+                .filter((sk) => sk.technicalSkills)
+                .map((sk) =>
+                  sk.technicalSkills.split(',').map((skill, i) => (
+                    <Text key={`${sk.id}-${i}`} style={s.pill}>
+                      {skill.trim()}
+                    </Text>
+                  ))
+                )}
             </View>
           </View>
         )}
@@ -130,9 +180,14 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
               <View key={proj.id} style={s.compactEntry}>
                 <View style={s.row}>
                   <View style={s.rowLeft}>
-                    <Text style={s.title}>{proj.name}{proj.role ? ` (${proj.role})` : ''}</Text>
+                    <Text style={s.title}>
+                      {proj.name}
+                      {proj.role ? ` (${proj.role})` : ''}
+                    </Text>
                   </View>
-                  <Text style={s.rowRight}>{formatDateRange(proj.startDate, proj.endDate, proj.current)}</Text>
+                  <Text style={s.rowRight}>
+                    {formatDateRange(proj.startDate, proj.endDate, proj.current)}
+                  </Text>
                 </View>
                 {proj.description && <Text style={s.text}>{stripHtml(proj.description)}</Text>}
               </View>
@@ -145,9 +200,14 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
           <View style={s.section}>
             <Text style={s.sectionTitle}>Certifications</Text>
             <View style={s.inline}>
-              {credentials.filter((c) => c.certificateName).map((cred) => (
-                <Text key={cred.id} style={s.pill}>{cred.certificateName} ({cred.issuer}){cred.dateIssued ? ` - ${cred.dateIssued}` : ''}</Text>
-              ))}
+              {credentials
+                .filter((c) => c.certificateName)
+                .map((cred) => (
+                  <Text key={cred.id} style={s.pill}>
+                    {cred.certificateName} ({cred.issuer})
+                    {cred.dateIssued ? ` - ${cred.dateIssued}` : ''}
+                  </Text>
+                ))}
             </View>
           </View>
         )}
@@ -157,7 +217,10 @@ export const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
           <View style={s.section}>
             <Text style={s.sectionTitle}>Languages</Text>
             <Text style={s.text}>
-              {skills.filter((sk) => sk.spokenLanguages).map((sk) => sk.spokenLanguages).join(', ')}
+              {skills
+                .filter((sk) => sk.spokenLanguages)
+                .map((sk) => sk.spokenLanguages)
+                .join(', ')}
             </Text>
           </View>
         )}

@@ -1,5 +1,14 @@
 import type { ReactNode } from 'react';
-import React, { createContext, useContext, useReducer, useCallback, useMemo, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
+
+import { initialFormState } from '../types/form';
 
 import type {
   FormState,
@@ -468,8 +477,6 @@ interface FormContextValue extends FormState {
 
 const FormContext = createContext<FormContextValue | null>(null);
 
-import { initialFormState } from '../types/form';
-
 const STORAGE_KEY = 'cv-form-data';
 
 function loadSavedState(): FormState {
@@ -477,9 +484,16 @@ function loadSavedState(): FormState {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved) as FormState;
-      return { ...initialFormState, data: parsed.data, completedSteps: parsed.completedSteps, currentStep: parsed.currentStep };
+      return {
+        ...initialFormState,
+        data: parsed.data,
+        completedSteps: parsed.completedSteps,
+        currentStep: parsed.currentStep,
+      };
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return initialFormState;
 }
 
@@ -488,8 +502,17 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: state.data, completedSteps: state.completedSteps, currentStep: state.currentStep }));
-    } catch { /* ignore */ }
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          data: state.data,
+          completedSteps: state.completedSteps,
+          currentStep: state.currentStep,
+        })
+      );
+    } catch {
+      /* ignore */
+    }
   }, [state.data, state.completedSteps, state.currentStep]);
 
   const actions = useMemo<FormContextValue>(

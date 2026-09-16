@@ -234,24 +234,33 @@ export const Step3Education: React.FC = () => {
                   />
                   <Input
                     label={
-                      formData.resultType === 'cgpa' ? 'CGPA' :
-                      formData.resultType === 'percentage' ? 'Percentage (%)' :
-                      formData.resultType === 'marks' ? 'Marks' :
-                      'GPA / Grade'
+                      formData.resultType === 'cgpa'
+                        ? 'CGPA'
+                        : formData.resultType === 'percentage'
+                          ? 'Percentage (%)'
+                          : formData.resultType === 'marks'
+                            ? 'Marks'
+                            : 'GPA / Grade'
                     }
                     value={formData.gpa}
                     onChange={(e) => handleInputChange('gpa', e.target.value)}
                     placeholder={
-                      formData.resultType === 'cgpa' ? 'e.g., 3.8 / 4.0' :
-                      formData.resultType === 'percentage' ? 'e.g., 85' :
-                      formData.resultType === 'marks' ? 'e.g., 450 / 500' :
-                      'e.g., 3.8/4.0, 85%, 450/500'
+                      formData.resultType === 'cgpa'
+                        ? 'e.g., 3.8 / 4.0'
+                        : formData.resultType === 'percentage'
+                          ? 'e.g., 85'
+                          : formData.resultType === 'marks'
+                            ? 'e.g., 450 / 500'
+                            : 'e.g., 3.8/4.0, 85%, 450/500'
                     }
                     helperText={
-                      formData.resultType === 'cgpa' ? 'Enter your CGPA with scale (e.g., 3.8/4.0)' :
-                      formData.resultType === 'percentage' ? 'Enter percentage as a number (e.g., 85)' :
-                      formData.resultType === 'marks' ? 'Enter marks with total (e.g., 450/500)' :
-                      'Select a result type first, or enter freely'
+                      formData.resultType === 'cgpa'
+                        ? 'Enter your CGPA with scale (e.g., 3.8/4.0)'
+                        : formData.resultType === 'percentage'
+                          ? 'Enter percentage as a number (e.g., 85)'
+                          : formData.resultType === 'marks'
+                            ? 'Enter marks with total (e.g., 450/500)'
+                            : 'Select a result type first, or enter freely'
                     }
                   />
                   <div className="flex flex-col justify-end">
@@ -259,14 +268,18 @@ export const Step3Education: React.FC = () => {
                       <input
                         type="checkbox"
                         checked={formData.resultExpected}
-                        onChange={(e) => handleInputChange('resultExpected', String(e.target.checked))}
+                        onChange={(e) =>
+                          handleInputChange('resultExpected', String(e.target.checked))
+                        }
                         className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                       />
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Result Expected
                       </span>
                     </label>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Check if your result is pending</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      Check if your result is pending
+                    </p>
                   </div>
                 </div>
 
@@ -470,7 +483,14 @@ export const Step3Education: React.FC = () => {
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                               />
                             </svg>
-                            {edu.resultType === 'cgpa' ? 'CGPA' : edu.resultType === 'percentage' ? 'Percentage' : edu.resultType === 'marks' ? 'Marks' : 'GPA'}: {edu.gpa}
+                            {edu.resultType === 'cgpa'
+                              ? 'CGPA'
+                              : edu.resultType === 'percentage'
+                                ? 'Percentage'
+                                : edu.resultType === 'marks'
+                                  ? 'Marks'
+                                  : 'GPA'}
+                            : {edu.gpa}
                             {edu.resultExpected && (
                               <span className="ml-1 rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
                                 Expected

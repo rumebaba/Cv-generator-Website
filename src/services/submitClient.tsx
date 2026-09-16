@@ -1,5 +1,13 @@
 import { pdf } from '@react-pdf/renderer';
-import { collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  serverTimestamp,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import CVTemplate from '../components/pdf/CVTemplate';
@@ -26,8 +34,8 @@ function serializeFormData(data: FormData): Record<string, unknown> {
   const raw = {
     personalData: data.personalData,
     introduction: data.introduction,
-    experiences: data.experiences,
     educations: data.educations,
+    experiences: data.experiences,
     medicalScience: data.medicalScience,
     projects: data.projects,
     skills: data.skills,
@@ -82,22 +90,32 @@ export interface SubmitClientResult {
   pdfUrl: string;
 }
 
+// NEW: Get user's CVs from Firestore
+export async function getUserCVs(userId: string): Promise<any[]> {
+  const cvsRef = collection(db, 'clients');
+  const q = query(cvsRef, where('userId', '==', userId), where('pdfUrl', '!=', ''));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
+
 export async function submitClient(
   formData: FormData,
-  template: TemplateId = 'classic'
+  template: TemplateId = 'classic',
+  userId: string
 ): Promise<SubmitClientResult> {
   const serialized = serializeFormData(formData);
 
   const docRef = await addDoc(collection(db, 'clients'), {
     ...serialized,
     template,
+    userId,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
 
   const pdfBlob = await generatePDFBlob(formData, template);
 
-  const fileName = `${formData.personalData.fullName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+  const fileName = `${formData.personalData.fullName.replace(/\s+/g, '_')}_${docRef.id}.pdf`;
   const storageRef = ref(storage, `cv-pdfs/${docRef.id}/${fileName}`);
   await uploadBytes(storageRef, pdfBlob);
 
@@ -108,6 +126,13 @@ export async function submitClient(
     pdfFileName: fileName,
     updatedAt: serverTimestamp(),
   });
+
+  // Also save userId to existing docs without it (migration)
+  const snapshot = await getDocs(query(collection(db, 'clients'), where('userId', '==', '')));
+  if (snapshot.size > 0) {
+    const migrationBatch = snapshot.docs.map((doc) => updateDoc(doc.ref, { userId }));
+    await Promise.all(migrationBatch);
+  }
 
   return { clientId: docRef.id, pdfUrl: downloadUrl };
 }

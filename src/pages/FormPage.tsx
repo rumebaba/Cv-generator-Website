@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
@@ -20,6 +20,8 @@ import { FormProvider, useForm } from '../hooks/useForm';
 import { TemplateProvider, useTemplate } from '../hooks/useTemplate';
 import { generateDocxBlob } from '../services/generateDocx';
 import { submitClient } from '../services/submitClient';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 const steps = [
   { number: 1, label: 'Personal Data', component: Step1PersonalData },
@@ -40,16 +42,51 @@ const stepComponents: Record<number, React.ComponentType> = steps.reduce((acc, s
 
 const FormPageInner: React.FC = () => {
   const { step } = useParams<{ step: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const form = useForm();
-  const { data, setSubmitting, isSubmitting } = form;
+  const { data, setSubmitting, isSubmitting, loadData } = form;
   const { selectedTemplate, setSelectedTemplate } = useTemplate();
   const { user } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [downloadingDocx, setDownloadingDocx] = useState(false);
   const [savedIndicator, setSavedIndicator] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
   const prevDataRef = useRef(data);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const cloudDocIdRef = useRef<string | null>(null);
+  const isResumingRef = useRef(false);
+
+  // Load draft data when resume parameter is present
+  useEffect(() => {
+    const resumeId = searchParams.get('resume');
+    if (resumeId && !isResumingRef.current) {
+      isResumingRef.current = true;
+      loadDraftData(resumeId);
+    }
+  }, [searchParams]);
+
+  const loadDraftData = async (docId: string) => {
+    try {
+      const docRef = doc(db, 'clients', docId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const draftData = docSnap.data();
+        // Load the draft data into the form
+        loadData(draftData as any);
+        cloudDocIdRef.current = docId;
+        // Set the template if saved
+        if (draftData.template) {
+          setSelectedTemplate(draftData.template);
+        }
+        // Navigate to step 1 to start editing
+        navigate('/form/step/1', { replace: true });
+      }
+    } catch (err) {
+      console.error('Failed to load draft:', err);
+    }
+  };
 
   // Auto-save indicator
   useEffect(() => {
@@ -60,6 +97,61 @@ const FormPageInner: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [data]);
+
+  // Auto-save to cloud (debounced)
+  useEffect(() => {
+    if (!user || !data.personalData.fullName?.trim()) return;
+
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      setAutoSaving(true);
+      try {
+        // Check if we have an existing cloud doc ID for this session
+        let docId = cloudDocIdRef.current;
+
+        const serialized = (await import('../services/submitClient')).serializeFormData(data);
+
+        if (docId) {
+          // Update existing document
+          const { updateDoc, doc } = await import('firebase/firestore');
+          const { db } = await import('../lib/firebase');
+          await updateDoc(doc(db, 'clients', docId), {
+            ...serialized,
+            template: selectedTemplate,
+            updatedAt: (await import('firebase/firestore')).serverTimestamp(),
+          });
+        } else {
+          // Create new document
+          const { addDoc, collection } = await import('firebase/firestore');
+          const { db } = await import('../lib/firebase');
+          const docRef = await addDoc(collection(db, 'clients'), {
+            ...serialized,
+            template: selectedTemplate,
+            userId: user.uid,
+            createdAt: (await import('firebase/firestore')).serverTimestamp(),
+            updatedAt: (await import('firebase/firestore')).serverTimestamp(),
+            isDraft: true,
+          });
+          docId = docRef.id;
+          cloudDocIdRef.current = docId;
+        }
+      } catch (err) {
+        console.error('Auto-save to cloud failed:', err);
+      } finally {
+        setAutoSaving(false);
+      }
+    }, 3000); // Debounce 3 seconds
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [data, selectedTemplate, user]);
 
   const currentStep = parseInt(step || '1', 10);
   const validStep = Math.max(1, Math.min(9, currentStep));
@@ -144,6 +236,15 @@ const FormPageInner: React.FC = () => {
                 />
               </svg>
               Saved
+            </span>
+          )}
+          {autoSaving && (
+            <span className="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400">
+              <svg className="h-4 w-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Saving draft...
             </span>
           )}
         </div>

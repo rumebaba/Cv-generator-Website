@@ -30,7 +30,7 @@ function stripEmptyArrays(obj: Record<string, unknown>): Record<string, unknown>
   return cleaned;
 }
 
-function serializeFormData(data: FormData): Record<string, unknown> {
+export function serializeFormData(data: FormData): Record<string, unknown> {
   const raw = {
     personalData: data.personalData,
     introduction: data.introduction,
@@ -90,10 +90,10 @@ export interface SubmitClientResult {
   pdfUrl: string;
 }
 
-// NEW: Get user's CVs from Firestore
+// NEW: Get user's CVs from Firestore (including drafts)
 export async function getUserCVs(userId: string): Promise<any[]> {
   const cvsRef = collection(db, 'clients');
-  const q = query(cvsRef, where('userId', '==', userId), where('pdfUrl', '!=', ''));
+  const q = query(cvsRef, where('userId', '==', userId));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }

@@ -481,7 +481,7 @@ const STORAGE_KEY = 'cv-form-data';
 
 function loadSavedState(): FormState {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved) as FormState;
       return {
@@ -502,7 +502,7 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     try {
-      localStorage.setItem(
+      sessionStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
           data: state.data,

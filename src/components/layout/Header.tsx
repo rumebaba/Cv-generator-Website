@@ -3,10 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { Button } from '../common/Button';
 import { DarkModeToggle } from '../common/DarkModeToggle';
+import { useAuth } from '../../contexts/AuthContext';
 
 export const Header: React.FC = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   const navItems = [
     { path: '/', label: 'Home' },
@@ -16,8 +18,18 @@ export const Header: React.FC = () => {
     { path: '/form', label: 'Build CV' },
   ];
 
+  const authNavItems = user ? [{ path: '/my-cvs', label: 'My CVs' }] : [];
+
   const isActive = (path: string) =>
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
+
+  if (loading) {
+    return (
+      <header className="fixed top-0 right-0 left-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/80">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16" />
+      </header>
+    );
+  }
 
   return (
     <header className="fixed top-0 right-0 left-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/80">
@@ -37,6 +49,19 @@ export const Header: React.FC = () => {
 
             <div className="hidden items-center gap-1 md:flex">
               {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive(item.path)
+                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {authNavItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -69,21 +94,11 @@ export const Header: React.FC = () => {
             >
               {mobileOpen ? (
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
             </button>
@@ -95,6 +110,20 @@ export const Header: React.FC = () => {
           <div className="border-t border-slate-200 py-4 md:hidden dark:border-slate-700">
             <div className="flex flex-col gap-1">
               {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileOpen(false)}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive(item.path)
+                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {authNavItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}

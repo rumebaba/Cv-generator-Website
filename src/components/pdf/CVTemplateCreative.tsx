@@ -86,7 +86,7 @@ const s = StyleSheet.create({
 });
 
 const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) => {
-  const { data } = formState;
+  const { data, selectedSections } = formState;
   const {
     personalData: pd,
     introduction,
@@ -97,6 +97,8 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
     credentials,
     medicalScience,
   } = data;
+
+  const shouldShow = (section: keyof typeof selectedSections) => selectedSections[section] !== false;
 
   return (
     <Document>
@@ -167,7 +169,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
 
         <View style={s.main}>
           {/* Summary */}
-          {introduction.professionalSummary && introduction.professionalSummary.trim() && (
+          {shouldShow('introduction') && introduction.professionalSummary && introduction.professionalSummary.trim() && (
             <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Professional Summary</Text>
               <Text style={s.text}>{stripHtml(introduction.professionalSummary)}</Text>
@@ -175,7 +177,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
           )}
 
           {/* Experience */}
-          {experiences.length > 0 && (
+          {shouldShow('experiences') && experiences.length > 0 && (
             <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Experience</Text>
               {experiences.map((exp) => (
@@ -247,7 +249,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
           )}
 
           {/* Projects */}
-          {projects.length > 0 && (
+          {shouldShow('projects') && projects.length > 0 && (
             <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Projects</Text>
               {projects.map((proj) => (
@@ -261,7 +263,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
           )}
 
           {/* Credentials */}
-          {credentials.length > 0 && credentials.some((c) => c.certificateName) && (
+          {shouldShow('credentials') && credentials.length > 0 && credentials.some((c) => c.certificateName) && (
             <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Certifications</Text>
               {credentials.map((cred) => (
@@ -289,7 +291,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
           )}
 
           {/* Languages */}
-          {skills.length > 0 && skills.some((sk) => sk.spokenLanguages) && (
+          {shouldShow('skills') && skills.length > 0 && skills.some((sk) => sk.spokenLanguages) && (
             <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Languages</Text>
               <Text style={s.text}>
@@ -302,7 +304,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
           )}
 
           {/* Medical & Science */}
-          {medicalScience.length > 0 && (
+          {shouldShow('medicalScience') && medicalScience.length > 0 && (
             <View>
               <Text style={s.sectionTitle}>Medical & Science</Text>
               {medicalScience.map((ms) => (

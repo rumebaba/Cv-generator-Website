@@ -14,6 +14,7 @@ import { Step6Projects } from '../components/forms/Step6Projects';
 import { Step7Skills } from '../components/forms/Step7Skills';
 import { Step8Credentials } from '../components/forms/Step8Credentials';
 import { Step9References } from '../components/forms/Step9References';
+import { Step10Review } from '../components/forms/Step10Review';
 import { PDFPreview } from '../components/pdf/PDFPreview';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -36,6 +37,7 @@ const steps = [
   { number: 7, label: 'Skills', component: Step7Skills },
   { number: 8, label: 'Credentials & Extras', component: Step8Credentials },
   { number: 9, label: 'References', component: Step9References },
+  { number: 10, label: 'Review & Customize', component: Step10Review },
 ];
 
 const stepComponents: Record<number, React.ComponentType> = steps.reduce(
@@ -172,7 +174,7 @@ const FormPageInner: React.FC = () => {
 
   const currentStepRaw = parseInt(step || '1', 10);
   const validStep: FormStep = (
-    Number.isFinite(currentStepRaw) && currentStepRaw >= 1 && currentStepRaw <= 9
+    Number.isFinite(currentStepRaw) && currentStepRaw >= 1 && currentStepRaw <= 10
       ? currentStepRaw
       : 1
   ) as FormStep;
@@ -183,11 +185,11 @@ const FormPageInner: React.FC = () => {
 
   const currentStepData = steps.find((s) => s.number === validStep);
   const isFirstStep = validStep === 1;
-  const isLastStep = validStep === 9;
+  const isLastStep = validStep === 10;
   const StepComponent = stepComponents[validStep] || null;
 
   const handleNext = () => {
-    if (validStep < 9) {
+    if (validStep < 10) {
       navigate(`/form/step/${validStep + 1}`);
     }
   };
@@ -323,7 +325,7 @@ const FormPageInner: React.FC = () => {
         <StepComponent />
       </div>
 
-      {isLastStep && (
+      {validStep === 9 && (
         <Card variant="elevated" padding="lg">
           <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
             Export Your CV

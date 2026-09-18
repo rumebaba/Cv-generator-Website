@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
 });
 
 const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) => {
-  const { data } = formState;
+  const { data, selectedSections } = formState;
   const {
     personalData: pd,
     introduction,
@@ -77,6 +77,8 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
     credentials,
     medicalScience,
   } = data;
+
+  const shouldShow = (section: keyof typeof selectedSections) => selectedSections[section] !== false;
 
   const formatEnd = (current: boolean, endDate: string) => {
     if (current) return 'Present';
@@ -111,14 +113,14 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
           </View>
         </View>
 
-        {introduction.professionalSummary && introduction.professionalSummary.trim() && (
+        {shouldShow('introduction') && introduction.professionalSummary && introduction.professionalSummary.trim() && (
           <>
             <View style={styles.hr} />
             <Text style={styles.desc}>{stripHtml(introduction.professionalSummary)}</Text>
           </>
         )}
 
-        {experiences && experiences.length > 0 && (
+        {shouldShow('experiences') && experiences && experiences.length > 0 && (
           <>
             <View style={styles.hr} />
             <Text style={styles.sectionTitle}>Professional Experience</Text>
@@ -150,7 +152,7 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
           </>
         )}
 
-        {educations && educations.length > 0 && (
+        {shouldShow('educations') && educations && educations.length > 0 && (
           <>
             <View style={styles.hr} />
             <Text style={styles.sectionTitle}>Education</Text>
@@ -181,7 +183,7 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
           </>
         )}
 
-        {skills && skills.length > 0 && (
+        {shouldShow('skills') && skills && skills.length > 0 && (
           <>
             <View style={styles.hr} />
             <Text style={styles.sectionTitle}>Skills</Text>
@@ -201,7 +203,7 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
           </>
         )}
 
-        {projects && projects.length > 0 && (
+        {shouldShow('projects') && projects && projects.length > 0 && (
           <>
             <View style={styles.hr} />
             <Text style={styles.sectionTitle}>Projects</Text>
@@ -214,7 +216,7 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
           </>
         )}
 
-        {credentials && credentials.length > 0 && (
+        {shouldShow('credentials') && credentials && credentials.length > 0 && (
           <>
             <View style={styles.hr} />
             <Text style={styles.sectionTitle}>Certifications</Text>
@@ -242,7 +244,7 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
           </>
         )}
 
-        {medicalScience && medicalScience.length > 0 && (
+        {shouldShow('medicalScience') && medicalScience && medicalScience.length > 0 && (
           <>
             <View style={styles.hr} />
             <Text style={styles.sectionTitle}>Medical & Science</Text>

@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
 });
 
 const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) => {
-  const { data } = formState;
+  const { data, selectedSections } = formState;
   const {
     personalData: pd,
     introduction,
@@ -72,6 +72,8 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
     credentials,
     medicalScience,
   } = data;
+
+  const shouldShow = (section: keyof typeof selectedSections) => selectedSections[section] !== false;
 
   const formatEnd = (current: boolean, endDate: string) => {
     if (current) return 'Present';
@@ -114,7 +116,7 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
           </View>
         </View>
 
-        {introduction.professionalSummary && introduction.professionalSummary.trim() && (
+        {shouldShow('introduction') && introduction.professionalSummary && introduction.professionalSummary.trim() && (
           <View style={{ marginBottom: 14 }}>
             <Text style={styles.sectionTitle}>Professional Summary</Text>
             <Text style={{ fontSize: 9, color: '#333', lineHeight: 1.5 }}>
@@ -123,7 +125,7 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
           </View>
         )}
 
-        {experiences.length > 0 && (
+        {shouldShow('experiences') && experiences.length > 0 && (
           <View style={{ marginBottom: 16 }}>
             <Text style={styles.sectionTitle}>Professional Experience</Text>
             {experiences.map((exp) => (
@@ -164,7 +166,7 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
           </View>
         )}
 
-        {educations.length > 0 && (
+        {shouldShow('educations') && educations.length > 0 && (
           <View style={{ marginBottom: 16 }}>
             <Text style={styles.sectionTitle}>Education</Text>
             {educations.map((edu) => (
@@ -201,7 +203,7 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
           </View>
         )}
 
-        {skills.length > 0 && (
+        {shouldShow('skills') && skills.length > 0 && (
           <View style={{ marginBottom: 16 }}>
             <Text style={styles.sectionTitle}>Skills</Text>
             {skills.map((skill) => (
@@ -225,7 +227,7 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
           </View>
         )}
 
-        {projects.length > 0 && (
+        {shouldShow('projects') && projects.length > 0 && (
           <View style={{ marginBottom: 16 }}>
             <Text style={styles.sectionTitle}>Projects</Text>
             {projects.map((pr) => (
@@ -240,7 +242,7 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
           </View>
         )}
 
-        {credentials.length > 0 && (
+        {shouldShow('credentials') && credentials.length > 0 && (
           <View style={{ marginBottom: 16 }}>
             <Text style={styles.sectionTitle}>Certifications</Text>
             {credentials.map((cred) => (
@@ -267,7 +269,7 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
           </View>
         )}
 
-        {medicalScience.length > 0 && (
+        {shouldShow('medicalScience') && medicalScience.length > 0 && (
           <View>
             <Text style={styles.sectionTitle}>Medical & Science</Text>
             {medicalScience.map((ms) => (

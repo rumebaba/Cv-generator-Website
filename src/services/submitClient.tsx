@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -136,4 +137,12 @@ export async function loadCV(userId: string, clientId: string): Promise<SavedCV>
   if (!result.exists() || result.data().userId !== userId)
     throw new Error('This CV is unavailable for your account.');
   return readCV(result.id, result.data());
+}
+
+export async function deleteCV(userId: string, clientId: string): Promise<void> {
+  requireUser(userId);
+  const result = await withTimeout(getDoc(doc(db, 'clients', clientId)), 'Loading CV');
+  if (!result.exists() || result.data().userId !== userId)
+    throw new Error('This CV is unavailable for your account.');
+  await withTimeout(deleteDoc(doc(db, 'clients', clientId)), 'Deleting CV');
 }

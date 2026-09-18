@@ -145,7 +145,7 @@ export interface FormData {
   references: Reference[];
 }
 
-export type FormStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export type FormStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 export interface FormState {
   data: FormData;
@@ -154,6 +154,7 @@ export interface FormState {
   errors: Partial<Record<keyof FormData, Record<string, string>>>;
   isDirty: boolean;
   isSubmitting: boolean;
+  selectedSections: Partial<Record<keyof FormData, boolean>>;
 }
 
 export const initialPersonalData: PersonalData = {
@@ -307,4 +308,17 @@ export const initialFormState: FormState = {
   errors: {},
   isDirty: false,
   isSubmitting: false,
+  selectedSections: {
+    personalData: true,
+    introduction: true,
+    experiences: true,
+    educations: true,
+    medicalScience: true,
+    projects: true,
+    skills: true,
+    credentials: true,
+    certifications: true,
+    languages: true,
+    references: true,
+  },
 };

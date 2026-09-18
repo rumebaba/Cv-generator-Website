@@ -67,7 +67,8 @@ type FormAction =
   | { type: 'SET_DIRTY'; payload: boolean }
   | { type: 'SET_SUBMITTING'; payload: boolean }
   | { type: 'RESET_FORM' }
-  | { type: 'LOAD_DATA'; payload: FormData };
+  | { type: 'LOAD_DATA'; payload: FormData }
+  | { type: 'SET_SELECTED_SECTIONS'; payload: Partial<Record<keyof FormData, boolean>> };
 
 const formReducer = (state: FormState, action: FormAction): FormState => {
   switch (action.type) {
@@ -426,6 +427,12 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
     case 'LOAD_DATA':
       return { ...state, data: normalizeFormData(action.payload), isDirty: false };
 
+    case 'SET_SELECTED_SECTIONS':
+      return {
+        ...state,
+        selectedSections: { ...state.selectedSections, ...action.payload },
+      };
+
     default:
       return state;
   }
@@ -473,6 +480,7 @@ interface FormContextValue extends FormState {
   setSubmitting: (submitting: boolean) => void;
   resetForm: () => void;
   loadData: (data: FormData) => void;
+  setSelectedSections: (sections: Partial<Record<keyof FormData, boolean>>) => void;
   canProceed: () => boolean;
   getStepCompletion: (step: FormStep) => number;
 }
@@ -490,14 +498,15 @@ function loadSavedState(): FormState {
         ...initialFormState,
         data: normalizeFormData(parsed?.data ?? {}),
         completedSteps: Array.isArray(parsed?.completedSteps)
-          ? parsed.completedSteps.filter((step) => Number.isInteger(step) && step >= 1 && step <= 9)
+          ? parsed.completedSteps.filter((step) => Number.isInteger(step) && step >= 1 && step <= 10)
           : [],
         currentStep:
           Number.isInteger(parsed?.currentStep) &&
           parsed.currentStep >= 1 &&
-          parsed.currentStep <= 9
+          parsed.currentStep <= 10
             ? parsed.currentStep
             : 1,
+        selectedSections: parsed?.selectedSections ?? initialFormState.selectedSections,
       };
     }
   } catch {
@@ -517,12 +526,13 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           data: state.data,
           completedSteps: state.completedSteps,
           currentStep: state.currentStep,
+          selectedSections: state.selectedSections,
         })
       );
     } catch {
       /* ignore */
     }
-  }, [state.data, state.completedSteps, state.currentStep]);
+  }, [state.data, state.completedSteps, state.currentStep, state.selectedSections]);
 
   const setStep = useCallback(
     (step: FormStep) => dispatch({ type: 'SET_STEP', payload: step }),
@@ -589,6 +599,8 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setSubmitting,
       resetForm: () => dispatch({ type: 'RESET_FORM' }),
       loadData,
+      setSelectedSections: (sections: Partial<Record<keyof FormData, boolean>>) =>
+        dispatch({ type: 'SET_SELECTED_SECTIONS', payload: sections }),
       canProceed: () => {
         const currentStepData = getStepData(state.data, state.currentStep);
         return validateStep(state.currentStep, currentStepData).length === 0;

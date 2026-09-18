@@ -2,31 +2,46 @@ import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/render
 import React from 'react';
 
 import type { FormState } from '../../types/form';
-import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
+import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHelpers';
+import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 
-const styles = StyleSheet.create({
+const colors = {
+  primary: '#6c3ce0',
+  sidebarBg: '#6c3ce0',
+  sidebarText: '#ffffff',
+  sidebarMuted: '#d4c4f7',
+  mainText: '#333',
+  mainMuted: '#666',
+};
+
+const s = StyleSheet.create({
   page: {
     flexDirection: 'row',
     fontFamily: 'Helvetica',
-    fontSize: 9,
-    color: '#333',
+    fontSize: 8.5,
+    color: colors.mainText,
     lineHeight: 1.4,
   },
-  sidebar: { width: 180, backgroundColor: '#6c3ce0', color: '#ffffff', padding: 20 },
+  sidebar: {
+    width: 180,
+    backgroundColor: colors.sidebarBg,
+    color: colors.sidebarText,
+    padding: 20,
+  },
   photo: { width: 60, height: 60, borderRadius: 30, alignSelf: 'center', marginBottom: 10 },
   name: {
     fontSize: 18,
     fontWeight: 'bold' as const,
-    color: '#ffffff',
+    color: colors.sidebarText,
     textAlign: 'center' as const,
   },
-  subtitle: { fontSize: 9, color: '#d4c4f7', marginTop: 4, textAlign: 'center' as const },
+  subtitle: { fontSize: 9, color: colors.sidebarMuted, marginTop: 4, textAlign: 'center' as const },
   sidebarSection: { marginBottom: 16 },
   sidebarTitle: {
     fontSize: 9,
     fontWeight: 'bold' as const,
-    color: '#d4c4f7',
+    color: colors.sidebarMuted,
     textTransform: 'uppercase' as const,
     letterSpacing: 1,
     marginBottom: 6,
@@ -34,37 +49,50 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255,255,255,0.2)',
     paddingBottom: 3,
   },
-  contactItem: { fontSize: 8, color: '#e0d4f7', marginBottom: 3 },
+  contactItem: { fontSize: 7.5, color: colors.sidebarMuted, marginBottom: 3 },
   skillTag: {
     backgroundColor: 'rgba(255,255,255,0.15)',
     borderRadius: 3,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    fontSize: 8,
-    color: '#ffffff',
+    fontSize: 7.5,
+    color: colors.sidebarText,
     marginBottom: 2,
   },
   main: { flex: 1, padding: 20 },
+  section: { marginBottom: 10 },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 9,
     fontWeight: 'bold' as const,
-    color: '#6c3ce0',
+    color: colors.primary,
     textTransform: 'uppercase' as const,
     letterSpacing: 1,
     marginBottom: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#6c3ce0',
+    borderBottomColor: colors.primary,
     paddingBottom: 3,
   },
-  entryHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
-  bold: { fontWeight: 'bold' as const },
-  italic: { fontFamily: 'Helvetica-Oblique', fontSize: 9, color: '#666' },
-  desc: { lineHeight: 1.5, marginBottom: 6, marginTop: 2 },
-  text: { fontSize: 9, color: '#334155' },
-  textSmall: { fontSize: 8, color: '#64748b' },
-  role: { fontSize: 10, fontWeight: 'bold' as const, color: '#1e293b' },
-  company: { fontSize: 9, color: '#6c3ce0', marginBottom: 1 },
-  skillsRow: { flexDirection: 'row', flexWrap: 'wrap' as const, gap: 4 },
+  row: { flexDirection: 'row', marginBottom: 6 },
+  rowLeft: { flex: 1 },
+  rowRight: { width: 90, textAlign: 'right' as const, fontSize: 7.5, color: colors.mainMuted },
+  title: { fontSize: 9, fontWeight: 'bold' as const, color: colors.mainText },
+  sub: { fontSize: 8, color: colors.mainMuted, fontStyle: 'italic' as const },
+  text: { fontSize: 8.5, color: colors.mainText, marginTop: 2 },
+  textSmall: { fontSize: 7.5, color: colors.mainMuted, marginTop: 1 },
+  inline: { flexDirection: 'row', flexWrap: 'wrap', gap: 3 },
+  pill: {
+    backgroundColor: 'rgba(108, 60, 224, 0.1)',
+    borderRadius: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    fontSize: 7.5,
+    color: colors.primary,
+    marginBottom: 2,
+  },
+  compactEntry: { marginBottom: 6 },
+  bulletRow: { flexDirection: 'row', marginBottom: 2 },
+  bullet: { width: 10, fontSize: 8, color: colors.primary },
+  bulletText: { flex: 1, fontSize: 8.5, color: colors.mainText },
 });
 
 const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) => {
@@ -77,53 +105,43 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
     projects,
     skills,
     credentials,
-    medicalScience,
+    references,
   } = data;
-
-  const formatEnd = (current: boolean, endDate: string) => {
-    if (current) return 'Present';
-    if (endDate)
-      return new Date(endDate + '-01').toLocaleDateString('en-US', {
-        month: 'short',
-        year: 'numeric',
-      });
-    return 'Present';
-  };
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.sidebar}>
-          {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
-          <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+      <Page size="A4" style={s.page}>
+        <View style={s.sidebar}>
+          {pd.profilePhotoUrl && <Image style={s.photo} src={pd.profilePhotoUrl} />}
+          <Text style={s.name}>{pd.fullName}</Text>
           {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-            <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
+            <Text style={s.subtitle}>{introduction.targetJobTitles}</Text>
           )}
 
-          <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarTitle}>Contact</Text>
-            {pd.email && <Text style={styles.contactItem}>{pd.email}</Text>}
-            {pd.phone && <Text style={styles.contactItem}>{pd.phone}</Text>}
+          <View style={s.sidebarSection}>
+            <Text style={s.sidebarTitle}>Contact</Text>
+            {pd.email && <Text style={s.contactItem}>{pd.email}</Text>}
+            {pd.phone && <Text style={s.contactItem}>{pd.phone}</Text>}
             {(pd.city || pd.country) && (
-              <Text style={styles.contactItem}>
+              <Text style={s.contactItem}>
                 {pd.city}
                 {pd.city && pd.country ? ', ' : ''}
                 {pd.country}
               </Text>
             )}
-            {pd.linkedin && <Text style={styles.contactItem}>{pd.linkedin}</Text>}
+            {pd.linkedin && <Text style={s.contactItem}>{pd.linkedin}</Text>}
           </View>
 
-          {skills && skills.length > 0 && (
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarTitle}>Skills</Text>
+          {skills.length > 0 && (
+            <View style={s.sidebarSection}>
+              <Text style={s.sidebarTitle}>Skills</Text>
               {skills.map((skill) => (
                 <View key={skill.id} style={{ marginBottom: 8 }}>
                   {skill.technicalSkills && skill.technicalSkills.trim() && (
-                    <View style={styles.skillsRow}>
-                      {skill.technicalSkills.split(',').map((s, i) => (
-                        <Text key={i} style={styles.skillTag}>
-                          {s.trim()}
+                    <View style={s.inline}>
+                      {skill.technicalSkills.split(',').map((skillText, i) => (
+                        <Text key={i} style={s.skillTag}>
+                          {skillText.trim()}
                         </Text>
                       ))}
                     </View>
@@ -133,126 +151,145 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
             </View>
           )}
 
-          {credentials && credentials.length > 0 && (
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarTitle}>Certifications</Text>
+          {credentials.length > 0 && (
+            <View style={s.sidebarSection}>
+              <Text style={s.sidebarTitle}>Certifications</Text>
               {credentials.map((cred) => (
-                <Text key={cred.id} style={styles.contactItem}>
+                <Text key={cred.id} style={s.contactItem}>
                   {cred.certificateName}
+                </Text>
+              ))}
+            </View>
+          )}
+
+          {references.length > 0 && (
+            <View style={s.sidebarSection}>
+              <Text style={s.sidebarTitle}>References</Text>
+              {references.map((ref) => (
+                <Text key={ref.id} style={s.contactItem}>
+                  {ref.name} ({ref.title})
                 </Text>
               ))}
             </View>
           )}
         </View>
 
-        <View style={styles.main}>
-          {introduction.professionalSummary && introduction.professionalSummary.trim() && (
-            <View style={{ marginBottom: 14 }}>
-              <Text style={styles.sectionTitle}>Professional Summary</Text>
-              <Text style={styles.text}>{stripHtml(introduction.professionalSummary)}</Text>
+        <View style={s.main}>
+          {/* Summary */}
+          {introduction.professionalSummary && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>Professional Summary</Text>
+              <Text style={s.text}>{stripHtml(introduction.professionalSummary)}</Text>
             </View>
           )}
 
-          {experiences && experiences.length > 0 && (
-            <View style={{ marginBottom: 14 }}>
-              <Text style={styles.sectionTitle}>Experience</Text>
+          {/* Experience */}
+          {experiences.length > 0 && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>Experience</Text>
               {experiences.map((exp) => (
-                <View key={exp.id} style={{ marginBottom: 8 }}>
-                  <View style={styles.entryHeader}>
-                    <Text style={styles.role}>{exp.position}</Text>
-                    <Text style={styles.italic}>
-                      {exp.startDate} —{' '}
-                      {exp.current
-                        ? 'Present'
-                        : exp.endDate
-                          ? formatEnd(exp.current, exp.endDate)
-                          : ''}
+                <View key={exp.id} style={s.compactEntry}>
+                  <View style={s.row}>
+                    <View style={s.rowLeft}>
+                      <Text style={s.title}>{exp.position}</Text>
+                      {exp.company && (
+                        <Text style={s.sub}>
+                          {exp.company}
+                          {exp.location ? ' | ' + exp.location : ''}
+                        </Text>
+                      )}
+                    </View>
+                    <Text style={s.rowRight}>
+                      {formatDateRange(exp.startDate, exp.endDate, exp.current)}
                     </Text>
                   </View>
-                  <Text style={styles.company}>
-                    {exp.company}
-                    {exp.location ? ' | ' + exp.location : ''}
-                  </Text>
-                  {exp.achievements && exp.achievements.trim() && (
-                    <>
-                      {stripHtml(exp.achievements)
-                        .split('\n')
-                        .filter(Boolean)
-                        .map((line, i) => (
-                          <Text key={i} style={{ marginLeft: 8, fontSize: 9 }}>
-                            • {line.trim()}
-                          </Text>
-                        ))}
-                    </>
-                  )}
-                  {exp.description && exp.description.trim() && (
-                    <Text style={styles.desc}>{stripHtml(exp.description)}</Text>
-                  )}
+                  {exp.achievements &&
+                    htmlToBullets(exp.achievements).map((b, j) => (
+                      <View key={j} style={s.bulletRow}>
+                        <Text style={s.bullet}>•</Text>
+                        <Text style={s.bulletText}>{b}</Text>
+                      </View>
+                    ))}
+                  {exp.description && <Text style={s.text}>{stripHtml(exp.description)}</Text>}
                 </View>
               ))}
             </View>
           )}
 
-          {educations && educations.length > 0 && (
-            <View style={{ marginBottom: 14 }}>
-              <Text style={styles.sectionTitle}>Education</Text>
+          {/* Education */}
+          {educations.length > 0 && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>Education</Text>
               {educations.map((edu) => (
-                <View key={edu.id} style={{ marginBottom: 6 }}>
-                  <View style={styles.entryHeader}>
-                    <Text style={styles.bold}>
-                      {getDegreeLabel(edu.degree)}
-                      {edu.fieldOfStudy ? ': ' + edu.fieldOfStudy : ''}
-                    </Text>
-                    <Text style={styles.italic}>
-                      {edu.startDate} —{' '}
-                      {edu.current
-                        ? 'Present'
-                        : edu.endDate
-                          ? formatEnd(edu.current, edu.endDate)
-                          : ''}
+                <View key={edu.id} style={s.compactEntry}>
+                  <View style={s.row}>
+                    <View style={s.rowLeft}>
+                      <Text style={s.title}>
+                        {getDegreeLabel(edu.degree)}
+                        {edu.fieldOfStudy ? ': ' + edu.fieldOfStudy : ''}
+                      </Text>
+                      {edu.institution && <Text style={s.sub}>{edu.institution}</Text>}
+                    </View>
+                    <Text style={s.rowRight}>
+                      {formatDateRange(edu.startDate, edu.endDate, edu.current)}
                     </Text>
                   </View>
-                  {edu.institution && <Text style={styles.company}>{edu.institution}</Text>}
-                  {edu.gpa && edu.gpa.trim() && (
-                    <Text style={styles.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>
+                  {edu.gpa && (
+                    <Text style={s.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>
                   )}
                 </View>
               ))}
             </View>
           )}
 
-          {projects && projects.length > 0 && (
-            <View style={{ marginBottom: 14 }}>
-              <Text style={styles.sectionTitle}>Projects</Text>
-              {projects.map((pr) => (
-                <View key={pr.id} style={{ marginBottom: 6 }}>
-                  <Text style={styles.bold}>{pr.name}</Text>
-                  {pr.role && <Text style={styles.company}>{pr.role}</Text>}
-                  <Text style={styles.desc}>{stripHtml(pr.description)}</Text>
+          {/* Projects */}
+          {projects.length > 0 && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>Projects</Text>
+              {projects.map((proj) => (
+                <View key={proj.id} style={s.compactEntry}>
+                  <View style={s.row}>
+                    <View style={s.rowLeft}>
+                      <Text style={s.title}>{proj.name}</Text>
+                      {proj.role && <Text style={s.sub}>{proj.role}</Text>}
+                    </View>
+                    <Text style={s.rowRight}>
+                      {formatDateRange(proj.startDate, proj.endDate, proj.current)}
+                    </Text>
+                  </View>
+                  {proj.description && <Text style={s.text}>{stripHtml(proj.description)}</Text>}
                 </View>
               ))}
             </View>
           )}
 
-          {medicalScience && medicalScience.length > 0 && (
-            <View>
-              <Text style={styles.sectionTitle}>Medical & Science</Text>
-              {medicalScience.map((ms) => (
-                <View key={ms.id} style={{ marginBottom: 6 }}>
-                  {ms.clinicalRotations && ms.clinicalRotations.trim() && (
-                    <Text style={styles.text}>Clinical Rotations: {ms.clinicalRotations}</Text>
-                  )}
-                  {ms.researchGrants && ms.researchGrants.trim() && (
-                    <Text style={styles.text}>Research Grants: {ms.researchGrants}</Text>
-                  )}
-                  {ms.publications && ms.publications.trim() && (
-                    <Text style={styles.text}>Publications: {ms.publications}</Text>
-                  )}
-                  {ms.medicalLicenses && ms.medicalLicenses.trim() && (
-                    <Text style={styles.text}>Licenses: {ms.medicalLicenses}</Text>
-                  )}
-                </View>
-              ))}
+          {/* Credentials */}
+          {credentials.length > 0 && credentials.some((c) => c.certificateName) && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>Certifications</Text>
+              <View style={s.inline}>
+                {credentials
+                  .filter((c) => c.certificateName)
+                  .map((cred) => (
+                    <Text key={cred.id} style={s.pill}>
+                      {cred.certificateName} ({cred.issuer})
+                      {cred.dateIssued ? ` - ${cred.dateIssued}` : ''}
+                    </Text>
+                  ))}
+              </View>
+            </View>
+          )}
+
+          {/* Languages */}
+          {skills.length > 0 && skills.some((sk) => sk.spokenLanguages) && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>Languages</Text>
+              <Text style={s.text}>
+                {skills
+                  .filter((sk) => sk.spokenLanguages)
+                  .map((sk) => sk.spokenLanguages)
+                  .join(', ')}
+              </Text>
             </View>
           )}
         </View>

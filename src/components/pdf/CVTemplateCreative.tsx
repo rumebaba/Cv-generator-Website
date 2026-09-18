@@ -11,35 +11,35 @@ const colors = {
   sidebarBg: '#6c3ce0',
   sidebarText: '#ffffff',
   sidebarMuted: '#d4c4f7',
-  mainText: '#333',
-  mainMuted: '#666',
+  mainText: '#1e293b',
+  mainMuted: '#64748b',
 };
 
 const s = StyleSheet.create({
   page: {
     flexDirection: 'row',
     fontFamily: 'Helvetica',
-    fontSize: 8.5,
+    fontSize: 9,
     color: colors.mainText,
     lineHeight: 1.4,
   },
   sidebar: {
-    width: 180,
+    width: 190,
     backgroundColor: colors.sidebarBg,
     color: colors.sidebarText,
-    padding: 20,
+    padding: 24,
   },
-  photo: { width: 60, height: 60, borderRadius: 30, alignSelf: 'center', marginBottom: 10 },
+  photo: { width: 70, height: 70, borderRadius: 35, alignSelf: 'center', marginBottom: 12 },
   name: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold' as const,
     color: colors.sidebarText,
     textAlign: 'center' as const,
   },
   subtitle: { fontSize: 9, color: colors.sidebarMuted, marginTop: 4, textAlign: 'center' as const },
-  sidebarSection: { marginBottom: 16 },
+  sidebarSection: { marginBottom: 18 },
   sidebarTitle: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold' as const,
     color: colors.sidebarMuted,
     textTransform: 'uppercase' as const,
@@ -59,40 +59,30 @@ const s = StyleSheet.create({
     color: colors.sidebarText,
     marginBottom: 2,
   },
-  main: { flex: 1, padding: 20 },
-  section: { marginBottom: 10 },
+  main: { flex: 1, padding: 28 },
   sectionTitle: {
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: 'bold' as const,
     color: colors.primary,
     textTransform: 'uppercase' as const,
     letterSpacing: 1,
-    marginBottom: 6,
+    marginBottom: 8,
+    marginTop: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.primary,
     paddingBottom: 3,
   },
-  row: { flexDirection: 'row', marginBottom: 6 },
-  rowLeft: { flex: 1 },
-  rowRight: { width: 90, textAlign: 'right' as const, fontSize: 7.5, color: colors.mainMuted },
-  title: { fontSize: 9, fontWeight: 'bold' as const, color: colors.mainText },
-  sub: { fontSize: 8, color: colors.mainMuted, fontStyle: 'italic' as const },
-  text: { fontSize: 8.5, color: colors.mainText, marginTop: 2 },
-  textSmall: { fontSize: 7.5, color: colors.mainMuted, marginTop: 1 },
-  inline: { flexDirection: 'row', flexWrap: 'wrap', gap: 3 },
-  pill: {
-    backgroundColor: 'rgba(108, 60, 224, 0.1)',
-    borderRadius: 2,
-    paddingHorizontal: 5,
-    paddingVertical: 1.5,
-    fontSize: 7.5,
-    color: colors.primary,
-    marginBottom: 2,
-  },
-  compactEntry: { marginBottom: 6 },
-  bulletRow: { flexDirection: 'row', marginBottom: 2 },
-  bullet: { width: 10, fontSize: 8, color: colors.primary },
-  bulletText: { flex: 1, fontSize: 8.5, color: colors.mainText },
+  entryHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
+  bold: { fontWeight: 'bold' as const },
+  italic: { fontFamily: 'Helvetica-Oblique', fontSize: 9, color: colors.mainMuted },
+  desc: { lineHeight: 1.5, marginBottom: 8, marginTop: 3 },
+  text: { fontSize: 9, color: colors.mainText },
+  textSmall: { fontSize: 8, color: colors.mainMuted },
+  role: { fontSize: 10, fontWeight: 'bold' as const, color: colors.mainText },
+  company: { fontSize: 9, color: colors.primary, marginBottom: 1 },
+  skillsRow: { flexDirection: 'row', flexWrap: 'wrap' as const, gap: 4 },
+  bullet: { width: 10, fontSize: 9, color: colors.primary },
+  bulletText: { flex: 1, fontSize: 9, color: colors.mainText },
 });
 
 const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) => {
@@ -105,7 +95,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
     projects,
     skills,
     credentials,
-    references,
+    medicalScience,
   } = data;
 
   return (
@@ -138,7 +128,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
               {skills.map((skill) => (
                 <View key={skill.id} style={{ marginBottom: 8 }}>
                   {skill.technicalSkills && skill.technicalSkills.trim() && (
-                    <View style={s.inline}>
+                    <View style={s.skillsRow}>
                       {skill.technicalSkills.split(',').map((skillText, i) => (
                         <Text key={i} style={s.skillTag}>
                           {skillText.trim()}
@@ -162,12 +152,13 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
             </View>
           )}
 
-          {references.length > 0 && (
+          {educations.length > 0 && (
             <View style={s.sidebarSection}>
-              <Text style={s.sidebarTitle}>References</Text>
-              {references.map((ref) => (
-                <Text key={ref.id} style={s.contactItem}>
-                  {ref.name} ({ref.title})
+              <Text style={s.sidebarTitle}>Education</Text>
+              {educations.map((edu) => (
+                <Text key={edu.id} style={s.contactItem}>
+                  {getDegreeLabel(edu.degree)}
+                  {edu.fieldOfStudy ? ': ' + edu.fieldOfStudy : ''} — {edu.institution}
                 </Text>
               ))}
             </View>
@@ -176,8 +167,8 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
 
         <View style={s.main}>
           {/* Summary */}
-          {introduction.professionalSummary && (
-            <View style={s.section}>
+          {introduction.professionalSummary && introduction.professionalSummary.trim() && (
+            <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Professional Summary</Text>
               <Text style={s.text}>{stripHtml(introduction.professionalSummary)}</Text>
             </View>
@@ -185,32 +176,42 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
 
           {/* Experience */}
           {experiences.length > 0 && (
-            <View style={s.section}>
+            <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Experience</Text>
               {experiences.map((exp) => (
-                <View key={exp.id} style={s.compactEntry}>
-                  <View style={s.row}>
-                    <View style={s.rowLeft}>
-                      <Text style={s.title}>{exp.position}</Text>
-                      {exp.company && (
-                        <Text style={s.sub}>
-                          {exp.company}
-                          {exp.location ? ' | ' + exp.location : ''}
-                        </Text>
-                      )}
-                    </View>
-                    <Text style={s.rowRight}>
-                      {formatDateRange(exp.startDate, exp.endDate, exp.current)}
+                <View key={exp.id} style={{ marginBottom: 10 }}>
+                  <View style={s.entryHeader}>
+                    <Text style={s.role}>{exp.position}</Text>
+                    <Text style={s.italic}>
+                      {exp.startDate} —{' '}
+                      {exp.current
+                        ? 'Present'
+                        : exp.endDate
+                          ? formatDateRange(exp.startDate, exp.endDate, exp.current)
+                          : ''}
                     </Text>
                   </View>
+                  {exp.company && (
+                    <Text style={s.company}>
+                      {exp.company}
+                      {exp.location ? ' | ' + exp.location : ''}
+                    </Text>
+                  )}
                   {exp.achievements &&
                     htmlToBullets(exp.achievements).map((b, j) => (
-                      <View key={j} style={s.bulletRow}>
-                        <Text style={s.bullet}>•</Text>
-                        <Text style={s.bulletText}>{b}</Text>
-                      </View>
+                      <Text
+                        key={j}
+                        style={{
+                          marginLeft: 10,
+                          fontSize: 9,
+                          color: colors.mainMuted,
+                          marginBottom: 2,
+                        }}
+                      >
+                        • {b}
+                      </Text>
                     ))}
-                  {exp.description && <Text style={s.text}>{stripHtml(exp.description)}</Text>}
+                  {exp.description && <Text style={s.desc}>{stripHtml(exp.description)}</Text>}
                 </View>
               ))}
             </View>
@@ -218,22 +219,25 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
 
           {/* Education */}
           {educations.length > 0 && (
-            <View style={s.section}>
+            <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Education</Text>
               {educations.map((edu) => (
-                <View key={edu.id} style={s.compactEntry}>
-                  <View style={s.row}>
-                    <View style={s.rowLeft}>
-                      <Text style={s.title}>
-                        {getDegreeLabel(edu.degree)}
-                        {edu.fieldOfStudy ? ': ' + edu.fieldOfStudy : ''}
-                      </Text>
-                      {edu.institution && <Text style={s.sub}>{edu.institution}</Text>}
-                    </View>
-                    <Text style={s.rowRight}>
-                      {formatDateRange(edu.startDate, edu.endDate, edu.current)}
+                <View key={edu.id} style={{ marginBottom: 6 }}>
+                  <View style={s.entryHeader}>
+                    <Text style={s.bold}>
+                      {getDegreeLabel(edu.degree)}
+                      {edu.fieldOfStudy ? ': ' + edu.fieldOfStudy : ''}
+                    </Text>
+                    <Text style={s.italic}>
+                      {edu.startDate} —{' '}
+                      {edu.current
+                        ? 'Present'
+                        : edu.endDate
+                          ? formatDateRange(edu.startDate, edu.endDate, edu.current)
+                          : ''}
                     </Text>
                   </View>
+                  {edu.institution && <Text style={s.company}>{edu.institution}</Text>}
                   {edu.gpa && (
                     <Text style={s.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>
                   )}
@@ -244,20 +248,13 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
 
           {/* Projects */}
           {projects.length > 0 && (
-            <View style={s.section}>
+            <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Projects</Text>
               {projects.map((proj) => (
-                <View key={proj.id} style={s.compactEntry}>
-                  <View style={s.row}>
-                    <View style={s.rowLeft}>
-                      <Text style={s.title}>{proj.name}</Text>
-                      {proj.role && <Text style={s.sub}>{proj.role}</Text>}
-                    </View>
-                    <Text style={s.rowRight}>
-                      {formatDateRange(proj.startDate, proj.endDate, proj.current)}
-                    </Text>
-                  </View>
-                  {proj.description && <Text style={s.text}>{stripHtml(proj.description)}</Text>}
+                <View key={proj.id} style={{ marginBottom: 6 }}>
+                  <Text style={s.bold}>{proj.name}</Text>
+                  {proj.role && <Text style={s.company}>{proj.role}</Text>}
+                  <Text style={s.desc}>{stripHtml(proj.description)}</Text>
                 </View>
               ))}
             </View>
@@ -265,24 +262,35 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
 
           {/* Credentials */}
           {credentials.length > 0 && credentials.some((c) => c.certificateName) && (
-            <View style={s.section}>
+            <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Certifications</Text>
-              <View style={s.inline}>
-                {credentials
-                  .filter((c) => c.certificateName)
-                  .map((cred) => (
-                    <Text key={cred.id} style={s.pill}>
-                      {cred.certificateName} ({cred.issuer})
-                      {cred.dateIssued ? ` - ${cred.dateIssued}` : ''}
+              {credentials.map((cred) => (
+                <View key={cred.id} style={{ marginBottom: 4 }}>
+                  <Text style={s.role}>{cred.certificateName}</Text>
+                  {cred.issuer && <Text style={s.company}>{cred.issuer}</Text>}
+                  {(cred.dateIssued || cred.expirationDate) && (
+                    <Text style={s.textSmall}>
+                      {cred.dateIssued &&
+                        new Date(cred.dateIssued + '-01').toLocaleDateString('en-US', {
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      {cred.expirationDate &&
+                        ' — ' +
+                          new Date(cred.expirationDate + '-01').toLocaleDateString('en-US', {
+                            month: 'short',
+                            year: 'numeric',
+                          })}
                     </Text>
-                  ))}
-              </View>
+                  )}
+                </View>
+              ))}
             </View>
           )}
 
           {/* Languages */}
           {skills.length > 0 && skills.some((sk) => sk.spokenLanguages) && (
-            <View style={s.section}>
+            <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Languages</Text>
               <Text style={s.text}>
                 {skills
@@ -290,6 +298,29 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
                   .map((sk) => sk.spokenLanguages)
                   .join(', ')}
               </Text>
+            </View>
+          )}
+
+          {/* Medical & Science */}
+          {medicalScience.length > 0 && (
+            <View>
+              <Text style={s.sectionTitle}>Medical & Science</Text>
+              {medicalScience.map((ms) => (
+                <View key={ms.id} style={{ marginBottom: 5 }}>
+                  {ms.clinicalRotations && ms.clinicalRotations.trim() && (
+                    <Text style={s.text}>Clinical Rotations: {ms.clinicalRotations}</Text>
+                  )}
+                  {ms.researchGrants && ms.researchGrants.trim() && (
+                    <Text style={s.text}>Research Grants: {ms.researchGrants}</Text>
+                  )}
+                  {ms.publications && ms.publications.trim() && (
+                    <Text style={s.text}>Publications: {ms.publications}</Text>
+                  )}
+                  {ms.medicalLicenses && ms.medicalLicenses.trim() && (
+                    <Text style={s.text}>Licenses: {ms.medicalLicenses}</Text>
+                  )}
+                </View>
+              ))}
             </View>
           )}
         </View>

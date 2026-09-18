@@ -6,49 +6,63 @@ import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHel
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 
-const s = StyleSheet.create({
-  page: { padding: 30, fontFamily: 'Helvetica', fontSize: 8.5, color: '#222', lineHeight: 1.4 },
-  header: {
+const styles = StyleSheet.create({
+  page: { padding: 44, fontFamily: 'Helvetica', fontSize: 10, color: '#1e293b', lineHeight: 1.5 },
+  header: { marginBottom: 18, textAlign: 'center' },
+  photo: { width: 60, height: 60, borderRadius: 30, alignSelf: 'center', marginBottom: 8 },
+  name: {
+    fontSize: 24,
+    fontFamily: 'Helvetica-Bold',
+    textAlign: 'center',
+    marginBottom: 4,
+    color: '#1e3a5f',
+  },
+  subtitle: {
+    fontSize: 11,
+    textAlign: 'center',
+    color: '#64748b',
+    marginBottom: 8,
+    fontStyle: 'italic',
+  },
+  contactRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    borderBottom: '2 solid #222',
-    paddingBottom: 8,
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: 10,
+    fontSize: 9,
+    color: '#64748b',
     marginBottom: 12,
   },
-  photo: { width: 45, height: 45, borderRadius: 23 },
-  name: { fontSize: 18, fontWeight: 'bold', color: '#222' },
-  contactBlock: { textAlign: 'right' as const, fontSize: 7.5, color: '#555' },
-  section: { marginBottom: 10 },
+  hr: { borderBottomWidth: 1, borderBottomColor: '#1e3a5f', marginVertical: 10 },
   sectionTitle: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: '#222',
-    textTransform: 'uppercase' as const,
-    backgroundColor: '#f5f5f5',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    marginBottom: 6,
+    fontSize: 12,
+    fontFamily: 'Helvetica-Bold',
+    color: '#1e3a5f',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
+    marginTop: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1e3a5f',
+    paddingBottom: 4,
   },
-  row: { flexDirection: 'row', marginBottom: 6 },
-  rowLeft: { flex: 1 },
-  rowRight: { width: 90, textAlign: 'right' as const, fontSize: 7.5, color: '#777' },
-  title: { fontSize: 9, fontWeight: 'bold', color: '#222' },
-  sub: { fontSize: 8, color: '#555', fontStyle: 'italic' as const },
-  text: { fontSize: 8.5, color: '#333', marginTop: 2 },
-  textSmall: { fontSize: 7.5, color: '#666', marginTop: 1 },
-  inline: { flexDirection: 'row', flexWrap: 'wrap', gap: 3 },
-  pill: {
-    backgroundColor: '#eee',
-    fontSize: 7.5,
-    paddingHorizontal: 5,
-    paddingVertical: 1.5,
-    borderRadius: 2,
+  entryHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
+  bold: { fontFamily: 'Helvetica-Bold' },
+  italic: { fontFamily: 'Helvetica-Oblique', fontSize: 9, color: '#64748b' },
+  desc: { lineHeight: 1.6, marginBottom: 8, marginTop: 3 },
+  skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
+  skillTag: {
+    backgroundColor: '#eef2ff',
+    borderRadius: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    fontSize: 8,
+    color: '#1e3a5f',
+    marginBottom: 3,
   },
-  compactEntry: { marginBottom: 6 },
-  bulletRow: { flexDirection: 'row', marginBottom: 2 },
-  bullet: { width: 10, fontSize: 8, color: '#555' },
-  bulletText: { flex: 1, fontSize: 8.5, color: '#333' },
+  bulletRow: { flexDirection: 'row', marginLeft: 10, marginBottom: 3 },
+  bullet: { width: 10, fontSize: 9, color: '#1e3a5f' },
+  bulletText: { flex: 1, fontSize: 9, color: '#334155' },
 });
 
 const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) => {
@@ -56,179 +70,199 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
   const {
     personalData: pd,
     introduction,
-    experiences,
     educations,
+    experiences,
     projects,
     skills,
     credentials,
-    references,
+    medicalScience,
   } = data;
+
+  const formatEnd = (current: boolean, endDate: string) => {
+    if (current) return 'Present';
+    if (endDate)
+      return new Date(endDate + '-01').toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      });
+    return 'Present';
+  };
 
   return (
     <Document>
-      <Page size="A4" style={s.page}>
-        {/* Header */}
-        <View style={s.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            {pd.profilePhotoUrl && <Image style={s.photo} src={pd.profilePhotoUrl} />}
-            <Text style={s.name}>{pd.fullName}</Text>
-          </View>
-          <View style={s.contactBlock}>
+      <Page size="A4" style={styles.page}>
+        {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
+        <View style={styles.header}>
+          <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+          {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
+            <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
+          )}
+          <View style={styles.contactRow}>
             {pd.email && <Text>{pd.email}</Text>}
             {pd.phone && <Text>{pd.phone}</Text>}
-            {pd.city && (
+            {(pd.city || pd.country) && (
               <Text>
                 {pd.city}
-                {pd.country ? `, ${pd.country}` : ''}
+                {pd.city && pd.country ? ', ' : ''}
+                {pd.country}
               </Text>
             )}
             {pd.linkedin && <Text>{pd.linkedin}</Text>}
           </View>
         </View>
 
-        {/* Summary */}
-        {introduction.professionalSummary && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Summary</Text>
-            <Text style={s.text}>{stripHtml(introduction.professionalSummary)}</Text>
-          </View>
+        {introduction.professionalSummary && introduction.professionalSummary.trim() && (
+          <>
+            <View style={styles.hr} />
+            <Text style={styles.desc}>{stripHtml(introduction.professionalSummary)}</Text>
+          </>
         )}
 
-        {/* Experience */}
-        {experiences.length > 0 && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Experience</Text>
+        {experiences && experiences.length > 0 && (
+          <>
+            <View style={styles.hr} />
+            <Text style={styles.sectionTitle}>Professional Experience</Text>
             {experiences.map((exp) => (
-              <View key={exp.id} style={s.compactEntry}>
-                <View style={s.row}>
-                  <View style={s.rowLeft}>
-                    <Text style={s.title}>
-                      {exp.position}
-                      {exp.company ? ` — ${exp.company}` : ''}
-                    </Text>
-                    {exp.location && <Text style={s.sub}>{exp.location}</Text>}
-                  </View>
-                  <Text style={s.rowRight}>
-                    {formatDateRange(exp.startDate, exp.endDate, exp.current)}
+              <View key={exp.id} style={{ marginBottom: 10 }}>
+                <View style={styles.entryHeader}>
+                  <Text style={styles.bold}>{exp.company}</Text>
+                  <Text style={styles.italic}>
+                    {exp.startDate} —{' '}
+                    {exp.current
+                      ? 'Present'
+                      : exp.endDate
+                        ? formatEnd(exp.current, exp.endDate)
+                        : ''}
                   </Text>
                 </View>
-                {exp.description && <Text style={s.text}>{stripHtml(exp.description)}</Text>}
+                <Text style={styles.italic}>{exp.position}</Text>
+                {exp.location && <Text style={styles.italic}>{exp.location}</Text>}
+                <Text style={styles.desc}>{stripHtml(exp.description)}</Text>
                 {exp.achievements &&
                   htmlToBullets(exp.achievements).map((b, j) => (
-                    <View key={j} style={s.bulletRow}>
-                      <Text style={s.bullet}>•</Text>
-                      <Text style={s.bulletText}>{b}</Text>
+                    <View key={j} style={styles.bulletRow}>
+                      <Text style={styles.bullet}>•</Text>
+                      <Text style={styles.bulletText}>{b}</Text>
                     </View>
                   ))}
               </View>
             ))}
-          </View>
+          </>
         )}
 
-        {/* Education */}
-        {educations.length > 0 && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Education</Text>
+        {educations && educations.length > 0 && (
+          <>
+            <View style={styles.hr} />
+            <Text style={styles.sectionTitle}>Education</Text>
             {educations.map((edu) => (
-              <View key={edu.id} style={s.compactEntry}>
-                <View style={s.row}>
-                  <View style={s.rowLeft}>
-                    <Text style={s.title}>
+              <View key={edu.id} style={{ marginBottom: 6 }}>
+                <View style={styles.entryHeader}>
+                  <Text>
+                    <Text style={styles.bold}>
                       {getDegreeLabel(edu.degree)}
-                      {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''} — {edu.institution}
+                      {edu.fieldOfStudy ? ': ' + edu.fieldOfStudy : ''}
                     </Text>
-                  </View>
-                  <Text style={s.rowRight}>
-                    {formatDateRange(edu.startDate, edu.endDate, edu.current)}
+                  </Text>
+                  <Text style={styles.italic}>
+                    {edu.startDate} —{' '}
+                    {edu.current
+                      ? 'Present'
+                      : edu.endDate
+                        ? formatEnd(edu.current, edu.endDate)
+                        : ''}
                   </Text>
                 </View>
-                {edu.gpa && (
-                  <Text style={s.textSmall}>{getResultLabel(edu.resultType, edu.gpa)}</Text>
+                {edu.institution && <Text style={styles.italic}>{edu.institution}</Text>}
+                {edu.gpa && edu.gpa.trim() && (
+                  <Text style={styles.italic}>{getResultLabel(edu.resultType, edu.gpa)}</Text>
                 )}
               </View>
             ))}
-          </View>
+          </>
         )}
 
-        {/* Skills */}
-        {skills.length > 0 && skills.some((sk) => sk.technicalSkills) && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Skills</Text>
-            <View style={s.inline}>
-              {skills
-                .filter((sk) => sk.technicalSkills)
-                .map((sk) =>
-                  sk.technicalSkills.split(',').map((skill, i) => (
-                    <Text key={`${sk.id}-${i}`} style={s.pill}>
-                      {skill.trim()}
-                    </Text>
-                  ))
-                )}
-            </View>
-          </View>
-        )}
-
-        {/* Projects */}
-        {projects.length > 0 && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Projects</Text>
-            {projects.map((proj) => (
-              <View key={proj.id} style={s.compactEntry}>
-                <View style={s.row}>
-                  <View style={s.rowLeft}>
-                    <Text style={s.title}>
-                      {proj.name}
-                      {proj.role ? ` (${proj.role})` : ''}
-                    </Text>
+        {skills && skills.length > 0 && (
+          <>
+            <View style={styles.hr} />
+            <Text style={styles.sectionTitle}>Skills</Text>
+            {skills.map((skill) => (
+              <View key={skill.id} style={{ marginBottom: 5 }}>
+                {skill.technicalSkills && skill.technicalSkills.trim() && (
+                  <View style={styles.skillsRow}>
+                    {skill.technicalSkills.split(',').map((s, i) => (
+                      <Text key={i} style={styles.skillTag}>
+                        {s.trim()}
+                      </Text>
+                    ))}
                   </View>
-                  <Text style={s.rowRight}>
-                    {formatDateRange(proj.startDate, proj.endDate, proj.current)}
-                  </Text>
-                </View>
-                {proj.description && <Text style={s.text}>{stripHtml(proj.description)}</Text>}
+                )}
               </View>
             ))}
-          </View>
+          </>
         )}
 
-        {/* Credentials */}
-        {credentials.length > 0 && credentials.some((c) => c.certificateName) && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Certifications</Text>
-            <View style={s.inline}>
-              {credentials
-                .filter((c) => c.certificateName)
-                .map((cred) => (
-                  <Text key={cred.id} style={s.pill}>
-                    {cred.certificateName} ({cred.issuer})
-                    {cred.dateIssued ? ` - ${cred.dateIssued}` : ''}
+        {projects && projects.length > 0 && (
+          <>
+            <View style={styles.hr} />
+            <Text style={styles.sectionTitle}>Projects</Text>
+            {projects.map((pr) => (
+              <View key={pr.id} style={{ marginBottom: 8 }}>
+                <Text style={styles.bold}>{pr.name}</Text>
+                <Text style={styles.desc}>{stripHtml(pr.description)}</Text>
+              </View>
+            ))}
+          </>
+        )}
+
+        {credentials && credentials.length > 0 && (
+          <>
+            <View style={styles.hr} />
+            <Text style={styles.sectionTitle}>Certifications</Text>
+            {credentials.map((cred) => (
+              <View key={cred.id} style={{ marginBottom: 5 }}>
+                <Text style={styles.bold}>{cred.certificateName}</Text>
+                {cred.issuer && <Text style={styles.italic}>{cred.issuer}</Text>}
+                {(cred.dateIssued || cred.expirationDate) && (
+                  <Text style={styles.italic}>
+                    {cred.dateIssued &&
+                      new Date(cred.dateIssued + '-01').toLocaleDateString('en-US', {
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    {cred.expirationDate &&
+                      ' — ' +
+                        new Date(cred.expirationDate + '-01').toLocaleDateString('en-US', {
+                          month: 'short',
+                          year: 'numeric',
+                        })}
                   </Text>
-                ))}
-            </View>
-          </View>
+                )}
+              </View>
+            ))}
+          </>
         )}
 
-        {/* Languages */}
-        {skills.length > 0 && skills.some((sk) => sk.spokenLanguages) && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Languages</Text>
-            <Text style={s.text}>
-              {skills
-                .filter((sk) => sk.spokenLanguages)
-                .map((sk) => sk.spokenLanguages)
-                .join(', ')}
-            </Text>
-          </View>
-        )}
-
-        {/* References */}
-        {references.length > 0 && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>References</Text>
-            <Text style={s.textSmall}>
-              {references.map((r) => `${r.name} (${r.title}, ${r.company})`).join(' | ')}
-            </Text>
-          </View>
+        {medicalScience && medicalScience.length > 0 && (
+          <>
+            <View style={styles.hr} />
+            <Text style={styles.sectionTitle}>Medical & Science</Text>
+            {medicalScience.map((ms) => (
+              <View key={ms.id} style={{ marginBottom: 5 }}>
+                {ms.clinicalRotations && ms.clinicalRotations.trim() && (
+                  <Text style={styles.desc}>Clinical Rotations: {ms.clinicalRotations}</Text>
+                )}
+                {ms.researchGrants && ms.researchGrants.trim() && (
+                  <Text style={styles.desc}>Research Grants: {ms.researchGrants}</Text>
+                )}
+                {ms.publications && ms.publications.trim() && (
+                  <Text style={styles.desc}>Publications: {ms.publications}</Text>
+                )}
+                {ms.medicalLicenses && ms.medicalLicenses.trim() && (
+                  <Text style={styles.desc}>Licenses: {ms.medicalLicenses}</Text>
+                )}
+              </View>
+            ))}
+          </>
         )}
       </Page>
     </Document>

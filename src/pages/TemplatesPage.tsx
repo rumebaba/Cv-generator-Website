@@ -7,6 +7,7 @@ import { useForm } from '../hooks/useForm';
 import { useTemplate, type TemplateId } from '../hooks/useTemplate';
 import type { FormData } from '../types/form';
 import { getDegreeLabel } from '../utils/cvHelpers';
+import { stripHtml } from '../utils/stripHtml';
 
 const ClassicPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
   const pd = formData?.personalData;
@@ -42,7 +43,7 @@ const ClassicPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
           <div className="mb-1 text-[10px] font-bold text-[#1e3a5f] uppercase">
             Professional Summary
           </div>
-          <div className="text-[9px] text-slate-600">{summary}</div>
+          <div className="text-[9px] text-slate-600">{stripHtml(summary)}</div>
         </div>
         <div>
           <div className="mb-1 text-[10px] font-bold text-[#1e3a5f] uppercase">Experience</div>
@@ -53,7 +54,9 @@ const ClassicPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
           </div>
           <div className="text-[9px] text-slate-600">
             {firstExp
-              ? firstExp.description || 'Led team of 5 engineers, improved performance by 40%.'
+              ? stripHtml(
+                  firstExp.description || 'Led team of 5 engineers, improved performance by 40%.'
+                )
               : 'Led team of 5 engineers, improved performance by 40%. Architected microservices infrastructure.'}
           </div>
         </div>
@@ -118,7 +121,7 @@ const ModernPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
       <div className="w-2/3 p-4">
         <div className="mb-3">
           <div className="mb-1 text-[10px] font-bold text-indigo-400 uppercase">Summary</div>
-          <div className="text-[9px] text-slate-300">{summary}</div>
+          <div className="text-[9px] text-slate-300">{stripHtml(summary)}</div>
         </div>
         <div className="mb-3">
           <div className="mb-1 text-[10px] font-bold text-indigo-400 uppercase">Experience</div>
@@ -133,7 +136,9 @@ const ModernPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
               : '2020-Present'}
           </div>
           <div className="text-[9px] text-slate-300">
-            {firstExp?.description || 'Led team of 5 engineers, improved performance by 40%.'}
+            {stripHtml(
+              firstExp?.description || 'Led team of 5 engineers, improved performance by 40%.'
+            )}
           </div>
         </div>
         <div>
@@ -175,7 +180,7 @@ const MinimalPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
       </div>
       <div className="mb-3 border-l-2 border-emerald-500 pl-3">
         <div className="text-[10px] font-bold text-emerald-700 uppercase">Summary</div>
-        <div className="text-[9px] text-slate-600">{summary}</div>
+        <div className="text-[9px] text-slate-600">{stripHtml(summary)}</div>
       </div>
       <div className="mb-3 border-l-2 border-emerald-500 pl-3">
         <div className="text-[10px] font-bold text-emerald-700 uppercase">Experience</div>
@@ -185,7 +190,9 @@ const MinimalPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
             : 'Senior Developer â€” Google (2020-Present)'}
         </div>
         <div className="text-[9px] text-slate-600">
-          {firstExp?.description || 'Led team of 5 engineers, improved performance by 40%.'}
+          {stripHtml(
+            firstExp?.description || 'Led team of 5 engineers, improved performance by 40%.'
+          )}
         </div>
       </div>
       <div className="border-l-2 border-emerald-500 pl-3">
@@ -228,7 +235,7 @@ const ExecutivePreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
         <div className="mb-1 text-[10px] font-bold text-[#c9a84c] uppercase">
           Professional Summary
         </div>
-        <div className="text-[9px] text-slate-300">{summary}</div>
+        <div className="text-[9px] text-slate-300">{stripHtml(summary)}</div>
       </div>
       <div className="mb-3">
         <div className="mb-1 text-[10px] font-bold text-[#c9a84c] uppercase">Experience</div>
@@ -238,7 +245,7 @@ const ExecutivePreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
             : 'VP of Engineering â€” Microsoft (2018-Present)'}
         </div>
         <div className="text-[9px] text-slate-300">
-          {firstExp?.description || 'Managed 200+ engineers across 3 global offices.'}
+          {stripHtml(firstExp?.description || 'Managed 200+ engineers across 3 global offices.')}
         </div>
       </div>
       <div>
@@ -294,7 +301,7 @@ const CreativePreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
       <div className="w-2/3 bg-white p-4 text-slate-800">
         <div className="mb-3">
           <div className="mb-1 text-[10px] font-bold text-[#6c3ce0] uppercase">About Me</div>
-          <div className="text-[9px] text-slate-600">{summary}</div>
+          <div className="text-[9px] text-slate-600">{stripHtml(summary)}</div>
         </div>
         <div className="mb-3">
           <div className="mb-1 text-[10px] font-bold text-[#6c3ce0] uppercase">Experience</div>
@@ -304,7 +311,9 @@ const CreativePreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
               : 'Senior Developer â€” Google'}
           </div>
           <div className="text-[9px] text-slate-600">
-            {firstExp?.description || 'Led team of 5 engineers, improved performance by 40%.'}
+            {stripHtml(
+              firstExp?.description || 'Led team of 5 engineers, improved performance by 40%.'
+            )}
           </div>
         </div>
         <div>
@@ -362,7 +371,9 @@ const CompactPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
           </div>
         </div>
         <div className="text-[9px] text-slate-600">
-          {firstExp?.description || 'Led team of 5 engineers, improved performance by 40%.'}
+          {stripHtml(
+            firstExp?.description || 'Led team of 5 engineers, improved performance by 40%.'
+          )}
         </div>
       </div>
       <div className="mb-2">

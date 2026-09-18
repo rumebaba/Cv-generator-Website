@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useForm } from '../../hooks/useForm';
+import { scrollToRef } from '../../lib/scroll';
 import type { Reference } from '../../types/form';
 import { Button } from '../common/Button';
 import { Card, CardHeader, CardContent, CardFooter } from '../common/Card';
@@ -29,6 +30,15 @@ export const Step9References: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Reference>(initialReference);
   const [showForm, setShowForm] = useState(false);
+  const formCardRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!showForm) return;
+    formCardRef.current
+      ?.querySelector<HTMLInputElement>('form input:not([disabled])')
+      ?.focus({ preventScroll: true });
+    scrollToRef(formCardRef);
+  }, [showForm, editingId]);
 
   const referenceErrors = errors.references || {};
 
@@ -70,7 +80,7 @@ export const Step9References: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" ref={formCardRef}>
       <Card variant="default" padding="lg">
         <CardHeader
           title="Professional References"

@@ -1,138 +1,139 @@
-import { pdf } from '@react-pdf/renderer';
 import {
   collection,
-  addDoc,
-  updateDoc,
-  serverTimestamp,
-  query,
-  where,
+  doc,
+  getDoc,
   getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-import CVTemplate from '../components/pdf/CVTemplate';
-import CVTemplateCompact from '../components/pdf/CVTemplateCompact';
-import CVTemplateCreative from '../components/pdf/CVTemplateCreative';
-import CVTemplateExecutive from '../components/pdf/CVTemplateExecutive';
-import CVTemplateMinimal from '../components/pdf/CVTemplateMinimal';
-import CVTemplateModern from '../components/pdf/CVTemplateModern';
 import type { TemplateId } from '../hooks/useTemplate';
-import { db, storage } from '../lib/firebase';
+import { auth, db } from '../lib/firebase';
+import { normalizeFormData } from '../types/form';
 import type { FormData } from '../types/form';
-import type { FormState } from '../types/form';
 
-function stripEmptyArrays(obj: Record<string, unknown>): Record<string, unknown> {
-  const cleaned: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (Array.isArray(value) && value.length === 0) continue;
-    cleaned[key] = value;
-  }
-  return cleaned;
+export type SavedCV = FormData & {
+  id: string;
+  template: TemplateId;
+  isDraft: boolean;
+  updatedAt?: { toMillis(): number };
+};
+
+export function normalizeTemplate(value: unknown): TemplateId {
+  return typeof value === 'string' &&
+    ['classic', 'modern', 'minimal', 'executive', 'creative', 'compact'].includes(value)
+    ? (value as TemplateId)
+    : 'classic';
 }
 
 export function serializeFormData(data: FormData): Record<string, unknown> {
-  const raw = {
-    personalData: data.personalData,
-    introduction: data.introduction,
-    educations: data.educations,
-    experiences: data.experiences,
-    medicalScience: data.medicalScience,
-    projects: data.projects,
-    skills: data.skills,
-    credentials: data.credentials,
-    certifications: data.certifications,
-    languages: data.languages,
-    references: data.references,
-  };
+  return JSON.parse(JSON.stringify(normalizeFormData(data))) as Record<string, unknown>;
+}
 
-  const cleaned: Record<string, unknown> = {};
-  for (const [section, value] of Object.entries(raw)) {
-    if (Array.isArray(value)) {
-      const nonEmpty = value.filter(
-        (item) =>
-          item &&
-          typeof item === 'object' &&
-          Object.values(item).some((v) => v !== '' && v !== 0 && v !== false)
-      );
-      if (nonEmpty.length > 0) cleaned[section] = nonEmpty;
-    } else if (value && typeof value === 'object') {
-      const stripped = stripEmptyArrays(value as unknown as Record<string, unknown>);
-      if (Object.keys(stripped).length > 0) cleaned[section] = stripped;
-    }
+export function withTimeout<T>(promise: Promise<T>, label: string, timeoutMs = 20000): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () =>
+        reject(
+          new Error(
+            `${label} could not be confirmed. Check your connection and retry. Pending writes may sync when you reconnect.`
+          )
+        ),
+      timeoutMs
+    );
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
+  });
+}
+
+function requireUser(userId: string): void {
+  if (!userId || auth.currentUser?.uid !== userId)
+    throw new Error('Please sign in to save or load your CVs.');
+}
+
+export function createClientId(): string {
+  return doc(collection(db, 'clients')).id;
+}
+
+export async function saveCV(
+  data: FormData,
+  template: TemplateId,
+  userId: string,
+  clientId: string,
+  isDraft: boolean
+): Promise<void> {
+  requireUser(userId);
+  const serialized = serializeFormData(data);
+  if (new TextEncoder().encode(JSON.stringify(serialized)).length > 850000) {
+    throw new Error(
+      'This CV is too large for a free cloud document. Reduce or remove embedded photos/images, then retry. Local PDF and DOCX downloads are still available.'
+    );
   }
-  return cleaned;
-}
-
-const templateMap = {
-  classic: CVTemplate,
-  modern: CVTemplateModern,
-  minimal: CVTemplateMinimal,
-  executive: CVTemplateExecutive,
-  creative: CVTemplateCreative,
-  compact: CVTemplateCompact,
-} as const;
-
-async function generatePDFBlob(data: FormData, template: TemplateId = 'classic'): Promise<Blob> {
-  const TemplateComponent = templateMap[template];
-  const formState: FormState = {
-    data,
-    currentStep: 9,
-    completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-    errors: {},
-    isDirty: false,
-    isSubmitting: false,
-  };
-  return pdf(<TemplateComponent formState={formState} />).toBlob();
-}
-
-export interface SubmitClientResult {
-  clientId: string;
-  pdfUrl: string;
-}
-
-// NEW: Get user's CVs from Firestore (including drafts)
-export async function getUserCVs(userId: string): Promise<any[]> {
-  const cvsRef = collection(db, 'clients');
-  const q = query(cvsRef, where('userId', '==', userId));
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  await withTimeout(
+    setDoc(
+      doc(db, 'clients', clientId),
+      {
+        ...serialized,
+        template,
+        userId,
+        isDraft,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    ),
+    'Cloud save'
+  );
 }
 
 export async function submitClient(
-  formData: FormData,
-  template: TemplateId = 'classic',
-  userId: string
-): Promise<SubmitClientResult> {
-  const serialized = serializeFormData(formData);
+  data: FormData,
+  template: TemplateId,
+  userId: string,
+  clientId = createClientId()
+): Promise<{ clientId: string }> {
+  await saveCV(data, template, userId, clientId, false);
+  return { clientId };
+}
 
-  const docRef = await addDoc(collection(db, 'clients'), {
-    ...serialized,
-    template,
-    userId,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+function readCV(id: string, value: Record<string, unknown>): SavedCV {
+  const timestamp = value.updatedAt ?? value.createdAt;
+  return {
+    ...normalizeFormData(value as Partial<FormData>),
+    id,
+    template: normalizeTemplate(value.template),
+    isDraft: value.isDraft === true,
+    updatedAt:
+      timestamp && typeof (timestamp as { toMillis?: unknown }).toMillis === 'function'
+        ? (timestamp as { toMillis(): number })
+        : undefined,
+  };
+}
 
-  const pdfBlob = await generatePDFBlob(formData, template);
+export async function getUserCVs(userId: string): Promise<SavedCV[]> {
+  requireUser(userId);
+  const result = await withTimeout(
+    getDocs(query(collection(db, 'clients'), where('userId', '==', userId))),
+    'Loading CVs'
+  );
+  return result.docs
+    .map((item) => readCV(item.id, item.data()))
+    .sort((a, b) => (b.updatedAt?.toMillis() ?? 0) - (a.updatedAt?.toMillis() ?? 0));
+}
 
-  const fileName = `${formData.personalData.fullName.replace(/\s+/g, '_')}_${docRef.id}.pdf`;
-  const storageRef = ref(storage, `cv-pdfs/${docRef.id}/${fileName}`);
-  await uploadBytes(storageRef, pdfBlob);
-
-  const downloadUrl = await getDownloadURL(storageRef);
-
-  await updateDoc(docRef, {
-    pdfUrl: downloadUrl,
-    pdfFileName: fileName,
-    updatedAt: serverTimestamp(),
-  });
-
-  // Also save userId to existing docs without it (migration)
-  const snapshot = await getDocs(query(collection(db, 'clients'), where('userId', '==', '')));
-  if (snapshot.size > 0) {
-    const migrationBatch = snapshot.docs.map((doc) => updateDoc(doc.ref, { userId }));
-    await Promise.all(migrationBatch);
-  }
-
-  return { clientId: docRef.id, pdfUrl: downloadUrl };
+export async function loadCV(userId: string, clientId: string): Promise<SavedCV> {
+  requireUser(userId);
+  const result = await withTimeout(getDoc(doc(db, 'clients', clientId)), 'Loading CV');
+  if (!result.exists() || result.data().userId !== userId)
+    throw new Error('This CV is unavailable for your account.');
+  return readCV(result.id, result.data());
 }

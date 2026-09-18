@@ -417,43 +417,43 @@ export const Step1PersonalData: React.FC = () => {
                   Add a professional headshot to your CV
                 </p>
                 <div className="mt-3 flex flex-col gap-2">
-<label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      Upload Photo
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            if (!file.type.startsWith('image/')) {
-                              alert('Please select an image file');
-                              e.target.value = '';
-                              return;
-                            }
-                            const maxSize = 2 * 1024 * 1024; // 2MB
-                            if (file.size > maxSize) {
-                              alert('Image must be less than 2MB');
-                              e.target.value = '';
-                              return;
-                            }
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              handleInputChange('profilePhotoUrl', reader.result as string);
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
-                    </label>
+                    </svg>
+                    Upload Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (!file.type.startsWith('image/')) {
+                            alert('Please select an image file');
+                            e.target.value = '';
+                            return;
+                          }
+                          const maxSize = 2 * 1024 * 1024; // 2MB
+                          if (file.size > maxSize) {
+                            alert('Image must be less than 2MB');
+                            e.target.value = '';
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            handleInputChange('profilePhotoUrl', reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
                   <span className="text-xs text-slate-400 dark:text-slate-500">
                     or paste a URL below
                   </span>

@@ -280,6 +280,26 @@ export const initialFormData: FormData = {
   references: [],
 };
 
+export function normalizeFormData(value: Partial<FormData>): FormData {
+  return {
+    personalData: {
+      ...initialPersonalData,
+      ...value.personalData,
+      customSocialLinks: value.personalData?.customSocialLinks ?? [],
+    },
+    introduction: { ...initialIntroduction, ...value.introduction },
+    experiences: value.experiences ?? [],
+    educations: value.educations ?? [],
+    medicalScience: value.medicalScience ?? [],
+    projects: value.projects ?? [],
+    skills: value.skills ?? [],
+    credentials: value.credentials ?? [],
+    certifications: value.certifications ?? [],
+    languages: value.languages ?? [],
+    references: value.references ?? [],
+  };
+}
+
 export const initialFormState: FormState = {
   data: initialFormData,
   currentStep: 1,

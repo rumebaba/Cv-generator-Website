@@ -8,8 +8,7 @@ import React, {
   useEffect,
 } from 'react';
 
-import { initialFormState } from '../types/form';
-
+import { initialFormState, normalizeFormData } from '../types/form';
 import type {
   FormState,
   FormData,
@@ -87,7 +86,9 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
       };
 
     case 'SET_STEP':
-      return { ...state, currentStep: action.payload };
+      return state.currentStep === action.payload
+        ? state
+        : { ...state, currentStep: action.payload };
 
     case 'COMPLETE_STEP':
       if (!state.completedSteps.includes(action.payload)) {
@@ -406,10 +407,11 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
       return { ...state, errors: { ...state.errors, ...action.payload } };
 
     case 'CLEAR_ERROR': {
-      const sectionErrors = state.errors[action.payload.section] || {};
-      const { [action.payload.field]: _fieldRemoved, ...restSectionErrors } = sectionErrors;
-      const { [action.payload.section]: _sectionRemoved, ...restErrors } = state.errors;
-      return { ...state, errors: { ...restErrors, [action.payload.section]: restSectionErrors } };
+      const sectionErrors = { ...state.errors[action.payload.section] };
+      delete sectionErrors[action.payload.field];
+      const restErrors = { ...state.errors };
+      delete restErrors[action.payload.section];
+      return { ...state, errors: { ...restErrors, [action.payload.section]: sectionErrors } };
     }
 
     case 'SET_DIRTY':
@@ -422,7 +424,7 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
       return initialFormState;
 
     case 'LOAD_DATA':
-      return { ...state, data: action.payload, isDirty: false };
+      return { ...state, data: normalizeFormData(action.payload), isDirty: false };
 
     default:
       return state;
@@ -486,9 +488,16 @@ function loadSavedState(): FormState {
       const parsed = JSON.parse(saved) as FormState;
       return {
         ...initialFormState,
-        data: parsed.data,
-        completedSteps: parsed.completedSteps,
-        currentStep: parsed.currentStep,
+        data: normalizeFormData(parsed?.data ?? {}),
+        completedSteps: Array.isArray(parsed?.completedSteps)
+          ? parsed.completedSteps.filter((step) => Number.isInteger(step) && step >= 1 && step <= 9)
+          : [],
+        currentStep:
+          Number.isInteger(parsed?.currentStep) &&
+          parsed.currentStep >= 1 &&
+          parsed.currentStep <= 9
+            ? parsed.currentStep
+            : 1,
       };
     }
   } catch {
@@ -515,12 +524,25 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [state.data, state.completedSteps, state.currentStep]);
 
+  const setStep = useCallback(
+    (step: FormStep) => dispatch({ type: 'SET_STEP', payload: step }),
+    []
+  );
+  const setSubmitting = useCallback(
+    (submitting: boolean) => dispatch({ type: 'SET_SUBMITTING', payload: submitting }),
+    []
+  );
+  const loadData = useCallback(
+    (data: FormData) => dispatch({ type: 'LOAD_DATA', payload: data }),
+    []
+  );
+
   const actions = useMemo<FormContextValue>(
     () => ({
       ...state,
       setPersonalData: (data) => dispatch({ type: 'SET_PERSONAL_DATA', payload: data }),
       setIntroduction: (data) => dispatch({ type: 'SET_INTRODUCTION', payload: data }),
-      setStep: (step) => dispatch({ type: 'SET_STEP', payload: step }),
+      setStep,
       nextStep: () =>
         dispatch({ type: 'SET_STEP', payload: Math.min(state.currentStep + 1, 9) as FormStep }),
       prevStep: () =>
@@ -564,16 +586,16 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       clearError: (section, field) =>
         dispatch({ type: 'CLEAR_ERROR', payload: { section, field } }),
       setDirty: (dirty) => dispatch({ type: 'SET_DIRTY', payload: dirty }),
-      setSubmitting: (submitting) => dispatch({ type: 'SET_SUBMITTING', payload: submitting }),
+      setSubmitting,
       resetForm: () => dispatch({ type: 'RESET_FORM' }),
-      loadData: (data) => dispatch({ type: 'LOAD_DATA', payload: data }),
+      loadData,
       canProceed: () => {
         const currentStepData = getStepData(state.data, state.currentStep);
         return validateStep(state.currentStep, currentStepData).length === 0;
       },
       getStepCompletion: (step) => calculateStepCompletion(state.data, step),
     }),
-    [state]
+    [state, setStep, setSubmitting, loadData]
   );
 
   return <FormContext.Provider value={actions}>{children}</FormContext.Provider>;

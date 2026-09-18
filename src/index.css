@@ -23,17 +23,14 @@
   }
 
   ::selection {
-    @apply bg-indigo-500/30 text-indigo-900 dark:text-indigo-100;
+    @apply bg-indigo-200 text-indigo-950;
   }
 
-  .dark .ProseMirror ::selection {
-    background: rgba(99, 102, 241, 0.4);
-    color: #e2e8f0;
-  }
-
+  .dark ::selection,
+  .dark .ProseMirror ::selection,
   .dark .ProseMirror *::selection {
-    background: rgba(99, 102, 241, 0.4);
-    color: #e2e8f0;
+    background: rgba(129, 140, 248, 0.45);
+    color: #f8fafc;
   }
 
   :focus-visible {
@@ -146,7 +143,10 @@
 }
 
 @media print {
-  header, footer, nav, .no-print {
+  header,
+  footer,
+  nav,
+  .no-print {
     display: none !important;
   }
   body {

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useForm } from '../../hooks/useForm';
+import { scrollToRef } from '../../lib/scroll';
 import type { Credential, FormState } from '../../types/form';
 import { Button } from '../common/Button';
 import { Card, CardHeader, CardContent, CardFooter } from '../common/Card';
@@ -440,6 +441,15 @@ export const Step8Credentials: React.FC = () => {
   const [formData, setFormData] = useState<Credential>(initialCredential);
   const [showForm, setShowForm] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const formCardRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!showForm) return;
+    formCardRef.current
+      ?.querySelector<HTMLInputElement>('form input:not([disabled])')
+      ?.focus({ preventScroll: true });
+    scrollToRef(formCardRef);
+  }, [showForm, editingId]);
 
   const credentialErrors = errors.credentials || {};
 
@@ -491,7 +501,7 @@ export const Step8Credentials: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" ref={formCardRef}>
       <Card variant="default" padding="lg">
         <CardHeader
           title="Credentials & Extras"

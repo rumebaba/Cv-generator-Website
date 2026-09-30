@@ -5,7 +5,9 @@ import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
 import { FormNavigation } from '../components/common/FormNavigation';
 import { StepProgress } from '../components/common/StepProgress';
-import { Step10Review } from '../components/forms/Step10Review';
+import { Step10Certifications } from '../components/forms/Step10Certifications';
+import { Step11Languages } from '../components/forms/Step11Languages';
+import { Step12Review } from '../components/forms/Step12Review';
 import { Step1PersonalData } from '../components/forms/Step1PersonalData';
 import { Step2Introduction } from '../components/forms/Step2Introduction';
 import { Step3Education } from '../components/forms/Step3Education';
@@ -37,8 +39,12 @@ const steps = [
   { number: 7, label: 'Skills', component: Step7Skills },
   { number: 8, label: 'Credentials & Extras', component: Step8Credentials },
   { number: 9, label: 'References', component: Step9References },
-  { number: 10, label: 'Review & Customize', component: Step10Review },
+  { number: 10, label: 'Certifications', component: Step10Certifications },
+  { number: 11, label: 'Languages', component: Step11Languages },
+  { number: 12, label: 'Review & Customize', component: Step12Review },
 ];
+
+const TOTAL_STEPS = 12;
 
 const stepComponents: Record<number, React.ComponentType> = steps.reduce(
   (acc, step) => {
@@ -188,7 +194,7 @@ const FormPageInner: React.FC = () => {
 
   const currentStepRaw = parseInt(step || '1', 10);
   const validStep: FormStep = (
-    Number.isFinite(currentStepRaw) && currentStepRaw >= 1 && currentStepRaw <= 10
+    Number.isFinite(currentStepRaw) && currentStepRaw >= 1 && currentStepRaw <= TOTAL_STEPS
       ? currentStepRaw
       : 1
   ) as FormStep;
@@ -199,11 +205,11 @@ const FormPageInner: React.FC = () => {
 
   const currentStepData = steps.find((s) => s.number === validStep);
   const isFirstStep = validStep === 1;
-  const isLastStep = validStep === 10;
+  const isLastStep = validStep === TOTAL_STEPS;
   const StepComponent = stepComponents[validStep] || null;
 
   const handleNext = () => {
-    if (validStep < 10) {
+    if (validStep < TOTAL_STEPS) {
       navigate(`/form/step/${validStep + 1}`);
     }
   };
@@ -340,14 +346,14 @@ const FormPageInner: React.FC = () => {
       )}
 
       <div className="animate-fade-in">
-        {validStep === 10 ? (
-          <Step10Review onGenerate={() => setShowPreview(true)} />
+        {validStep === TOTAL_STEPS ? (
+          <Step12Review onGenerate={() => setShowPreview(true)} />
         ) : (
           <StepComponent />
         )}
       </div>
 
-      {validStep >= 9 && (
+      {validStep >= TOTAL_STEPS - 3 && (
         <Card variant="elevated" padding="lg">
           <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
             Export Your CV
@@ -431,7 +437,7 @@ const FormPageInner: React.FC = () => {
         </Card>
       )}
 
-      {validStep !== 10 && (
+      {validStep !== TOTAL_STEPS && (
         <FormNavigation
           onNext={handleNext}
           onPrev={handlePrev}

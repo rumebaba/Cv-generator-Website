@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "verify:sections": "npx --yes tsx scripts/verifySectionSelection.tsx",
-    "verify:creative": "npx --yes tsx scripts/verifyCreativeTemplate.tsx"
+    "verify:creative": "npx --yes tsx scripts/verifyCreativeTemplate.tsx",
+    "verify:steps": "npx --yes tsx scripts/verifyStepWiring.ts"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",

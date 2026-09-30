@@ -23,20 +23,20 @@ const SECTION_LABELS: Record<string, { label: string; description: string }> = {
     description: 'Clinical rotations, research, publications, licenses',
   },
   projects: { label: 'Projects', description: 'Project names, roles, descriptions, links' },
-  skills: { label: 'Skills', description: 'Technical skills, soft skills, languages, proficiency' },
+  skills: { label: 'Skills', description: 'Technical skills, soft skills, proficiency' },
   credentials: {
-    label: 'Credentials',
+    label: 'Credentials & Extras',
     description: 'Certificates, volunteer work, hobbies, military, references',
   },
-  certifications: {
-    label: 'Certifications',
-    description: 'Certificate names, issuers, dates, credential IDs',
-  },
-  languages: { label: 'Languages', description: 'Spoken languages and proficiency levels' },
   references: {
     label: 'References',
     description: 'Reference names, titles, companies, contact info',
   },
+  certifications: {
+    label: 'Certifications',
+    description: 'Certificate names, issuers, dates, credential IDs, verification links',
+  },
+  languages: { label: 'Languages', description: 'Spoken languages and proficiency levels' },
 };
 
 const SECTION_ORDER: string[] = [
@@ -48,9 +48,9 @@ const SECTION_ORDER: string[] = [
   'projects',
   'skills',
   'credentials',
+  'references',
   'certifications',
   'languages',
-  'references',
 ];
 
 const hasContent = (data: FormData, section: string): boolean => {
@@ -61,11 +61,11 @@ const hasContent = (data: FormData, section: string): boolean => {
   return Boolean(value);
 };
 
-interface Step10ReviewProps {
+interface Step12ReviewProps {
   onGenerate?: () => void;
 }
 
-export const Step10Review: React.FC<Step10ReviewProps> = ({ onGenerate }) => {
+export const Step12Review: React.FC<Step12ReviewProps> = ({ onGenerate }) => {
   const { data, selectedSections, setSelectedSections } = useForm();
   const { selectedTemplate, setSelectedTemplate } = useTemplate();
   const navigate = useNavigate();

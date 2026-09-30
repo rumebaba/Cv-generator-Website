@@ -145,7 +145,7 @@ export interface FormData {
   references: Reference[];
 }
 
-export type FormStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type FormStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 export interface FormState {
   data: FormData;
@@ -265,6 +265,22 @@ export const initialReference: Reference = {
   email: '',
   phone: '',
   relationship: '',
+};
+
+export const initialCertification: Certification = {
+  id: '',
+  name: '',
+  issuer: '',
+  issueDate: '',
+  expiryDate: '',
+  credentialId: '',
+  credentialUrl: '',
+};
+
+export const initialLanguage: Language = {
+  id: '',
+  name: '',
+  proficiency: 'fluent',
 };
 
 export const initialFormData: FormData = {

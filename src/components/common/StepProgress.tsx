@@ -14,7 +14,9 @@ const steps: { number: FormStep; label: string; href: string }[] = [
   { number: 7, label: 'Skills', href: '/form/step/7' },
   { number: 8, label: 'Credentials', href: '/form/step/8' },
   { number: 9, label: 'References', href: '/form/step/9' },
-  { number: 10, label: 'Review', href: '/form/step/10' },
+  { number: 10, label: 'Certifications', href: '/form/step/10' },
+  { number: 11, label: 'Languages', href: '/form/step/11' },
+  { number: 12, label: 'Review', href: '/form/step/12' },
 ];
 
 interface StepProgressProps {

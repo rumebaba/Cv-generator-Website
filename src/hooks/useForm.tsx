@@ -498,12 +498,14 @@ function loadSavedState(): FormState {
         ...initialFormState,
         data: normalizeFormData(parsed?.data ?? {}),
         completedSteps: Array.isArray(parsed?.completedSteps)
-          ? parsed.completedSteps.filter((step) => Number.isInteger(step) && step >= 1 && step <= 10)
+          ? parsed.completedSteps.filter(
+              (step) => Number.isInteger(step) && step >= 1 && step <= 12
+            )
           : [],
         currentStep:
           Number.isInteger(parsed?.currentStep) &&
           parsed.currentStep >= 1 &&
-          parsed.currentStep <= 10
+          parsed.currentStep <= 12
             ? parsed.currentStep
             : 1,
         selectedSections: parsed?.selectedSections ?? initialFormState.selectedSections,
@@ -642,6 +644,10 @@ const getStepData = (data: FormData, step: FormStep) => {
     case 9:
       return data.references;
     case 10:
+      return data.certifications;
+    case 11:
+      return data.languages;
+    case 12:
       return data;
     default:
       return null;
@@ -689,6 +695,14 @@ const validateStep = (step: FormStep, data: unknown): string[] => {
     }
     case 8: {
       // Credentials is optional - always valid
+      break;
+    }
+    case 10: {
+      // Certifications is optional - always valid
+      break;
+    }
+    case 11: {
+      // Languages is optional - always valid
       break;
     }
   }
@@ -795,7 +809,17 @@ const calculateStepCompletion = (data: FormData, step: FormStep): number => {
       if (refs.length === 0) return 0;
       return 100;
     }
-    case 10:
+    case 10: {
+      const certs = stepData as Certification[];
+      if (certs.length === 0) return 0;
+      return 100;
+    }
+    case 11: {
+      const langs = stepData as Language[];
+      if (langs.length === 0) return 0;
+      return 100;
+    }
+    case 12:
       return 100;
     default:
       return stepData instanceof Array && stepData.length > 0 ? 100 : 0;

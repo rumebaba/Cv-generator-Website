@@ -261,7 +261,7 @@ const FormPageInner: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Build Your CV</h1>
           <p className="mt-1 text-slate-600 dark:text-slate-400">
-            Step {validStep} of 9: {currentStepData?.label}
+            Step {validStep} of {steps.length}: {currentStepData?.label}
           </p>
         </div>
         <div className="flex items-center gap-3">

@@ -13,6 +13,7 @@ const steps = [
   { number: 7, label: 'Skills', href: '/form/step/7' },
   { number: 8, label: 'Credentials', href: '/form/step/8' },
   { number: 9, label: 'References', href: '/form/step/9' },
+  { number: 10, label: 'Review', href: '/form/step/10' },
 ];
 
 interface StepProgressProps {
@@ -20,6 +21,8 @@ interface StepProgressProps {
   className?: string;
   showLabels?: boolean;
 }
+
+const ALL_STEPS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 
 export const StepProgress: React.FC<StepProgressProps> = ({
   currentStep,
@@ -33,12 +36,10 @@ export const StepProgress: React.FC<StepProgressProps> = ({
     <nav className={`w-full ${className}`} aria-label="Form progress">
       <ol className="flex items-center" role="list">
         {steps.map((step, index) => {
-          const isCompleted = completedSteps.includes(
-            step.number as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-          );
+          const isCompleted = completedSteps.includes(step.number as (typeof ALL_STEPS)[number]);
           const isCurrent = step.number === currentStep;
           const isFuture = step.number > currentStep;
-          const completion = getStepCompletion(step.number as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9);
+          const completion = getStepCompletion(step.number as (typeof ALL_STEPS)[number]);
 
           return (
             <li key={step.number} className="flex flex-1 items-center">

@@ -641,6 +641,8 @@ const getStepData = (data: FormData, step: FormStep) => {
       return data.credentials;
     case 9:
       return data.references;
+    case 10:
+      return data;
     default:
       return null;
   }
@@ -793,6 +795,8 @@ const calculateStepCompletion = (data: FormData, step: FormStep): number => {
       if (refs.length === 0) return 0;
       return 100;
     }
+    case 10:
+      return 100;
     default:
       return stepData instanceof Array && stepData.length > 0 ? 100 : 0;
   }

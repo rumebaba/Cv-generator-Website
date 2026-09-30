@@ -73,7 +73,8 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
     medicalScience,
   } = data;
 
-  const shouldShow = (section: keyof typeof selectedSections) => selectedSections[section] !== false;
+  const shouldShow = (section: keyof typeof selectedSections) =>
+    selectedSections[section] !== false;
 
   const formatEnd = (current: boolean, endDate: string) => {
     if (current) return 'Present';
@@ -88,42 +89,48 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
-        <View style={styles.header}>
-          <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
-          {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-            <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
-          )}
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: 8,
-              marginTop: 8,
-            }}
-          >
-            {pd.email && <Text style={styles.contact}>{pd.email}</Text>}
-            {pd.phone && <Text style={styles.contact}>{pd.phone}</Text>}
-            {(pd.city || pd.country) && (
-              <Text style={styles.contact}>
-                {pd.city}
-                {pd.city && pd.country ? ', ' : ''}
-                {pd.country}
-              </Text>
-            )}
-            {pd.linkedin && <Text style={styles.contact}>{pd.linkedin}</Text>}
-          </View>
-        </View>
-
-        {shouldShow('introduction') && introduction.professionalSummary && introduction.professionalSummary.trim() && (
-          <View style={{ marginBottom: 14 }}>
-            <Text style={styles.sectionTitle}>Professional Summary</Text>
-            <Text style={{ fontSize: 9, color: '#333', lineHeight: 1.5 }}>
-              {stripHtml(introduction.professionalSummary)}
-            </Text>
-          </View>
+        {shouldShow('personalData') && (
+          <>
+            {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
+            <View style={styles.header}>
+              <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+              {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
+                <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
+              )}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
+                  gap: 8,
+                  marginTop: 8,
+                }}
+              >
+                {pd.email && <Text style={styles.contact}>{pd.email}</Text>}
+                {pd.phone && <Text style={styles.contact}>{pd.phone}</Text>}
+                {(pd.city || pd.country) && (
+                  <Text style={styles.contact}>
+                    {pd.city}
+                    {pd.city && pd.country ? ', ' : ''}
+                    {pd.country}
+                  </Text>
+                )}
+                {pd.linkedin && <Text style={styles.contact}>{pd.linkedin}</Text>}
+              </View>
+            </View>
+          </>
         )}
+
+        {shouldShow('introduction') &&
+          introduction.professionalSummary &&
+          introduction.professionalSummary.trim() && (
+            <View style={{ marginBottom: 14 }}>
+              <Text style={styles.sectionTitle}>Professional Summary</Text>
+              <Text style={{ fontSize: 9, color: '#333', lineHeight: 1.5 }}>
+                {stripHtml(introduction.professionalSummary)}
+              </Text>
+            </View>
+          )}
 
         {shouldShow('experiences') && experiences.length > 0 && (
           <View style={{ marginBottom: 16 }}>

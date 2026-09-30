@@ -13,14 +13,39 @@ import {
 import type { TemplateId } from '../hooks/useTemplate';
 import { auth, db } from '../lib/firebase';
 import { normalizeFormData } from '../types/form';
-import type { FormData } from '../types/form';
+import type { FormData, FormState } from '../types/form';
 
 export type SavedCV = FormData & {
   id: string;
   template: TemplateId;
   isDraft: boolean;
+  selectedSections: FormState['selectedSections'];
   updatedAt?: { toMillis(): number };
 };
+
+const ALL_SECTIONS_SELECTED: FormState['selectedSections'] = {
+  personalData: true,
+  introduction: true,
+  experiences: true,
+  educations: true,
+  medicalScience: true,
+  projects: true,
+  skills: true,
+  credentials: true,
+  certifications: true,
+  languages: true,
+  references: true,
+};
+
+function normalizeSelectedSections(value: unknown): FormState['selectedSections'] {
+  if (!value || typeof value !== 'object') return { ...ALL_SECTIONS_SELECTED };
+  const source = value as Record<string, unknown>;
+  const result: Record<string, boolean> = { ...ALL_SECTIONS_SELECTED };
+  for (const key of Object.keys(ALL_SECTIONS_SELECTED)) {
+    if (typeof source[key] === 'boolean') result[key] = source[key] as boolean;
+  }
+  return result as FormState['selectedSections'];
+}
 
 export function normalizeTemplate(value: unknown): TemplateId {
   return typeof value === 'string' &&
@@ -71,7 +96,8 @@ export async function saveCV(
   template: TemplateId,
   userId: string,
   clientId: string,
-  isDraft: boolean
+  isDraft: boolean,
+  selectedSections?: FormState['selectedSections']
 ): Promise<void> {
   requireUser(userId);
   const serialized = serializeFormData(data);
@@ -88,6 +114,7 @@ export async function saveCV(
         template,
         userId,
         isDraft,
+        selectedSections: selectedSections ?? { ...ALL_SECTIONS_SELECTED },
         updatedAt: serverTimestamp(),
       },
       { merge: true }
@@ -100,9 +127,10 @@ export async function submitClient(
   data: FormData,
   template: TemplateId,
   userId: string,
-  clientId = createClientId()
+  clientId = createClientId(),
+  selectedSections?: FormState['selectedSections']
 ): Promise<{ clientId: string }> {
-  await saveCV(data, template, userId, clientId, false);
+  await saveCV(data, template, userId, clientId, false, selectedSections);
   return { clientId };
 }
 
@@ -113,6 +141,7 @@ function readCV(id: string, value: Record<string, unknown>): SavedCV {
     id,
     template: normalizeTemplate(value.template),
     isDraft: value.isDraft === true,
+    selectedSections: normalizeSelectedSections(value.selectedSections),
     updatedAt:
       timestamp && typeof (timestamp as { toMillis?: unknown }).toMillis === 'function'
         ? (timestamp as { toMillis(): number })

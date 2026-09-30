@@ -56,7 +56,7 @@ const s = StyleSheet.create({
 });
 
 const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
-  const { data } = formState;
+  const { data, selectedSections } = formState;
   const {
     personalData: pd,
     introduction,
@@ -68,30 +68,35 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
     references,
   } = data;
 
+  const shouldShow = (section: keyof typeof selectedSections) =>
+    selectedSections[section] !== false;
+
   return (
     <Document>
       <Page size="A4" style={s.page}>
         {/* Header */}
-        <View style={s.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            {pd.profilePhotoUrl && <Image style={s.photo} src={pd.profilePhotoUrl} />}
-            <Text style={s.name}>{pd.fullName}</Text>
+        {shouldShow('personalData') && (
+          <View style={s.header}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              {pd.profilePhotoUrl && <Image style={s.photo} src={pd.profilePhotoUrl} />}
+              <Text style={s.name}>{pd.fullName}</Text>
+            </View>
+            <View style={s.contactBlock}>
+              {pd.email && <Text>{pd.email}</Text>}
+              {pd.phone && <Text>{pd.phone}</Text>}
+              {pd.city && (
+                <Text>
+                  {pd.city}
+                  {pd.country ? `, ${pd.country}` : ''}
+                </Text>
+              )}
+              {pd.linkedin && <Text>{pd.linkedin}</Text>}
+            </View>
           </View>
-          <View style={s.contactBlock}>
-            {pd.email && <Text>{pd.email}</Text>}
-            {pd.phone && <Text>{pd.phone}</Text>}
-            {pd.city && (
-              <Text>
-                {pd.city}
-                {pd.country ? `, ${pd.country}` : ''}
-              </Text>
-            )}
-            {pd.linkedin && <Text>{pd.linkedin}</Text>}
-          </View>
-        </View>
+        )}
 
         {/* Summary */}
-        {introduction.professionalSummary && (
+        {shouldShow('introduction') && introduction.professionalSummary && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Summary</Text>
             <Text style={s.text}>{stripHtml(introduction.professionalSummary)}</Text>
@@ -99,7 +104,7 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
         )}
 
         {/* Experience */}
-        {experiences.length > 0 && (
+        {shouldShow('experiences') && experiences.length > 0 && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Experience</Text>
             {experiences.map((exp) => (
@@ -130,7 +135,7 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
         )}
 
         {/* Education */}
-        {educations.length > 0 && (
+        {shouldShow('educations') && educations.length > 0 && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Education</Text>
             {educations.map((edu) => (
@@ -155,7 +160,7 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
         )}
 
         {/* Skills */}
-        {skills.length > 0 && skills.some((sk) => sk.technicalSkills) && (
+        {shouldShow('skills') && skills.length > 0 && skills.some((sk) => sk.technicalSkills) && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Skills</Text>
             <View style={s.inline}>
@@ -173,7 +178,7 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
         )}
 
         {/* Projects */}
-        {projects.length > 0 && (
+        {shouldShow('projects') && projects.length > 0 && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Projects</Text>
             {projects.map((proj) => (
@@ -196,37 +201,41 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
         )}
 
         {/* Credentials */}
-        {credentials.length > 0 && credentials.some((c) => c.certificateName) && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Certifications</Text>
-            <View style={s.inline}>
-              {credentials
-                .filter((c) => c.certificateName)
-                .map((cred) => (
-                  <Text key={cred.id} style={s.pill}>
-                    {cred.certificateName} ({cred.issuer})
-                    {cred.dateIssued ? ` - ${cred.dateIssued}` : ''}
-                  </Text>
-                ))}
+        {shouldShow('credentials') &&
+          credentials.length > 0 &&
+          credentials.some((c) => c.certificateName) && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>Certifications</Text>
+              <View style={s.inline}>
+                {credentials
+                  .filter((c) => c.certificateName)
+                  .map((cred) => (
+                    <Text key={cred.id} style={s.pill}>
+                      {cred.certificateName} ({cred.issuer})
+                      {cred.dateIssued ? ` - ${cred.dateIssued}` : ''}
+                    </Text>
+                  ))}
+              </View>
             </View>
-          </View>
-        )}
+          )}
 
         {/* Languages */}
-        {skills.length > 0 && skills.some((sk) => sk.spokenLanguages) && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Languages</Text>
-            <Text style={s.text}>
-              {skills
-                .filter((sk) => sk.spokenLanguages)
-                .map((sk) => sk.spokenLanguages)
-                .join(', ')}
-            </Text>
-          </View>
-        )}
+        {shouldShow('languages') &&
+          skills.length > 0 &&
+          skills.some((sk) => sk.spokenLanguages) && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>Languages</Text>
+              <Text style={s.text}>
+                {skills
+                  .filter((sk) => sk.spokenLanguages)
+                  .map((sk) => sk.spokenLanguages)
+                  .join(', ')}
+              </Text>
+            </View>
+          )}
 
         {/* References */}
-        {references.length > 0 && (
+        {shouldShow('references') && references.length > 0 && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>References</Text>
             <Text style={s.textSmall}>

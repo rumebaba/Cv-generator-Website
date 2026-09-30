@@ -98,33 +98,38 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
     medicalScience,
   } = data;
 
-  const shouldShow = (section: keyof typeof selectedSections) => selectedSections[section] !== false;
+  const shouldShow = (section: keyof typeof selectedSections) =>
+    selectedSections[section] !== false;
 
   return (
     <Document>
       <Page size="A4" style={s.page}>
         <View style={s.sidebar}>
-          {pd.profilePhotoUrl && <Image style={s.photo} src={pd.profilePhotoUrl} />}
-          <Text style={s.name}>{pd.fullName}</Text>
-          {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-            <Text style={s.subtitle}>{introduction.targetJobTitles}</Text>
+          {shouldShow('personalData') && (
+            <>
+              {pd.profilePhotoUrl && <Image style={s.photo} src={pd.profilePhotoUrl} />}
+              <Text style={s.name}>{pd.fullName}</Text>
+              {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
+                <Text style={s.subtitle}>{introduction.targetJobTitles}</Text>
+              )}
+
+              <View style={s.sidebarSection}>
+                <Text style={s.sidebarTitle}>Contact</Text>
+                {pd.email && <Text style={s.contactItem}>{pd.email}</Text>}
+                {pd.phone && <Text style={s.contactItem}>{pd.phone}</Text>}
+                {(pd.city || pd.country) && (
+                  <Text style={s.contactItem}>
+                    {pd.city}
+                    {pd.city && pd.country ? ', ' : ''}
+                    {pd.country}
+                  </Text>
+                )}
+                {pd.linkedin && <Text style={s.contactItem}>{pd.linkedin}</Text>}
+              </View>
+            </>
           )}
 
-          <View style={s.sidebarSection}>
-            <Text style={s.sidebarTitle}>Contact</Text>
-            {pd.email && <Text style={s.contactItem}>{pd.email}</Text>}
-            {pd.phone && <Text style={s.contactItem}>{pd.phone}</Text>}
-            {(pd.city || pd.country) && (
-              <Text style={s.contactItem}>
-                {pd.city}
-                {pd.city && pd.country ? ', ' : ''}
-                {pd.country}
-              </Text>
-            )}
-            {pd.linkedin && <Text style={s.contactItem}>{pd.linkedin}</Text>}
-          </View>
-
-          {skills.length > 0 && (
+          {shouldShow('skills') && skills.length > 0 && (
             <View style={s.sidebarSection}>
               <Text style={s.sidebarTitle}>Skills</Text>
               {skills.map((skill) => (
@@ -143,7 +148,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
             </View>
           )}
 
-          {credentials.length > 0 && (
+          {shouldShow('credentials') && credentials.length > 0 && (
             <View style={s.sidebarSection}>
               <Text style={s.sidebarTitle}>Certifications</Text>
               {credentials.map((cred) => (
@@ -154,7 +159,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
             </View>
           )}
 
-          {educations.length > 0 && (
+          {shouldShow('educations') && educations.length > 0 && (
             <View style={s.sidebarSection}>
               <Text style={s.sidebarTitle}>Education</Text>
               {educations.map((edu) => (
@@ -169,12 +174,14 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
 
         <View style={s.main}>
           {/* Summary */}
-          {shouldShow('introduction') && introduction.professionalSummary && introduction.professionalSummary.trim() && (
-            <View style={{ marginBottom: 16 }}>
-              <Text style={s.sectionTitle}>Professional Summary</Text>
-              <Text style={s.text}>{stripHtml(introduction.professionalSummary)}</Text>
-            </View>
-          )}
+          {shouldShow('introduction') &&
+            introduction.professionalSummary &&
+            introduction.professionalSummary.trim() && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={s.sectionTitle}>Professional Summary</Text>
+                <Text style={s.text}>{stripHtml(introduction.professionalSummary)}</Text>
+              </View>
+            )}
 
           {/* Experience */}
           {shouldShow('experiences') && experiences.length > 0 && (
@@ -220,7 +227,7 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
           )}
 
           {/* Education */}
-          {educations.length > 0 && (
+          {shouldShow('educations') && educations.length > 0 && (
             <View style={{ marginBottom: 16 }}>
               <Text style={s.sectionTitle}>Education</Text>
               {educations.map((edu) => (
@@ -263,45 +270,49 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
           )}
 
           {/* Credentials */}
-          {shouldShow('credentials') && credentials.length > 0 && credentials.some((c) => c.certificateName) && (
-            <View style={{ marginBottom: 16 }}>
-              <Text style={s.sectionTitle}>Certifications</Text>
-              {credentials.map((cred) => (
-                <View key={cred.id} style={{ marginBottom: 4 }}>
-                  <Text style={s.role}>{cred.certificateName}</Text>
-                  {cred.issuer && <Text style={s.company}>{cred.issuer}</Text>}
-                  {(cred.dateIssued || cred.expirationDate) && (
-                    <Text style={s.textSmall}>
-                      {cred.dateIssued &&
-                        new Date(cred.dateIssued + '-01').toLocaleDateString('en-US', {
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      {cred.expirationDate &&
-                        ' — ' +
-                          new Date(cred.expirationDate + '-01').toLocaleDateString('en-US', {
+          {shouldShow('credentials') &&
+            credentials.length > 0 &&
+            credentials.some((c) => c.certificateName) && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={s.sectionTitle}>Certifications</Text>
+                {credentials.map((cred) => (
+                  <View key={cred.id} style={{ marginBottom: 4 }}>
+                    <Text style={s.role}>{cred.certificateName}</Text>
+                    {cred.issuer && <Text style={s.company}>{cred.issuer}</Text>}
+                    {(cred.dateIssued || cred.expirationDate) && (
+                      <Text style={s.textSmall}>
+                        {cred.dateIssued &&
+                          new Date(cred.dateIssued + '-01').toLocaleDateString('en-US', {
                             month: 'short',
                             year: 'numeric',
                           })}
-                    </Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          )}
+                        {cred.expirationDate &&
+                          ' — ' +
+                            new Date(cred.expirationDate + '-01').toLocaleDateString('en-US', {
+                              month: 'short',
+                              year: 'numeric',
+                            })}
+                      </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
 
           {/* Languages */}
-          {shouldShow('skills') && skills.length > 0 && skills.some((sk) => sk.spokenLanguages) && (
-            <View style={{ marginBottom: 16 }}>
-              <Text style={s.sectionTitle}>Languages</Text>
-              <Text style={s.text}>
-                {skills
-                  .filter((sk) => sk.spokenLanguages)
-                  .map((sk) => sk.spokenLanguages)
-                  .join(', ')}
-              </Text>
-            </View>
-          )}
+          {shouldShow('languages') &&
+            skills.length > 0 &&
+            skills.some((sk) => sk.spokenLanguages) && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={s.sectionTitle}>Languages</Text>
+                <Text style={s.text}>
+                  {skills
+                    .filter((sk) => sk.spokenLanguages)
+                    .map((sk) => sk.spokenLanguages)
+                    .join(', ')}
+                </Text>
+              </View>
+            )}
 
           {/* Medical & Science */}
           {shouldShow('medicalScience') && medicalScience.length > 0 && (

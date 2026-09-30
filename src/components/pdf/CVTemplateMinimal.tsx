@@ -57,7 +57,8 @@ const CVTemplateMinimal: React.FC<{ formState: FormState }> = ({ formState }) =>
     medicalScience,
   } = data;
 
-  const shouldShow = (section: keyof typeof selectedSections) => selectedSections[section] !== false;
+  const shouldShow = (section: keyof typeof selectedSections) =>
+    selectedSections[section] !== false;
 
   const formatEnd = (current: boolean, endDate: string) => {
     if (current) return 'Present';
@@ -72,31 +73,39 @@ const CVTemplateMinimal: React.FC<{ formState: FormState }> = ({ formState }) =>
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {pd.profilePhotoUrl && (
-          <Image
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 25,
-              alignSelf: 'flex-start',
-              marginBottom: 12,
-            }}
-            src={pd.profilePhotoUrl}
-          />
-        )}
-        <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
-        <Text style={styles.contact}>
-          {[pd.email, pd.phone, pd.city || pd.country, pd.linkedin].filter(Boolean).join('  ·  ')}
-        </Text>
-
-        {shouldShow('introduction') && introduction.professionalSummary && introduction.professionalSummary.trim() && (
-          <View style={{ marginBottom: 16 }}>
-            <Text style={styles.sectionTitle}>Summary</Text>
-            <Text style={{ ...styles.desc, marginBottom: 14 }}>
-              {stripHtml(introduction.professionalSummary)}
+        {shouldShow('personalData') && (
+          <>
+            {pd.profilePhotoUrl && (
+              <Image
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  alignSelf: 'flex-start',
+                  marginBottom: 12,
+                }}
+                src={pd.profilePhotoUrl}
+              />
+            )}
+            <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+            <Text style={styles.contact}>
+              {[pd.email, pd.phone, pd.city || pd.country, pd.linkedin]
+                .filter(Boolean)
+                .join('  ·  ')}
             </Text>
-          </View>
+          </>
         )}
+
+        {shouldShow('introduction') &&
+          introduction.professionalSummary &&
+          introduction.professionalSummary.trim() && (
+            <View style={{ marginBottom: 16 }}>
+              <Text style={styles.sectionTitle}>Summary</Text>
+              <Text style={{ ...styles.desc, marginBottom: 14 }}>
+                {stripHtml(introduction.professionalSummary)}
+              </Text>
+            </View>
+          )}
 
         {shouldShow('experiences') && experiences.length > 0 && (
           <View>

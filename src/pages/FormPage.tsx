@@ -53,7 +53,15 @@ const FormPageInner: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const form = useForm();
-  const { data, setSubmitting, isSubmitting, loadData, setStep } = form;
+  const {
+    data,
+    setSubmitting,
+    isSubmitting,
+    loadData,
+    setStep,
+    selectedSections,
+    setSelectedSections,
+  } = form;
   const { selectedTemplate, setSelectedTemplate } = useTemplate();
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -111,8 +119,9 @@ const FormPageInner: React.FC = () => {
         const restored = normalizeFormData(cv);
         cloudDocIdRef.current = cv.id;
         completedRef.current = !cv.isDraft;
-        savedSnapshotRef.current = JSON.stringify([restored, cv.template]);
         loadDataRef.current(restored);
+        setSelectedSections(cv.selectedSections);
+        savedSnapshotRef.current = JSON.stringify([restored, cv.template, cv.selectedSections]);
         templateSetterRef.current(cv.template);
         setSubmitError(null);
         setCloudStatus('Loaded from My CVs');
@@ -129,7 +138,11 @@ const FormPageInner: React.FC = () => {
 
   useEffect(() => {
     if (!user || resumeId || !data.personalData.fullName?.trim()) return;
-    const pendingSnapshot = JSON.stringify([normalizeFormData(data), selectedTemplate]);
+    const pendingSnapshot = JSON.stringify([
+      normalizeFormData(data),
+      selectedTemplate,
+      selectedSections,
+    ]);
     latestSnapshotRef.current = pendingSnapshot;
     if (busyRef.current || savedSnapshotRef.current === pendingSnapshot) return;
     autoSaveTimeoutRef.current = setTimeout(async () => {
@@ -146,7 +159,8 @@ const FormPageInner: React.FC = () => {
           selectedTemplate,
           user.uid,
           cloudDocIdRef.current,
-          !completedRef.current
+          !completedRef.current,
+          selectedSections
         );
         if (scope !== scopeRef.current || user.uid !== auth.currentUser?.uid) return;
         if (latestSnapshotRef.current === targetSnapshot) {
@@ -213,9 +227,13 @@ const FormPageInner: React.FC = () => {
     setSubmitting(true);
     cloudDocIdRef.current ??= createClientId();
     try {
-      await submitClient(data, selectedTemplate, user.uid, cloudDocIdRef.current);
+      await submitClient(data, selectedTemplate, user.uid, cloudDocIdRef.current, selectedSections);
       completedRef.current = true;
-      savedSnapshotRef.current = JSON.stringify([normalizeFormData(data), selectedTemplate]);
+      savedSnapshotRef.current = JSON.stringify([
+        normalizeFormData(data),
+        selectedTemplate,
+        selectedSections,
+      ]);
       setCloudStatus('Saved to My CVs. PDF and DOCX downloads are generated on your device.');
       setSavedToCloud(true);
       setSaveRevision((value) => value + 1);

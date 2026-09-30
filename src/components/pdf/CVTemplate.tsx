@@ -78,7 +78,8 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
     medicalScience,
   } = data;
 
-  const shouldShow = (section: keyof typeof selectedSections) => selectedSections[section] !== false;
+  const shouldShow = (section: keyof typeof selectedSections) =>
+    selectedSections[section] !== false;
 
   const formatEnd = (current: boolean, endDate: string) => {
     if (current) return 'Present';
@@ -93,32 +94,38 @@ const CVTemplateClassic: React.FC<{ formState: FormState }> = ({ formState }) =>
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
-        <View style={styles.header}>
-          <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
-          {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-            <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
-          )}
-          <View style={styles.contactRow}>
-            {pd.email && <Text>{pd.email}</Text>}
-            {pd.phone && <Text>{pd.phone}</Text>}
-            {(pd.city || pd.country) && (
-              <Text>
-                {pd.city}
-                {pd.city && pd.country ? ', ' : ''}
-                {pd.country}
-              </Text>
-            )}
-            {pd.linkedin && <Text>{pd.linkedin}</Text>}
-          </View>
-        </View>
-
-        {shouldShow('introduction') && introduction.professionalSummary && introduction.professionalSummary.trim() && (
+        {shouldShow('personalData') && (
           <>
-            <View style={styles.hr} />
-            <Text style={styles.desc}>{stripHtml(introduction.professionalSummary)}</Text>
+            {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
+            <View style={styles.header}>
+              <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+              {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
+                <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
+              )}
+              <View style={styles.contactRow}>
+                {pd.email && <Text>{pd.email}</Text>}
+                {pd.phone && <Text>{pd.phone}</Text>}
+                {(pd.city || pd.country) && (
+                  <Text>
+                    {pd.city}
+                    {pd.city && pd.country ? ', ' : ''}
+                    {pd.country}
+                  </Text>
+                )}
+                {pd.linkedin && <Text>{pd.linkedin}</Text>}
+              </View>
+            </View>
           </>
         )}
+
+        {shouldShow('introduction') &&
+          introduction.professionalSummary &&
+          introduction.professionalSummary.trim() && (
+            <>
+              <View style={styles.hr} />
+              <Text style={styles.desc}>{stripHtml(introduction.professionalSummary)}</Text>
+            </>
+          )}
 
         {shouldShow('experiences') && experiences && experiences.length > 0 && (
           <>

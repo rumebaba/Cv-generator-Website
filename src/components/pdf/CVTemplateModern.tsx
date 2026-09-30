@@ -82,7 +82,8 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
   const { data, selectedSections } = formState;
   const { personalData: pd, introduction, educations, experiences, projects, skills } = data;
 
-  const shouldShow = (section: keyof typeof selectedSections) => selectedSections[section] !== false;
+  const shouldShow = (section: keyof typeof selectedSections) =>
+    selectedSections[section] !== false;
 
   const formatEnd = (current: boolean, endDate: string) => {
     if (current) return 'Present';
@@ -98,25 +99,29 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.sidebar}>
-          {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
-          <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
-          {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
-            <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
-          )}
+          {shouldShow('personalData') && (
+            <>
+              {pd.profilePhotoUrl && <Image style={styles.photo} src={pd.profilePhotoUrl} />}
+              <Text style={styles.name}>{pd.fullName || 'Your Name'}</Text>
+              {introduction.targetJobTitles && introduction.targetJobTitles.trim() && (
+                <Text style={styles.subtitle}>{introduction.targetJobTitles}</Text>
+              )}
 
-          <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarTitle}>Contact</Text>
-            {pd.email && <Text style={styles.contactItem}>{pd.email}</Text>}
-            {pd.phone && <Text style={styles.contactItem}>{pd.phone}</Text>}
-            {(pd.city || pd.country) && (
-              <Text style={styles.contactItem}>
-                {pd.city}
-                {pd.city && pd.country ? ', ' : ''}
-                {pd.country}
-              </Text>
-            )}
-            {pd.linkedin && <Text style={styles.contactItem}>{pd.linkedin}</Text>}
-          </View>
+              <View style={styles.sidebarSection}>
+                <Text style={styles.sidebarTitle}>Contact</Text>
+                {pd.email && <Text style={styles.contactItem}>{pd.email}</Text>}
+                {pd.phone && <Text style={styles.contactItem}>{pd.phone}</Text>}
+                {(pd.city || pd.country) && (
+                  <Text style={styles.contactItem}>
+                    {pd.city}
+                    {pd.city && pd.country ? ', ' : ''}
+                    {pd.country}
+                  </Text>
+                )}
+                {pd.linkedin && <Text style={styles.contactItem}>{pd.linkedin}</Text>}
+              </View>
+            </>
+          )}
 
           {shouldShow('skills') && skills.length > 0 && (
             <View style={styles.sidebarSection}>
@@ -151,14 +156,16 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
         </View>
 
         <View style={styles.main}>
-          {shouldShow('introduction') && introduction.professionalSummary && introduction.professionalSummary.trim() && (
-            <View style={{ marginBottom: 16 }}>
-              <Text style={styles.sectionTitle}>Summary</Text>
-              <Text style={{ lineHeight: 1.5, color: colors.gray }}>
-                {stripHtml(introduction.professionalSummary)}
-              </Text>
-            </View>
-          )}
+          {shouldShow('introduction') &&
+            introduction.professionalSummary &&
+            introduction.professionalSummary.trim() && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={styles.sectionTitle}>Summary</Text>
+                <Text style={{ lineHeight: 1.5, color: colors.gray }}>
+                  {stripHtml(introduction.professionalSummary)}
+                </Text>
+              </View>
+            )}
 
           {shouldShow('experiences') && experiences.length > 0 && (
             <View style={{ marginBottom: 16 }}>

@@ -5,6 +5,7 @@ import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
 import { FormNavigation } from '../components/common/FormNavigation';
 import { StepProgress } from '../components/common/StepProgress';
+import { Step10Review } from '../components/forms/Step10Review';
 import { Step1PersonalData } from '../components/forms/Step1PersonalData';
 import { Step2Introduction } from '../components/forms/Step2Introduction';
 import { Step3Education } from '../components/forms/Step3Education';
@@ -14,7 +15,6 @@ import { Step6Projects } from '../components/forms/Step6Projects';
 import { Step7Skills } from '../components/forms/Step7Skills';
 import { Step8Credentials } from '../components/forms/Step8Credentials';
 import { Step9References } from '../components/forms/Step9References';
-import { Step10Review } from '../components/forms/Step10Review';
 import { PDFPreview } from '../components/pdf/PDFPreview';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -322,10 +322,14 @@ const FormPageInner: React.FC = () => {
       )}
 
       <div className="animate-fade-in">
-        <StepComponent />
+        {validStep === 10 ? (
+          <Step10Review onGenerate={() => setShowPreview(true)} />
+        ) : (
+          <StepComponent />
+        )}
       </div>
 
-      {validStep === 9 && (
+      {validStep >= 9 && (
         <Card variant="elevated" padding="lg">
           <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
             Export Your CV
@@ -409,16 +413,18 @@ const FormPageInner: React.FC = () => {
         </Card>
       )}
 
-      <FormNavigation
-        onNext={handleNext}
-        onPrev={handlePrev}
-        onSubmit={isLastStep ? handleSubmit : undefined}
-        isFirstStep={isFirstStep}
-        isLastStep={isLastStep}
-        nextLabel="Continue"
-        disabled={isSubmitting}
-        submitLabel={isSubmitting ? 'Saving...' : 'Save to Cloud'}
-      />
+      {validStep !== 10 && (
+        <FormNavigation
+          onNext={handleNext}
+          onPrev={handlePrev}
+          onSubmit={isLastStep ? handleSubmit : undefined}
+          isFirstStep={isFirstStep}
+          isLastStep={isLastStep}
+          nextLabel="Continue"
+          disabled={isSubmitting}
+          submitLabel={isSubmitting ? 'Saving...' : 'Save to Cloud'}
+        />
+      )}
 
       <PDFPreview
         formState={form}

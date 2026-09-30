@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Secrets - never commit
+.env
+.env.*
+!.env.example
+serviceAccount*.json
+*-service-account*.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

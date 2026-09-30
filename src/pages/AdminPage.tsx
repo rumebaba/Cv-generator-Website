@@ -36,7 +36,7 @@ export const AdminPage: React.FC = () => {
 
   const fetchClients = useCallback(async () => {
     try {
-      const q = query(collection(db, 'clients'), orderBy('createdAt', 'desc'));
+      const q = query(collection(db, 'clients'), orderBy('updatedAt', 'desc'));
       const snapshot = await getDocs(q);
       const records: ClientRecord[] = snapshot.docs.map((doc) => {
         const d = doc.data();
@@ -44,7 +44,8 @@ export const AdminPage: React.FC = () => {
           { fullName?: string; email?: string } | undefined;
         const fullName = personalData?.fullName || (d.fullName as string | undefined) || 'Unknown';
         const email = personalData?.email || (d.email as string | undefined) || '';
-        const createdAt = d.createdAt?.toDate?.() ?? new Date(d.createdAt as string);
+        const stamp = d.updatedAt ?? d.createdAt;
+        const createdAt = stamp?.toDate?.() ?? new Date(stamp as string);
         return {
           id: doc.id,
           name: fullName,

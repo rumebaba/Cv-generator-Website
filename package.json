@@ -12,7 +12,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css,md}\"",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "verify:sections": "npx --yes tsx scripts/verifySectionSelection.tsx"
+    "verify:sections": "npx --yes tsx scripts/verifySectionSelection.tsx",
+    "verify:creative": "npx --yes tsx scripts/verifyCreativeTemplate.tsx"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",

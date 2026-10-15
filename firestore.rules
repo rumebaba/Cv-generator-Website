@@ -2,32 +2,68 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Admin access: granted to the owner's account email, or to any token
-    // carrying the admin custom claim (set via Firebase Admin SDK).
+    // Admin access: either a token carrying an `admin` custom claim (set via the
+    // Firebase Admin SDK), or the owner's account email.
+    //
+    // email_verified is required on the email path. Without it, any account
+    // registered with an unverified address equal to the admin address would
+    // inherit admin - and this repository is public, so that address is readable
+    // by anyone. The custom-claim path remains the preferred mechanism.
     function isAdmin() {
-      return request.auth != null && (
-        request.auth.token.admin == true ||
-        request.auth.token.email == 'rumeansari5@gmail.com'
-      );
+      return request.auth != null
+        && (request.auth.token.admin == true
+            || (request.auth.token.email_verified == true
+                && request.auth.token.email == 'rumeansari5@gmail.com'));
     }
 
-    // Users can only read/write their own CVs
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // One match block, not two. Firestore unions the permissions of every
+    // matching block, so the previous split into an owner block and a separate
+    // admin block worked but read like two independent scopes and invited an
+    // edit that would silently widen access.
     match /clients/{docId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+
+      allow create: if isOwner(request.resource.data.userId);
+
+      // Both sides are checked on update:
+      //   resource.data          - stops a non-owner editing the document
+      //   request.resource.data  - stops the owner reassigning `userId`, which
+      //                            would hand read access to another account
+      //                            and silently orphan the CV from its creator
+      allow update: if isAdmin()
+                    || (isOwner(resource.data.userId)
+                        && request.resource.data.userId == request.auth.uid);
+
+      allow delete: if isAdmin() || isOwner(resource.data.userId);
     }
 
-    // Admin can read all CVs
-    match /clients/{docId} {
-      allow read: if isAdmin();
-    }
-
-    // Contact messages - anyone can create, only admin can read
+    // Contact form. Anyone may submit, but the payload is constrained so the
+    // collection cannot be filled with arbitrary or oversized documents.
+    // The limits match the maxLength attributes on the ContactPage inputs, so a
+    // legitimate submission can never be rejected by these rules.
     match /contact-messages/{docId} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'message', 'createdAt', 'read'])
+                    && request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt', 'read'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 120
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() > 0
+                    && request.resource.data.email.size() <= 200
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() <= 2000
+                    && request.resource.data.read == false;
+
       allow read: if isAdmin();
+
+      // Messages are immutable. An admin may delete one to clear spam.
+      allow delete: if isAdmin();
+      allow update: if false;
     }
   }
 }

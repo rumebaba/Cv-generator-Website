@@ -6,7 +6,7 @@ import { scrollToRef } from '../../lib/scroll';
 import type { MedicalScience } from '../../types/form';
 import { Button } from '../common/Button';
 import { Card, CardHeader, CardContent, CardFooter } from '../common/Card';
-import { Textarea, Input } from '../common/Input';
+import { Textarea } from '../common/Input';
 
 const initialMedicalScience: MedicalScience = {
   id: '',
@@ -23,7 +23,6 @@ export const Step5MedicalScience: React.FC = () => {
     updateMedicalScience,
     removeMedicalScience,
     clearError,
-    errors,
   } = useForm();
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -38,8 +37,6 @@ export const Step5MedicalScience: React.FC = () => {
       ?.focus({ preventScroll: true });
     scrollToRef(formCardRef);
   }, [showForm, editingId]);
-
-  const medicalErrors = errors.medicalScience || {};
 
   const handleInputChange = (field: keyof MedicalScience, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

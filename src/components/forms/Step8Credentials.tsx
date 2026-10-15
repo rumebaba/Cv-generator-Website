@@ -432,7 +432,6 @@ export const Step8Credentials: React.FC = () => {
   const formContext = useForm();
   const {
     data: { credentials },
-    ...rest
   } = formContext;
   const formState = formContext as FormState;
   const { addCredential, updateCredential, removeCredential, clearError, errors } = formContext;

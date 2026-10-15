@@ -5,7 +5,7 @@ import { useForm } from '../../hooks/useForm';
 import type { PersonalData, SocialLink } from '../../types/form';
 import { Button } from '../common/Button';
 import { Card, CardHeader, CardContent } from '../common/Card';
-import { Input, Textarea, Select } from '../common/Input';
+import { Input, Select } from '../common/Input';
 
 const countries = [
   'Afghanistan',

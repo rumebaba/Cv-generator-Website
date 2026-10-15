@@ -138,6 +138,11 @@ const FormPageInner: React.FC = () => {
     return () => {
       cancelled = true;
     };
+    // setSelectedSections is intentionally omitted: useForm's context value is
+    // rebuilt on every state change, so adding it would re-run this effect (and
+    // re-issue loadCV) on every keystroke. The scopeRef guard below is what
+    // actually invalidates stale resumes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeId, user, navigate]);
 
   useEffect(() => {
@@ -188,7 +193,7 @@ const FormPageInner: React.FC = () => {
     return () => {
       if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
     };
-  }, [data, selectedTemplate, user, resumeId, saveRevision]);
+  }, [data, selectedTemplate, selectedSections, user, resumeId, saveRevision]);
 
   const currentStepRaw = parseInt(step || '1', 10);
   const validStep: FormStep = (

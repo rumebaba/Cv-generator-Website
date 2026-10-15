@@ -32,6 +32,9 @@ export const AdminPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'name'>('date');
+  // Captured once per mount so the "this week" stat is stable across renders.
+  // Calling Date.now() during render made every render impure.
+  const [now] = useState(() => Date.now());
 
   const fetchClients = useCallback(async () => {
     try {
@@ -82,42 +85,40 @@ export const AdminPage: React.FC = () => {
   }, []);
 
   const fetchAll = useCallback(async () => {
-    setLoading(true);
-    setError(null);
     await Promise.all([fetchClients(), fetchMessages()]);
     setLoading(false);
   }, [fetchClients, fetchMessages]);
 
+  // fetchAll only calls setState after `await getDocs(...)`, so nothing is set
+  // synchronously here. The lint rule cannot prove that through the useCallback
+  // boundary, so it is suppressed with justification rather than contorted.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- see note above
     fetchAll();
   }, [fetchAll]);
 
+  const term = searchTerm.toLowerCase();
+
   const filteredClients = clients
-    .filter((c) => {
-      const term = searchTerm.toLowerCase();
-      return c.name.toLowerCase().includes(term) || c.email.toLowerCase().includes(term);
-    })
+    .filter((c) => c.name.toLowerCase().includes(term) || c.email.toLowerCase().includes(term))
     .sort((a, b) => {
       if (sortBy === 'name') return a.name.localeCompare(b.name);
       return b.createdAt.getTime() - a.createdAt.getTime();
     });
 
   const filteredMessages = messages
-    .filter((m) => {
-      const term = searchTerm.toLowerCase();
-      return (
+    .filter(
+      (m) =>
         m.name.toLowerCase().includes(term) ||
         m.email.toLowerCase().includes(term) ||
         m.message.toLowerCase().includes(term)
-      );
-    })
+    )
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   const stats = {
     totalClients: clients.length,
     totalMessages: messages.length,
-    thisWeek: clients.filter((c) => Date.now() - c.createdAt.getTime() < 7 * 24 * 60 * 60 * 1000)
-      .length,
+    thisWeek: clients.filter((c) => now - c.createdAt.getTime() < 7 * 24 * 60 * 60 * 1000).length,
   };
 
   return (
@@ -132,7 +133,11 @@ export const AdminPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchAll}
+            onClick={() => {
+              setLoading(true);
+              setError(null);
+              fetchAll();
+            }}
             leftIcon={
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

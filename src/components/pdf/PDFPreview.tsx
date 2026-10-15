@@ -51,7 +51,6 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
   const [downloadingDocx, setDownloadingDocx] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
-  const pdfUrlRef = useRef<string | null>(null);
 
   const TemplateComponent = templateMap[template];
 
@@ -93,42 +92,47 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
     }
   }, [TemplateComponent, isOpen, formState]);
 
+  // PDF generation is asynchronous and must restart whenever the inputs change.
+  // Every setState in generatePDF happens either after an await or is the
+  // loading-flag reset that replaces stale content with a spinner. The lint rule
+  // cannot prove that statically, so it is suppressed with justification.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- see note above
     generatePDF();
   }, [isOpen, template, generatePDF]);
 
-  useEffect(() => {
-    return () => {
-      if (pdfUrlRef.current) {
-        URL.revokeObjectURL(pdfUrlRef.current);
-      }
-    };
-  }, []);
-
   if (!isOpen) return null;
+
+  const safeFileName = (formState.data.personalData.fullName || '').replace(/\s+/g, '_') || 'cv';
+
+  // Revoking on the next tick rather than immediately: some browsers abort the
+  // download if the object URL disappears in the same task as the click.
+  const triggerDownload = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
+
+  const handleDownloadPdf = () => {
+    if (!pdfBlob) return;
+    triggerDownload(pdfBlob, `${safeFileName}.pdf`);
+  };
 
   const handleDownloadDocx = async () => {
     setDownloadingDocx(true);
     try {
       const blob = await generateDocxBlob(formState.data);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${formState.data.personalData.fullName.replace(/\s+/g, '_') || 'cv'}.docx`;
-      a.click();
-      URL.revokeObjectURL(url);
+      triggerDownload(blob, `${safeFileName}.docx`);
     } catch (err) {
       console.error('DOCX generation failed:', err);
     } finally {
       setDownloadingDocx(false);
     }
-  };
-
-  const getPdfUrl = () => {
-    if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
-    if (!pdfBlob) return '';
-    pdfUrlRef.current = URL.createObjectURL(pdfBlob);
-    return pdfUrlRef.current;
   };
 
   return (
@@ -164,11 +168,9 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
               {downloadingDocx ? 'Generating...' : 'Download DOCX'}
             </Button>
             {pdfBlob && (
-              <a href={getPdfUrl()} download="cv.pdf">
-                <Button variant="primary" size="sm">
-                  Download PDF
-                </Button>
-              </a>
+              <Button variant="primary" size="sm" onClick={handleDownloadPdf}>
+                Download PDF
+              </Button>
             )}
           </div>
         </div>

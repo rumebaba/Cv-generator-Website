@@ -1,13 +1,4 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "clients",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "userId", "order": "ASCENDING" },
-        { "fieldPath": "pdfUrl", "order": "ASCENDING" }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }

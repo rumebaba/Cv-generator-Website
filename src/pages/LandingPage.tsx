@@ -59,27 +59,6 @@ const features = [
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={2}
-          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-        />
-      </svg>
-    ),
-    title: 'Multi-Format Export',
-    description:
-      'Download your CV as PDF, Word, LaTeX, or plain text. Share a live link or embed on your portfolio.',
-  },
-  {
-    icon: (
-      <svg
-        className="h-6 w-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
           d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
         />
       </svg>
@@ -131,8 +110,8 @@ const features = [
 ];
 
 const stats = [
-  { value: '3', label: 'Pro Templates' },
-  { value: '9', label: 'Form Steps' },
+  { value: '6', label: 'Pro Templates' },
+  { value: '12', label: 'Form Steps' },
   { value: '2', label: 'Export Formats' },
   { value: '100%', label: 'Free' },
 ];
@@ -149,7 +128,7 @@ export const LandingPage: React.FC = () => {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-indigo-500"></span>
               </span>
-              New: AI-Powered Content Suggestions Now Available
+              New: Certifications &amp; Languages Sections Now Supported
             </div>
 
             <h1 className="animate-fade-in mb-6 text-5xl leading-tight font-bold text-slate-900 sm:text-6xl lg:text-7xl dark:text-white">

@@ -119,34 +119,3 @@ export const FormNavigation: React.FC<FormNavigationProps> = ({
     </div>
   );
 };
-
-interface StepIndicatorProps {
-  currentStep: number;
-  totalSteps: number;
-  stepLabels: string[];
-}
-
-export const StepIndicator: React.FC<StepIndicatorProps> = ({
-  currentStep,
-  totalSteps,
-  stepLabels,
-}) => {
-  return (
-    <div className="mb-6" role="status" aria-live="polite">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-slate-600 dark:text-slate-400">
-          Step {currentStep} of {totalSteps}
-        </span>
-        <span className="font-medium text-indigo-600 dark:text-indigo-400">
-          {Math.round((currentStep / totalSteps) * 100)}% Complete
-        </span>
-      </div>
-      <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-        <div
-          className="h-full rounded-full bg-indigo-500 transition-all duration-300 ease-out"
-          style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-        />
-      </div>
-    </div>
-  );
-};

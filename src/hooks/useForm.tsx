@@ -482,6 +482,8 @@ interface FormContextValue extends FormState {
   loadData: (data: FormData) => void;
   setSelectedSections: (sections: Partial<Record<keyof FormData, boolean>>) => void;
   canProceed: () => boolean;
+  /** Human-readable reasons the current step cannot be completed. Empty when valid. */
+  getStepErrors: () => string[];
   getStepCompletion: (step: FormStep) => number;
 }
 
@@ -609,6 +611,10 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       canProceed: () => {
         const currentStepData = getStepData(state.data, state.currentStep);
         return validateStep(state.currentStep, currentStepData).length === 0;
+      },
+      getStepErrors: () => {
+        const currentStepData = getStepData(state.data, state.currentStep);
+        return validateStep(state.currentStep, currentStepData);
       },
       getStepCompletion: (step) => calculateStepCompletion(state.data, step),
     }),

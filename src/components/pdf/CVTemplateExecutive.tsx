@@ -79,6 +79,7 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
     certifications,
     languages,
     medicalScience,
+    references,
   } = data;
 
   const shouldShow = (section: keyof typeof selectedSections) =>
@@ -345,6 +346,32 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
                 )}
                 {ms.medicalLicenses && ms.medicalLicenses.trim() && (
                   <Text style={{ fontSize: 9, color: '#333' }}>Licenses: {ms.medicalLicenses}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {shouldShow('references') && references.length > 0 && (
+          <View>
+            <Text style={styles.sectionTitle}>References</Text>
+            {references.map((ref) => (
+              <View key={ref.id} style={{ marginBottom: 6 }}>
+                <Text style={styles.role}>{ref.name}</Text>
+                {(ref.title || ref.company) && (
+                  <Text style={styles.company}>
+                    {[ref.title, ref.company].filter(Boolean).join(', ')}
+                  </Text>
+                )}
+                {(ref.email || ref.phone) && (
+                  <Text style={{ fontSize: 8, color: '#666' }}>
+                    {[ref.email, ref.phone].filter(Boolean).join(' | ')}
+                  </Text>
+                )}
+                {ref.relationship && (
+                  <Text style={{ fontSize: 8, color: '#666' }}>
+                    Relationship: {ref.relationship}
+                  </Text>
                 )}
               </View>
             ))}

@@ -63,6 +63,7 @@ const CVTemplateMinimal: React.FC<{ formState: FormState }> = ({ formState }) =>
     certifications,
     languages,
     medicalScience,
+    references,
   } = data;
 
   const shouldShow = (section: keyof typeof selectedSections) =>
@@ -285,6 +286,30 @@ const CVTemplateMinimal: React.FC<{ formState: FormState }> = ({ formState }) =>
                 )}
                 {ms.medicalLicenses && ms.medicalLicenses.trim() && (
                   <Text style={styles.desc}>Licenses: {ms.medicalLicenses}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {shouldShow('references') && references.length > 0 && (
+          <View style={{ marginTop: 16 }}>
+            <Text style={styles.sectionTitle}>References</Text>
+            {references.map((ref) => (
+              <View key={ref.id} style={{ marginBottom: 5 }}>
+                <Text style={styles.bold}>{ref.name}</Text>
+                {(ref.title || ref.company) && (
+                  <Text style={styles.light}>
+                    {[ref.title, ref.company].filter(Boolean).join(', ')}
+                  </Text>
+                )}
+                {(ref.email || ref.phone) && (
+                  <Text style={styles.light}>
+                    {[ref.email, ref.phone].filter(Boolean).join(' | ')}
+                  </Text>
+                )}
+                {ref.relationship && (
+                  <Text style={styles.light}>Relationship: {ref.relationship}</Text>
                 )}
               </View>
             ))}

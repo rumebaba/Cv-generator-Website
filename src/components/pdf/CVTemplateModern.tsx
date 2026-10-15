@@ -96,6 +96,8 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
     credentials,
     certifications,
     languages,
+    medicalScience,
+    references,
   } = data;
 
   const shouldShow = (section: keyof typeof selectedSections) =>
@@ -326,6 +328,52 @@ const CVTemplateModern: React.FC<{ formState: FormState }> = ({ formState }) => 
                   {lang.name}
                   {lang.proficiency ? ` — ${lang.proficiency}` : ''}
                 </Text>
+              ))}
+            </View>
+          )}
+
+          {shouldShow('medicalScience') && medicalScience.length > 0 && (
+            <View style={{ marginBottom: 16 }}>
+              <Text style={styles.sectionTitle}>Medical & Science</Text>
+              {medicalScience.map((ms) => (
+                <View key={ms.id} style={{ marginBottom: 6 }}>
+                  {ms.clinicalRotations && ms.clinicalRotations.trim() && (
+                    <Text style={styles.entryDesc}>Clinical Rotations: {ms.clinicalRotations}</Text>
+                  )}
+                  {ms.researchGrants && ms.researchGrants.trim() && (
+                    <Text style={styles.entryDesc}>Research Grants: {ms.researchGrants}</Text>
+                  )}
+                  {ms.publications && ms.publications.trim() && (
+                    <Text style={styles.entryDesc}>Publications: {ms.publications}</Text>
+                  )}
+                  {ms.medicalLicenses && ms.medicalLicenses.trim() && (
+                    <Text style={styles.entryDesc}>Licenses: {ms.medicalLicenses}</Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
+
+          {shouldShow('references') && references.length > 0 && (
+            <View style={{ marginBottom: 16 }}>
+              <Text style={styles.sectionTitle}>References</Text>
+              {references.map((ref) => (
+                <View key={ref.id} style={{ marginBottom: 6 }}>
+                  <Text style={styles.entryTitle}>{ref.name}</Text>
+                  {(ref.title || ref.company) && (
+                    <Text style={styles.entrySubtitle}>
+                      {[ref.title, ref.company].filter(Boolean).join(', ')}
+                    </Text>
+                  )}
+                  {(ref.email || ref.phone) && (
+                    <Text style={styles.entryDesc}>
+                      {[ref.email, ref.phone].filter(Boolean).join(' | ')}
+                    </Text>
+                  )}
+                  {ref.relationship && (
+                    <Text style={styles.entryDesc}>Relationship: {ref.relationship}</Text>
+                  )}
+                </View>
               ))}
             </View>
           )}

@@ -213,6 +213,9 @@ const hasMarker = (text: string, marker: string) =>
 
 const ALL_ON = Object.fromEntries(Object.keys(MARKERS).map((k) => [k, true]));
 
+/** Every section the Review step exposes a toggle for; all must reach every template. */
+const ALL_SECTIONS = Object.keys(MARKERS) as SectionKey[];
+
 async function render(
   template: React.ComponentType<{ formState: FormState }>,
   sections: Record<string, boolean>,
@@ -256,6 +259,18 @@ async function main() {
     }
     if (bad === 0)
       console.log(`   OK: all ${rendered.length} rendered sections hide when deselected`);
+
+    // Coverage: every section the Review step offers a toggle for must actually
+    // appear. Previously this script only iterated the sections it found, so a
+    // template silently dropping one (Modern/Compact omitted medicalScience,
+    // four templates omitted references) passed with no complaint.
+    const missing = ALL_SECTIONS.filter((s) => !rendered.includes(s));
+    if (missing.length === 0) {
+      console.log(`   OK: all ${ALL_SECTIONS.length} sections render`);
+    } else {
+      failures += missing.length;
+      console.log(`   FAIL: never rendered: ${missing.join(', ')}`);
+    }
 
     // Backwards compatibility: CVs saved before Step 11 existed only have the
     // Step 7 free-text field, so templates must still fall back to it.

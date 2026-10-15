@@ -73,6 +73,7 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
     credentials,
     certifications,
     languages,
+    medicalScience,
     references,
   } = data;
 
@@ -269,6 +270,25 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
                 .map((l) => (l.proficiency ? `${l.name} (${l.proficiency})` : l.name))
                 .join(', ')}
             </Text>
+          </View>
+        )}
+
+        {/* Medical & Science */}
+        {shouldShow('medicalScience') && medicalScience.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Medical & Science</Text>
+            {medicalScience.map((ms) => (
+              <Text key={ms.id} style={s.textSmall}>
+                {[
+                  ms.clinicalRotations && `Rotations: ${ms.clinicalRotations}`,
+                  ms.researchGrants && `Grants: ${ms.researchGrants}`,
+                  ms.publications && `Publications: ${ms.publications}`,
+                  ms.medicalLicenses && `Licenses: ${ms.medicalLicenses}`,
+                ]
+                  .filter(Boolean)
+                  .join('  |  ')}
+              </Text>
+            ))}
           </View>
         )}
 

@@ -83,6 +83,7 @@ export const ContactPage: React.FC = () => {
               <input
                 type="text"
                 required
+                maxLength={120}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
@@ -96,6 +97,7 @@ export const ContactPage: React.FC = () => {
               <input
                 type="email"
                 required
+                maxLength={200}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
@@ -109,6 +111,7 @@ export const ContactPage: React.FC = () => {
               <textarea
                 rows={5}
                 required
+                maxLength={2000}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"

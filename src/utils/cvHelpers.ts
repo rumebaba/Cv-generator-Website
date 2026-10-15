@@ -1,3 +1,5 @@
+import type { Certification, Language, Skill } from '../types/form';
+
 import { stripHtml } from './stripHtml';
 
 const degreeLabels: Record<string, string> = {
@@ -56,4 +58,92 @@ export function htmlToBullets(html: string): string[] {
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean);
+}
+
+export interface CertificationEntry {
+  id: string;
+  title: string;
+  issuer: string;
+  issued: string;
+  expires: string;
+  credentialId: string;
+  url: string;
+}
+
+/**
+ * Normalises the Certifications step into a render-ready list.
+ * Entries without a name are dropped so an empty draft row never
+ * produces a blank line in the PDF.
+ */
+export function buildCertificationEntries(certifications: Certification[]): CertificationEntry[] {
+  return certifications
+    .filter((c) => (c.name || '').trim())
+    .map((c) => ({
+      id: c.id,
+      title: c.name.trim(),
+      issuer: (c.issuer || '').trim(),
+      issued: formatDateForPdf(c.issueDate),
+      expires: formatDateForPdf(c.expiryDate),
+      credentialId: (c.credentialId || '').trim(),
+      url: (c.credentialUrl || '').trim(),
+    }));
+}
+
+export interface LanguageEntry {
+  id: string;
+  name: string;
+  proficiency: string;
+}
+
+/**
+ * Normalises a proficiency value for display. Values are passed through
+ * unchanged (e.g. "fluent") to preserve the existing PDF output wording that
+ * scripts/verifyCreativeTemplate.tsx asserts against.
+ */
+export function formatProficiency(value: string): string {
+  return (value || '').trim();
+}
+
+/**
+ * Builds the Languages list. Step 11 (languages[]) is authoritative; when it is
+ * empty we fall back to the free-text spokenLanguages field on Step 7 so older
+ * CVs saved before Step 11 existed still render languages. Names are deduped
+ * case-insensitively so a language entered in both places only shows once.
+ */
+export function buildLanguageEntries(languages: Language[], skills: Skill[]): LanguageEntry[] {
+  const entries: LanguageEntry[] = [];
+
+  if (languages.length > 0) {
+    languages.forEach((lang, i) => {
+      const name = (lang.name || '').trim();
+      if (!name) return;
+      entries.push({
+        id: lang.id || `lang-${i}`,
+        name,
+        proficiency: formatProficiency(lang.proficiency),
+      });
+    });
+  } else {
+    skills.forEach((skill, i) => {
+      (skill.spokenLanguages || '')
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .forEach((name, j) => {
+          entries.push({
+            id: `skill-lang-${i}-${j}`,
+            name,
+            proficiency: formatProficiency(skill.proficiencyLevel),
+          });
+        });
+    });
+  }
+
+  const seen = new Set<string>();
+  return entries.filter((e) => {
+    const key = e.name.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }

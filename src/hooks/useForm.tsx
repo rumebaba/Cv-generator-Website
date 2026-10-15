@@ -8,7 +8,7 @@ import React, {
   useEffect,
 } from 'react';
 
-import { initialFormState, normalizeFormData } from '../types/form';
+import { initialFormState, normalizeFormData, TOTAL_STEPS } from '../types/form';
 import type {
   FormState,
   FormData,
@@ -556,7 +556,10 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIntroduction: (data) => dispatch({ type: 'SET_INTRODUCTION', payload: data }),
       setStep,
       nextStep: () =>
-        dispatch({ type: 'SET_STEP', payload: Math.min(state.currentStep + 1, 9) as FormStep }),
+        dispatch({
+          type: 'SET_STEP',
+          payload: Math.min(state.currentStep + 1, TOTAL_STEPS) as FormStep,
+        }),
       prevStep: () =>
         dispatch({ type: 'SET_STEP', payload: Math.max(state.currentStep - 1, 1) as FormStep }),
       addExperience: (exp) => dispatch({ type: 'ADD_EXPERIENCE', payload: exp }),

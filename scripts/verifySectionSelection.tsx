@@ -1,13 +1,14 @@
-import React from 'react';
-import { renderToBuffer } from '@react-pdf/renderer';
 import { inflateSync } from 'node:zlib';
 
+import { renderToBuffer } from '@react-pdf/renderer';
+import React from 'react';
+
 import Classic from '../src/components/pdf/CVTemplate';
-import Modern from '../src/components/pdf/CVTemplateModern';
-import Minimal from '../src/components/pdf/CVTemplateMinimal';
-import Executive from '../src/components/pdf/CVTemplateExecutive';
-import Creative from '../src/components/pdf/CVTemplateCreative';
 import Compact from '../src/components/pdf/CVTemplateCompact';
+import Creative from '../src/components/pdf/CVTemplateCreative';
+import Executive from '../src/components/pdf/CVTemplateExecutive';
+import Minimal from '../src/components/pdf/CVTemplateMinimal';
+import Modern from '../src/components/pdf/CVTemplateModern';
 import type { FormState } from '../src/types/form';
 import { initialFormData } from '../src/types/form';
 
@@ -30,11 +31,14 @@ const MARKERS: Record<SectionKey, string> = {
   medicalScience: 'ZQXMEDICAL',
   projects: 'ZQXPROJECT',
   skills: 'ZQXSKILLS',
-  credentials: 'ZQXCERTIFY',
-  certifications: 'ZQXLANG',
-  languages: 'ZQXSPOKEN',
+  credentials: 'ZQXCREDENTIAL',
+  certifications: 'ZQXCERTIFICATION',
+  languages: 'ZQXSPOKENLANG',
   references: 'ZQXREFERENCE',
 };
+
+/** Marker that only exists on the legacy Step 7 free-text languages field. */
+const SKILLS_LANG_FALLBACK = 'ZQXSKILLSLANG';
 
 function buildData() {
   return {
@@ -113,7 +117,7 @@ function buildData() {
         id: 's1',
         technicalSkills: 'ZQXSKILLS',
         softSkills: '',
-        spokenLanguages: 'ZQXSPOKEN',
+        spokenLanguages: SKILLS_LANG_FALLBACK,
         proficiencyLevel: 'expert' as const,
         yearsOfExperience: 5,
       },
@@ -121,7 +125,7 @@ function buildData() {
     credentials: [
       {
         id: 'c1',
-        certificateName: 'ZQXCERTIFY',
+        certificateName: 'ZQXCREDENTIAL',
         issuer: 'Issuer',
         dateIssued: '2021-01',
         credentialId: '',
@@ -131,6 +135,24 @@ function buildData() {
         militaryService: '',
         references: '',
         securityClearance: '',
+      },
+    ],
+    certifications: [
+      {
+        id: 'cert1',
+        name: 'ZQXCERTIFICATION',
+        issuer: 'ZQXISSUER',
+        issueDate: '2022-03',
+        expiryDate: '',
+        credentialId: 'ZQXCERTID',
+        credentialUrl: '',
+      },
+    ],
+    languages: [
+      {
+        id: 'lang1',
+        name: 'ZQXSPOKENLANG',
+        proficiency: 'fluent' as const,
       },
     ],
     references: [
@@ -193,10 +215,13 @@ const ALL_ON = Object.fromEntries(Object.keys(MARKERS).map((k) => [k, true]));
 
 async function render(
   template: React.ComponentType<{ formState: FormState }>,
-  sections: Record<string, boolean>
+  sections: Record<string, boolean>,
+  mutate?: (data: FormState['data']) => void
 ) {
   const Component = template as never;
-  return decodePdfText(await renderToBuffer(<Component formState={buildState(sections)} />));
+  const state = buildState(sections);
+  if (mutate) mutate(state.data);
+  return decodePdfText(await renderToBuffer(<Component formState={state} />));
 }
 
 async function main() {
@@ -213,6 +238,12 @@ async function main() {
     }
     console.log(`\n${name.toUpperCase()} — sections rendered: [${rendered.join(', ')}]`);
 
+    // Step 11 data must win over the legacy Step 7 free-text field.
+    if (hasMarker(all, SKILLS_LANG_FALLBACK)) {
+      failures++;
+      console.log('   FAIL: Step 7 spokenLanguages rendered even though Step 11 has entries');
+    }
+
     let bad = 0;
     for (const section of rendered) {
       const off = { ...ALL_ON, [section]: false };
@@ -223,7 +254,20 @@ async function main() {
         console.log(`   FAIL: deselecting "${section}" left its content in the PDF`);
       }
     }
-    if (bad === 0) console.log(`   OK: all ${rendered.length} rendered sections hide when deselected`);
+    if (bad === 0)
+      console.log(`   OK: all ${rendered.length} rendered sections hide when deselected`);
+
+    // Backwards compatibility: CVs saved before Step 11 existed only have the
+    // Step 7 free-text field, so templates must still fall back to it.
+    const legacy = await render(Tpl, ALL_ON, (data) => {
+      data.languages = [];
+    });
+    if (hasMarker(legacy, SKILLS_LANG_FALLBACK)) {
+      console.log('   OK: falls back to Step 7 spokenLanguages when Step 11 is empty');
+    } else {
+      failures++;
+      console.log('   FAIL: no languages rendered when Step 11 is empty (no Step 7 fallback)');
+    }
   }
 
   console.log(failures === 0 ? '\nALL CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);

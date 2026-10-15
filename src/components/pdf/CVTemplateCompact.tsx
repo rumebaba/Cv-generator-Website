@@ -2,7 +2,13 @@ import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/render
 import React from 'react';
 
 import type { FormState } from '../../types/form';
-import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHelpers';
+import {
+  buildCertificationEntries,
+  buildLanguageEntries,
+  getDegreeLabel,
+  getResultLabel,
+  htmlToBullets,
+} from '../../utils/cvHelpers';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 
@@ -65,11 +71,16 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
     projects,
     skills,
     credentials,
+    certifications,
+    languages,
     references,
   } = data;
 
   const shouldShow = (section: keyof typeof selectedSections) =>
     selectedSections[section] !== false;
+
+  const certificationEntries = buildCertificationEntries(certifications);
+  const languageEntries = buildLanguageEntries(languages, skills);
 
   return (
     <Document>
@@ -205,7 +216,7 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
           credentials.length > 0 &&
           credentials.some((c) => c.certificateName) && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>Certifications</Text>
+              <Text style={s.sectionTitle}>Credentials & Extras</Text>
               <View style={s.inline}>
                 {credentials
                   .filter((c) => c.certificateName)
@@ -219,20 +230,47 @@ const CVTemplateCompact: React.FC<Props> = ({ formState }) => {
             </View>
           )}
 
-        {/* Languages */}
-        {shouldShow('languages') &&
-          skills.length > 0 &&
-          skills.some((sk) => sk.spokenLanguages) && (
-            <View style={s.section}>
-              <Text style={s.sectionTitle}>Languages</Text>
-              <Text style={s.text}>
-                {skills
-                  .filter((sk) => sk.spokenLanguages)
-                  .map((sk) => sk.spokenLanguages)
-                  .join(', ')}
-              </Text>
+        {/* Certifications */}
+        {shouldShow('certifications') && certificationEntries.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Certifications</Text>
+            <View style={s.inline}>
+              {certificationEntries.map((entry) => (
+                <Text key={entry.id} style={s.pill}>
+                  {entry.title}
+                  {entry.issuer ? ` (${entry.issuer})` : ''}
+                  {entry.issued ? ` - ${entry.issued}` : ''}
+                </Text>
+              ))}
             </View>
-          )}
+            {certificationEntries.some((e) => e.credentialId || e.url) && (
+              <Text style={s.textSmall}>
+                {certificationEntries
+                  .map((e) => {
+                    const bits = [
+                      e.credentialId ? `ID: ${e.credentialId}` : '',
+                      e.url || '',
+                    ].filter(Boolean);
+                    return bits.length ? `${e.title}: ${bits.join(' - ')}` : '';
+                  })
+                  .filter(Boolean)
+                  .join('  |  ')}
+              </Text>
+            )}
+          </View>
+        )}
+
+        {/* Languages */}
+        {shouldShow('languages') && languageEntries.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Languages</Text>
+            <Text style={s.text}>
+              {languageEntries
+                .map((l) => (l.proficiency ? `${l.name} (${l.proficiency})` : l.name))
+                .join(', ')}
+            </Text>
+          </View>
+        )}
 
         {/* References */}
         {shouldShow('references') && references.length > 0 && (

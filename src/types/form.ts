@@ -147,6 +147,9 @@ export interface FormData {
 
 export type FormStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
+/** Total number of wizard steps. Keep this as the single source of truth. */
+export const TOTAL_STEPS = 12;
+
 export interface FormState {
   data: FormData;
   currentStep: FormStep;

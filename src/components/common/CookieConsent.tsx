@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export const CookieConsent: React.FC = () => {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (!consent) setVisible(true);
-  }, []);
+  // Read localStorage lazily during init rather than in an effect: this avoids a
+  // flash of nothing on first paint and avoids a synchronous setState in an effect.
+  const [visible, setVisible] = useState(() => !localStorage.getItem('cookie-consent'));
 
   const accept = () => {
     localStorage.setItem('cookie-consent', 'accepted');

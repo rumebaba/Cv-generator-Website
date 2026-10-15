@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import { Button } from '../components/common/Button';
 import { Card, CardHeader, CardContent } from '../components/common/Card';
-import { Input, Select } from '../components/common/Input';
+import { Input } from '../components/common/Input';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 
@@ -12,7 +12,6 @@ interface ClientRecord {
   name: string;
   email: string;
   createdAt: Date;
-  pdfUrl?: string;
   template?: string;
 }
 
@@ -51,7 +50,6 @@ export const AdminPage: React.FC = () => {
           name: fullName,
           email,
           createdAt,
-          pdfUrl: d.pdfUrl as string | undefined,
           template: d.template as string | undefined,
         };
       });
@@ -233,16 +231,13 @@ export const AdminPage: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-400">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-400">
-                    PDF
-                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                 {loading ? (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={4}
                       className="px-6 py-12 text-center text-slate-500 dark:text-slate-400"
                     >
                       Loading...
@@ -251,7 +246,7 @@ export const AdminPage: React.FC = () => {
                 ) : filteredClients.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={4}
                       className="px-6 py-12 text-center text-slate-500 dark:text-slate-400"
                     >
                       No clients found.
@@ -281,20 +276,6 @@ export const AdminPage: React.FC = () => {
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        {client.pdfUrl ? (
-                          <a
-                            href={client.pdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
-                          >
-                            View PDF
-                          </a>
-                        ) : (
-                          <span className="text-sm text-slate-400">No PDF</span>
-                        )}
                       </td>
                     </tr>
                   ))

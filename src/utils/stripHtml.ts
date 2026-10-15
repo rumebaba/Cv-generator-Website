@@ -9,11 +9,11 @@ export function stripHtml(html: string): string {
         .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_: string, itemContent: string) => {
           const text = itemContent
             .replace(/<[^>]*>/g, '')
-            .replace(/&/g, '&')
-            .replace(/</g, '<')
-            .replace(/>/g, '>')
-            .replace(/"/g, '"')
-            .replace(/'/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&amp;/g, '&')
             .replace(/&nbsp;/g, ' ')
             .trim();
           return text ? `• ${text}` : '';
@@ -30,11 +30,11 @@ export function stripHtml(html: string): string {
           index++;
           const text = itemContent
             .replace(/<[^>]*>/g, '')
-            .replace(/&/g, '&')
-            .replace(/</g, '<')
-            .replace(/>/g, '>')
-            .replace(/"/g, '"')
-            .replace(/'/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&amp;/g, '&')
             .replace(/&nbsp;/g, ' ')
             .trim();
           return text ? `${index}. ${text}` : '';
@@ -51,11 +51,11 @@ export function stripHtml(html: string): string {
     .replace(/<\/p>/gi, '\n')
     .replace(/<\/li>/gi, '\n')
     .replace(/<[^>]*>/g, '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
-    .replace(/'/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
     .replace(/&nbsp;/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();

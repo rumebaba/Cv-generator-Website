@@ -1,0 +1,12 @@
+# Normalise line endings to LF in the repository.
+#
+# Without this, Git's core.autocrlf rewrites LF to CRLF on checkout on Windows,
+# which conflicts with "endOfLine": "lf" in .prettierrc and makes `npm run lint`
+# report a prettier error on every line of every file.
+* text=auto eol=lf
+
+# Keep binary assets out of text conversion.
+*.png binary
+*.ico binary
+*.woff binary
+*.woff2 binary

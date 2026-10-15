@@ -11,7 +11,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css,md}\"",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
+    "test": "npm run typecheck && npm run verify:steps && npm run verify:sections && npm run verify:creative",
     "verify:sections": "npx --yes tsx scripts/verifySectionSelection.tsx",
     "verify:creative": "npx --yes tsx scripts/verifyCreativeTemplate.tsx",
     "verify:steps": "npx --yes tsx scripts/verifyStepWiring.ts"

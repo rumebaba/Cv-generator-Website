@@ -91,7 +91,9 @@ export const Step12Review: React.FC<Step12ReviewProps> = ({ onGenerate }) => {
   };
 
   const handleBack = () => {
-    navigate('/form/step/9');
+    // Step 11 (Languages) immediately precedes the review step. This previously
+    // jumped to step 9, skipping Certifications and Languages entirely.
+    navigate('/form/step/11');
   };
 
   return (

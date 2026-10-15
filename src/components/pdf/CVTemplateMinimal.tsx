@@ -2,7 +2,13 @@ import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/render
 import React from 'react';
 
 import type { FormState } from '../../types/form';
-import { getDegreeLabel, getResultLabel, htmlToBullets } from '../../utils/cvHelpers';
+import {
+  buildCertificationEntries,
+  buildLanguageEntries,
+  getDegreeLabel,
+  getResultLabel,
+  htmlToBullets,
+} from '../../utils/cvHelpers';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 
@@ -54,11 +60,16 @@ const CVTemplateMinimal: React.FC<{ formState: FormState }> = ({ formState }) =>
     projects,
     skills,
     credentials,
+    certifications,
+    languages,
     medicalScience,
   } = data;
 
   const shouldShow = (section: keyof typeof selectedSections) =>
     selectedSections[section] !== false;
+
+  const certificationEntries = buildCertificationEntries(certifications);
+  const languageEntries = buildLanguageEntries(languages, skills);
 
   const formatEnd = (current: boolean, endDate: string) => {
     if (current) return 'Present';
@@ -199,7 +210,7 @@ const CVTemplateMinimal: React.FC<{ formState: FormState }> = ({ formState }) =>
 
         {shouldShow('credentials') && credentials.length > 0 && (
           <View style={{ marginTop: 16 }}>
-            <Text style={styles.sectionTitle}>Certifications</Text>
+            <Text style={styles.sectionTitle}>Credentials & Extras</Text>
             {credentials.map((cred) => (
               <View key={cred.id} style={{ marginBottom: 5 }}>
                 <Text style={styles.bold}>{cred.certificateName}</Text>
@@ -220,6 +231,40 @@ const CVTemplateMinimal: React.FC<{ formState: FormState }> = ({ formState }) =>
                   </Text>
                 )}
               </View>
+            ))}
+          </View>
+        )}
+
+        {shouldShow('certifications') && certificationEntries.length > 0 && (
+          <View style={{ marginTop: 16 }}>
+            <Text style={styles.sectionTitle}>Certifications</Text>
+            {certificationEntries.map((entry) => (
+              <View key={entry.id} style={{ marginBottom: 5 }}>
+                <Text style={styles.bold}>{entry.title}</Text>
+                {entry.issuer && <Text style={styles.light}>{entry.issuer}</Text>}
+                {(entry.issued || entry.expires) && (
+                  <Text style={styles.light}>
+                    {entry.issued}
+                    {entry.expires ? ' — ' + entry.expires : ''}
+                  </Text>
+                )}
+                {entry.credentialId && (
+                  <Text style={styles.light}>Credential ID: {entry.credentialId}</Text>
+                )}
+                {entry.url && <Text style={styles.light}>{entry.url}</Text>}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {shouldShow('languages') && languageEntries.length > 0 && (
+          <View style={{ marginTop: 16 }}>
+            <Text style={styles.sectionTitle}>Languages</Text>
+            {languageEntries.map((lang) => (
+              <Text key={lang.id} style={styles.desc}>
+                {lang.name}
+                {lang.proficiency ? ` — ${lang.proficiency}` : ''}
+              </Text>
             ))}
           </View>
         )}

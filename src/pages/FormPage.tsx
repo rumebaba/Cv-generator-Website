@@ -26,7 +26,7 @@ import { TemplateProvider, useTemplate } from '../hooks/useTemplate';
 import { auth } from '../lib/firebase';
 import { generateDocxBlob } from '../services/generateDocx';
 import { createClientId, loadCV, saveCV, submitClient } from '../services/submitClient';
-import { normalizeFormData } from '../types/form';
+import { normalizeFormData, TOTAL_STEPS } from '../types/form';
 import type { FormStep } from '../types/form';
 
 const steps = [
@@ -43,8 +43,6 @@ const steps = [
   { number: 11, label: 'Languages', component: Step11Languages },
   { number: 12, label: 'Review & Customize', component: Step12Review },
 ];
-
-const TOTAL_STEPS = 12;
 
 const stepComponents: Record<number, React.ComponentType> = steps.reduce(
   (acc, step) => {

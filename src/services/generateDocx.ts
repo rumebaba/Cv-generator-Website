@@ -1,6 +1,7 @@
 import { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle } from 'docx';
 
 import type { FormData } from '../types/form';
+import { buildCertificationEntries, buildLanguageEntries } from '../utils/cvHelpers';
 
 function cleanText(text: string): string {
   return text.replace(/<[^>]*>/g, '').trim();
@@ -75,8 +76,13 @@ export async function generateDocxBlob(formData: FormData): Promise<Blob> {
     projects,
     skills,
     credentials,
+    certifications,
+    languages,
     references,
   } = formData;
+
+  const certificationEntries = buildCertificationEntries(certifications);
+  const languageEntries = buildLanguageEntries(languages, skills);
 
   const children: Paragraph[] = [];
 
@@ -499,6 +505,51 @@ export async function generateDocxBlob(formData: FormData): Promise<Blob> {
         );
         children.push(createBodyText(cred.militaryService));
       }
+    });
+  }
+
+  // Certifications
+  if (certificationEntries.length > 0) {
+    children.push(createSectionTitle('Certifications'));
+    certificationEntries.forEach((entry) => {
+      children.push(
+        new Paragraph({
+          children: [new TextRun({ text: entry.title, bold: true, size: 22, font: 'Calibri' })],
+          spacing: { before: 120, after: 40 },
+        })
+      );
+      if (entry.issuer) {
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: entry.issuer, size: 20, color: '4F46E5', font: 'Calibri' }),
+            ],
+            spacing: { after: 40 },
+          })
+        );
+      }
+      if (entry.issued || entry.expires) {
+        const dates = [
+          entry.issued ? `Issued ${entry.issued}` : '',
+          entry.expires ? `Expires ${entry.expires}` : '',
+        ]
+          .filter(Boolean)
+          .join(' | ');
+        children.push(createSmallText(dates));
+      }
+      if (entry.credentialId)
+        children.push(createSmallText(`Credential ID: ${entry.credentialId}`));
+      if (entry.url) children.push(createSmallText(entry.url));
+    });
+  }
+
+  // Languages
+  if (languageEntries.length > 0) {
+    children.push(createSectionTitle('Languages'));
+    languageEntries.forEach((lang) => {
+      children.push(
+        createBullet(`${lang.name}${lang.proficiency ? ` (${lang.proficiency})` : ''}`)
+      );
     });
   }
 

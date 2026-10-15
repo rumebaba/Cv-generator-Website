@@ -2,7 +2,12 @@ import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/render
 import React from 'react';
 
 import type { FormState } from '../../types/form';
-import { getDegreeLabel, getResultLabel } from '../../utils/cvHelpers';
+import {
+  buildCertificationEntries,
+  buildLanguageEntries,
+  getDegreeLabel,
+  getResultLabel,
+} from '../../utils/cvHelpers';
 import { fitFontSize, textWidthEm } from '../../utils/fitText';
 import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
@@ -236,33 +241,28 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
   const softSkills = skills
     .flatMap((sk) => (sk.softSkills || '').split(',').map((t) => t.trim()))
     .filter(Boolean);
-  const spokenFromSkills = skills
-    .flatMap((sk) => (sk.spokenLanguages || '').split(',').map((t) => t.trim()))
-    .filter(Boolean);
   const yearsExperience = skills.map((sk) => sk.yearsOfExperience).find((y) => y && y > 0);
   const proficiency = skills.map((sk) => sk.proficiencyLevel).find((p) => p && p !== 'beginner');
-  const languagesList = languages.length
-    ? languages.map((l) => `${l.name}${l.proficiency ? ` (${l.proficiency})` : ''}`)
-    : spokenFromSkills;
+  // Step 11 is authoritative; buildLanguageEntries falls back to the Step 7
+  // free-text field and dedupes names that appear in both places.
+  const languageEntries = buildLanguageEntries(languages, skills);
+  const languagesList = languageEntries.map(
+    (l) => `${l.name}${l.proficiency ? ` (${l.proficiency})` : ''}`
+  );
   const extraCredentials = credentials.filter(
     (c) => c.volunteerWork || c.militaryService || c.securityClearance || c.hobbies || c.references
   );
-  // Certificates from both the credentials and certifications steps are merged
-  // into one sidebar list so nothing is rendered twice.
-  const credentialBlocks = [
-    ...credentials.map((c) => ({
+  const certificationEntries = buildCertificationEntries(certifications);
+  // Step 8 credentials and Step 10 certifications are kept in separate lists so
+  // each honours its own toggle on the Review step.
+  const credentialBlocks = credentials
+    .map((c) => ({
       id: c.id,
       title: c.certificateName,
       subtitle: c.issuer,
       credentialId: c.credentialId,
-    })),
-    ...certifications.map((c) => ({
-      id: `cert-${c.id}`,
-      title: c.name,
-      subtitle: c.issuer,
-      credentialId: c.credentialId,
-    })),
-  ].filter((item) => item.title);
+    }))
+    .filter((item) => item.title);
 
   const contactExtras = [
     pd.nationality ? `Nationality: ${pd.nationality}` : '',
@@ -351,12 +351,33 @@ const CVTemplateCreative: React.FC<{ formState: FormState }> = ({ formState }) =
 
           {shouldShow('credentials') && credentialBlocks.length > 0 && (
             <View style={s.sidebarSection}>
-              <Text style={s.sidebarTitle}>Certifications</Text>
+              <Text style={s.sidebarTitle}>Credentials</Text>
               {credentialBlocks.map((item) => (
                 <View key={item.id} style={{ marginBottom: 3 }}>
                   <Text style={s.contactItem}>{item.title}</Text>
                   {item.subtitle && <Text style={s.contactItem}>{item.subtitle}</Text>}
                   {item.credentialId && <Text style={s.contactItem}>ID: {item.credentialId}</Text>}
+                </View>
+              ))}
+            </View>
+          )}
+
+          {shouldShow('certifications') && certificationEntries.length > 0 && (
+            <View style={s.sidebarSection}>
+              <Text style={s.sidebarTitle}>Certifications</Text>
+              {certificationEntries.map((entry) => (
+                <View key={entry.id} style={{ marginBottom: 3 }}>
+                  <Text style={s.contactItem}>{entry.title}</Text>
+                  {entry.issuer && <Text style={s.contactItem}>{entry.issuer}</Text>}
+                  {(entry.issued || entry.expires) && (
+                    <Text style={s.contactItem}>
+                      {entry.issued}
+                      {entry.expires ? ` — ${entry.expires}` : ''}
+                    </Text>
+                  )}
+                  {entry.credentialId && (
+                    <Text style={s.contactItem}>ID: {entry.credentialId}</Text>
+                  )}
                 </View>
               ))}
             </View>

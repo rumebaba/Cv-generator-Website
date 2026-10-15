@@ -92,6 +92,16 @@ export const Step3Education: React.FC = () => {
     setFormData((prev) => ({ ...prev, current: checked, endDate: checked ? '' : prev.endDate }));
   };
 
+  // Must take a boolean. This previously went through handleInputChange, whose
+  // value parameter is typed `string`, so the checkbox wrote the string 'false'
+  // - which is truthy, so it could never be unchecked.
+  const handleResultExpectedChange = (checked: boolean) => {
+    setFormData((prev) => ({ ...prev, resultExpected: checked }));
+    if (editingId) {
+      clearError('educations', 'resultExpected');
+    }
+  };
+
   const resetForm = () => {
     setFormData(initialEducation);
     setEditingId(null);
@@ -278,9 +288,7 @@ export const Step3Education: React.FC = () => {
                       <input
                         type="checkbox"
                         checked={formData.resultExpected}
-                        onChange={(e) =>
-                          handleInputChange('resultExpected', String(e.target.checked))
-                        }
+                        onChange={(e) => handleResultExpectedChange(e.target.checked)}
                         className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                       />
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">

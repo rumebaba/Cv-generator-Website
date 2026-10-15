@@ -88,16 +88,6 @@ const CVTemplateExecutive: React.FC<{ formState: FormState }> = ({ formState }) 
   const certificationEntries = buildCertificationEntries(certifications);
   const languageEntries = buildLanguageEntries(languages, skills);
 
-  const formatEnd = (current: boolean, endDate: string) => {
-    if (current) return 'Present';
-    if (endDate)
-      return new Date(endDate + '-01').toLocaleDateString('en-US', {
-        month: 'short',
-        year: 'numeric',
-      });
-    return 'Present';
-  };
-
   return (
     <Document>
       <Page size="A4" style={styles.page}>

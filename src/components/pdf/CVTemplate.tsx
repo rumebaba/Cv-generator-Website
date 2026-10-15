@@ -9,7 +9,6 @@ import {
   getResultLabel,
   htmlToBullets,
 } from '../../utils/cvHelpers';
-import { formatDateRange } from '../../utils/formatDate';
 import { stripHtml } from '../../utils/stripHtml';
 
 const styles = StyleSheet.create({

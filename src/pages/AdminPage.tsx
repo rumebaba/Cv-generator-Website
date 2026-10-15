@@ -2,7 +2,7 @@ import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { Button } from '../components/common/Button';
-import { Card, CardHeader, CardContent } from '../components/common/Card';
+import { Card, CardContent } from '../components/common/Card';
 import { Input } from '../components/common/Input';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
@@ -31,7 +31,6 @@ export const AdminPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'date' | 'name'>('date');
   // Captured once per mount so the "this week" stat is stable across renders.
   // Calling Date.now() during render made every render impure.
   const [now] = useState(() => Date.now());
@@ -101,10 +100,7 @@ export const AdminPage: React.FC = () => {
 
   const filteredClients = clients
     .filter((c) => c.name.toLowerCase().includes(term) || c.email.toLowerCase().includes(term))
-    .sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      return b.createdAt.getTime() - a.createdAt.getTime();
-    });
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   const filteredMessages = messages
     .filter(

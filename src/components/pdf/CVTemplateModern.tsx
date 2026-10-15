@@ -6,7 +6,6 @@ import {
   buildCertificationEntries,
   buildLanguageEntries,
   getDegreeLabel,
-  getResultLabel,
   htmlToBullets,
 } from '../../utils/cvHelpers';
 import { formatDateRange } from '../../utils/formatDate';

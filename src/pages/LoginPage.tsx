@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '../components/common/Button';
-import { Card, CardHeader, CardContent } from '../components/common/Card';
+import { Card } from '../components/common/Card';
 import { Input } from '../components/common/Input';
 import { useAuth } from '../contexts/AuthContext';
 

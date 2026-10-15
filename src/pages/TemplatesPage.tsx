@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '../components/common/Button';
@@ -215,7 +215,6 @@ const ExecutivePreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
 
   const name = pd?.fullName || 'John Smith';
   const email = pd?.email || 'john@email.com';
-  const phone = pd?.phone || '+1 555 0123';
   const location = `${pd?.city || 'New York'}${pd?.city && pd?.country ? ', ' : ''}${pd?.country || 'NY'}`;
   const summary =
     intro?.professionalSummary ||
@@ -331,7 +330,6 @@ const CreativePreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
 
 const CompactPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
   const pd = formData?.personalData;
-  const intro = formData?.introduction;
   const experiences = formData?.experiences || [];
   const educations = formData?.educations || [];
   const skills = formData?.skills || [];
@@ -339,7 +337,6 @@ const CompactPreview: React.FC<{ formData?: FormData }> = ({ formData }) => {
   const name = pd?.fullName || 'John Smith';
   const email = pd?.email || 'john@email.com';
   const phone = pd?.phone || '+1 555 0123';
-  const location = `${pd?.city || 'New York'}${pd?.city && pd?.country ? ', ' : ''}${pd?.country || ''}`;
   const firstExp = experiences[0];
   const firstEdu = educations[0];
   const techSkills = skills
